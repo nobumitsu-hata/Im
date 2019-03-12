@@ -26,10 +26,10 @@
             </objects>
             <point key="canvasLocation" x="-748" y="-270"/>
         </scene>
-        <!--View Controller-->
+        <!--Home View Controller-->
         <scene sceneID="vw7-2q-Kjs">
             <objects>
-                <viewController id="AxI-Mn-rOd" sceneMemberID="viewController">
+                <viewController id="AxI-Mn-rOd" customClass="HomeViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dcG-cr-dxb">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -50,6 +50,9 @@
                         <viewLayoutGuide key="safeArea" id="XDQ-XR-BbQ"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="Home" selectedImage="Home" id="bM8-Z8-nQM"/>
+                    <connections>
+                        <outlet property="tableView" destination="F6E-iP-lE6" id="gBL-1S-1C4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1iE-fM-hFs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -21,6 +21,7 @@
 		52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D342237846900CD3C50 /* RootTabBarController.swift */; };
 		52838D382237905D00CD3C50 /* CommunityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */; };
 		52838D392237905D00CD3C50 /* CommunityTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */; };
+		52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D3A2237921A00CD3C50 /* HomeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		52838D342237846900CD3C50 /* RootTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabBarController.swift; sourceTree = "<group>"; };
 		52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityTableViewCell.swift; sourceTree = "<group>"; };
 		52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommunityTableViewCell.xib; sourceTree = "<group>"; };
+		52838D3A2237921A00CD3C50 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		61B5262E30067EBCBBD10BC9 /* Pods-ImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImTests.release.xcconfig"; path = "Target Support Files/Pods-ImTests/Pods-ImTests.release.xcconfig"; sourceTree = "<group>"; };
 		6A3E9C13257F126F3465C779 /* Pods-Im.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.debug.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.debug.xcconfig"; sourceTree = "<group>"; };
 		72BA2461F0542D9E517A1970 /* Pods-Im.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.release.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.release.xcconfig"; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				52838D0922368D3800CD3C50 /* LaunchScreen.storyboard */,
 				52838D0C22368D3800CD3C50 /* Info.plist */,
 				52838D342237846900CD3C50 /* RootTabBarController.swift */,
+				52838D3A2237921A00CD3C50 /* HomeViewController.swift */,
 			);
 			path = Im;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
