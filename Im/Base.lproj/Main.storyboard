@@ -42,10 +42,10 @@
             </objects>
             <point key="canvasLocation" x="-748" y="-935"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Root Tab Bar Controller-->
         <scene sceneID="MDn-4Q-hPt">
             <objects>
-                <tabBarController id="5Hb-pa-Ozg" sceneMemberID="viewController">
+                <tabBarController id="5Hb-pa-Ozg" customClass="RootTabBarController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="X6Z-Fq-fX0">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
