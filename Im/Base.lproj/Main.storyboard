@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Item 2-->
+        <!--View Controller-->
         <scene sceneID="vFA-G3-A6q">
             <objects>
                 <viewController id="JUx-II-n1x" sceneMemberID="viewController">
@@ -20,13 +20,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="1a2-NW-rYA"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item 2" id="f3h-4K-WWJ"/>
+                    <tabBarItem key="tabBarItem" title="" image="Message" selectedImage="Message" id="f3h-4K-WWJ"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H9b-cF-Ina" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-748" y="-270"/>
         </scene>
-        <!--Item 1-->
+        <!--View Controller-->
         <scene sceneID="vw7-2q-Kjs">
             <objects>
                 <viewController id="AxI-Mn-rOd" sceneMemberID="viewController">
@@ -36,7 +36,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="XDQ-XR-BbQ"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item 1" id="bM8-Z8-nQM"/>
+                    <tabBarItem key="tabBarItem" title="" image="Home" selectedImage="Home" id="bM8-Z8-nQM"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1iE-fM-hFs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -90,4 +90,8 @@
             </objects>
         </scene>
     </scenes>
+    <resources>
+        <image name="Home" width="50" height="50"/>
+        <image name="Message" width="37.5" height="37.5"/>
+    </resources>
 </document>
