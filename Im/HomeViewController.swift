@@ -43,12 +43,25 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // 自作セルをテーブルビューに登録する
         let communityXib = UINib(nibName: "CommunityTableViewCell", bundle: nil)
         tableView.register(communityXib, forCellReuseIdentifier: "communityCell")
+        
+        setupFirebase()
     }
     
     //各セルの要素を設定する
     func tableView(_ table: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: "communityCell", for: indexPath) as! CommunityTableViewCell
+        
+        // Tag番号 1 で UILabel インスタンスの生成
+        let titleLabel = cell.viewWithTag(1) as! UILabel
+        let title = self.communityArray[indexPath.row]["title"] as! String
+        titleLabel.textColor = UIColor.blue
+        titleLabel.text = String(describing: title)
+        
+        let img  = cell.viewWithTag(2) as! UIImageView
+        var storageRef = storage.reference()
+        var perfumeRef = storageRef.child("perfume.jpg")
+        img.sd_setImage(with: perfumeRef)
         
         return cell
     }
@@ -59,7 +72,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return communityArray.count
     }
     
-    // Cell の高さを１２０にする
+    // Cell の高さをスクリーンサイズにする
     func tableView(_ table: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UIScreen.main.bounds.height
