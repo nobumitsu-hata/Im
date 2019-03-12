@@ -15,7 +15,25 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     @IBOutlet weak var tableView: UITableView!
     
+    var ref: DatabaseReference!
+    var storage: Storage!
     var communityArray:[[String:Any]] = []
+    
+    func setupFirebase() {
+        storage = Storage.storage()
+        
+        ref = Database.database().reference()
+        ref.child("communities").observeSingleEvent(of: .value, with: { (snapshot) in
+            // Get user value
+            let val = snapshot.value as! [String:[String:Any]]
+            let community = val.values
+            self.communityArray += community
+            self.tableView.reloadData()
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
