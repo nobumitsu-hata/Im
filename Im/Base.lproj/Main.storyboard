@@ -49,7 +49,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="XDQ-XR-BbQ"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="" image="Home" selectedImage="Home" id="bM8-Z8-nQM"/>
+                    <tabBarItem key="tabBarItem" tag="1" title="" image="Home" selectedImage="Home" id="bM8-Z8-nQM"/>
                     <connections>
                         <outlet property="tableView" destination="F6E-iP-lE6" id="gBL-1S-1C4"/>
                     </connections>
