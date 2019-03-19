@@ -23,6 +23,9 @@
 		52838D392237905D00CD3C50 /* CommunityTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */; };
 		52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D3A2237921A00CD3C50 /* HomeViewController.swift */; };
 		52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D3E2238D26B00CD3C50 /* MessageViewController.swift */; };
+		52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */; };
+		52838D43223F2C1900CD3C50 /* ChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */; };
+		52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D44223F319500CD3C50 /* ChatViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +69,9 @@
 		52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommunityTableViewCell.xib; sourceTree = "<group>"; };
 		52838D3A2237921A00CD3C50 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		52838D3E2238D26B00CD3C50 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
+		52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
+		52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatTableViewCell.xib; sourceTree = "<group>"; };
+		52838D44223F319500CD3C50 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		61B5262E30067EBCBBD10BC9 /* Pods-ImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImTests.release.xcconfig"; path = "Target Support Files/Pods-ImTests/Pods-ImTests.release.xcconfig"; sourceTree = "<group>"; };
 		6A3E9C13257F126F3465C779 /* Pods-Im.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.debug.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.debug.xcconfig"; sourceTree = "<group>"; };
 		72BA2461F0542D9E517A1970 /* Pods-Im.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.release.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.release.xcconfig"; sourceTree = "<group>"; };
@@ -130,6 +136,9 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */,
+				52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */,
+				52838D44223F319500CD3C50 /* ChatViewController.swift */,
 				52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */,
 				52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */,
 				52838D0722368D3800CD3C50 /* Assets.xcassets */,
@@ -293,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52838D0B22368D3800CD3C50 /* LaunchScreen.storyboard in Resources */,
+				52838D43223F2C1900CD3C50 /* ChatTableViewCell.xib in Resources */,
 				52838D332236951000CD3C50 /* GoogleService-Info.plist in Resources */,
 				52838D0822368D3800CD3C50 /* Assets.xcassets in Resources */,
 				52838D0622368D3700CD3C50 /* Main.storyboard in Resources */,
@@ -452,8 +462,10 @@
 			files = (
 				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
+				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
+				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,
 				52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */,
 				52838D382237905D00CD3C50 /* CommunityTableViewCell.swift in Sources */,
 			);
