@@ -52,6 +52,7 @@
                     <tabBarItem key="tabBarItem" tag="1" title="" image="Home" selectedImage="Home" id="bM8-Z8-nQM"/>
                     <connections>
                         <outlet property="tableView" destination="F6E-iP-lE6" id="gBL-1S-1C4"/>
+                        <segue destination="Xkd-pN-RYu" kind="presentation" identifier="toChatViewController" id="Exa-gZ-cvv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1iE-fM-hFs" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -79,12 +80,12 @@
         <!--Chat View Controller-->
         <scene sceneID="1QC-0y-3W0">
             <objects>
-                <viewController storyboardIdentifier="ChatViewController" id="Xkd-pN-RYu" customClass="ChatViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChatViewController" modalPresentationStyle="overCurrentContext" id="Xkd-pN-RYu" customClass="ChatViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3pA-oh-Gqr">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aGW-Tb-B19">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aGW-Tb-B19">
                                 <rect key="frame" x="0.0" y="20" width="375" height="567"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
@@ -135,6 +136,7 @@
                         <viewLayoutGuide key="safeArea" id="BlT-3T-lMb"/>
                     </view>
                     <connections>
+                        <outlet property="inputWrap" destination="3X3-Rl-d72" id="YdJ-Jb-rG2"/>
                         <outlet property="tableView" destination="aGW-Tb-B19" id="wKd-mC-B2c"/>
                     </connections>
                 </viewController>

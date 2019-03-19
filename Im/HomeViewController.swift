@@ -77,6 +77,12 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UIScreen.main.bounds.height
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("せんい")
+        tabBarController?.tabBar.isHidden = true
+        performSegue(withIdentifier: "toChatViewController", sender: nil)
+    }
 
     /*
     // MARK: - Navigation
