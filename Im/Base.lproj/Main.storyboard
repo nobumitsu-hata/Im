@@ -99,6 +99,9 @@
                                             <constraint firstAttribute="height" constant="30" id="ybl-8Z-56d"/>
                                         </constraints>
                                         <state key="normal" title="送信"/>
+                                        <connections>
+                                            <action selector="postMessage:" destination="Xkd-pN-RYu" eventType="touchUpInside" id="ijH-a2-0zk"/>
+                                        </connections>
                                     </button>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Oa-VX-ws2">
                                         <rect key="frame" x="30" y="20" width="255" height="40"/>
@@ -138,6 +141,7 @@
                     <connections>
                         <outlet property="inputWrap" destination="3X3-Rl-d72" id="YdJ-Jb-rG2"/>
                         <outlet property="tableView" destination="aGW-Tb-B19" id="wKd-mC-B2c"/>
+                        <outlet property="textField" destination="1Oa-VX-ws2" id="HCe-lh-tH8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pem-GE-744" userLabel="First Responder" sceneMemberID="firstResponder"/>

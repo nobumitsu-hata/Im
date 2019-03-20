@@ -12,9 +12,11 @@ import FirebaseUI
 
 class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControllerDelegate {
     
+    static var userId = ""
     var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
     
     let providers: [FUIAuthProvider] = [
+        FUIEmailAuth(),
         FUIGoogleAuth(),
         FUIPhoneAuth(authUI:FUIAuth.defaultAuthUI()!),
         ]
@@ -32,7 +34,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         UITabBar.appearance().backgroundImage = UIImage()
         
         self.delegate = self
-
+        
         // authUIのデリゲート
         self.authUI.delegate = self
         self.authUI.providers = providers
@@ -44,6 +46,8 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
             if user != nil{
                 //サインインしている
                 print("ログイン中")
+                print(user!.uid)
+                RootTabBarController.userId = user!.uid
                 self.authCheck = true
             } else {
                 //サインインしていない

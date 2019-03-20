@@ -7,20 +7,28 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
 
 class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var inputWrap: UIView!
+    @IBOutlet weak var textField: UITextField!
+    
+    var ref: DatabaseReference!
+    var communityId: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
+        
         self.view.backgroundColor = UIColor.clear
         tableView.backgroundColor = UIColor.clear
         inputWrap.backgroundColor = UIColor.clear
-        
+
+        ref = Database.database().reference()
         // 自作セルをテーブルビューに登録する
         let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
         tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
@@ -43,15 +51,13 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    @IBAction func postMessage(_ sender: UIButton) {
+        // TextFieldから文字を取得
+        let message = textField.text
+        self.ref.child("messages").child(communityId).setValue(["user":RootTabBarController.userId,"message":message])
+        // TextFieldの中身をクリア
+        textField.text = ""
     }
-    */
 
 }

@@ -17,7 +17,8 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var ref: DatabaseReference!
     var storage: Storage!
-    var communityArray:[[String:Any]] = []
+    var communityKey:[String] = []
+    var communityVal:[[String:Any]] = []
     
     func setupFirebase() {
         storage = Storage.storage()
@@ -26,8 +27,9 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         ref.child("communities").observeSingleEvent(of: .value, with: { (snapshot) in
             // Get user value
             let val = snapshot.value as! [String:[String:Any]]
-            let community = val.values
-            self.communityArray += community
+//            let community =
+            self.communityVal += val.values
+            self.communityKey += val.keys
             self.tableView.reloadData()
             
         }) { (error) in
@@ -54,13 +56,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         // Tag番号 1 で UILabel インスタンスの生成
         let titleLabel = cell.viewWithTag(1) as! UILabel
-        let title = self.communityArray[indexPath.row]["title"] as! String
+        let title = self.communityVal[indexPath.row]["title"] as! String
         titleLabel.textColor = UIColor.blue
         titleLabel.text = String(describing: title)
         
         let img  = cell.viewWithTag(2) as! UIImageView
-        var storageRef = storage.reference()
-        var perfumeRef = storageRef.child("perfume.jpg")
+        let storageRef = storage.reference()
+        let perfumeRef = storageRef.child("perfume.jpg")
         img.sd_setImage(with: perfumeRef)
         
         return cell
@@ -69,7 +71,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     //Table Viewのセルの数を指定
     func tableView(_ table: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        return communityArray.count
+        return communityVal.count
     }
     
     // Cell の高さをスクリーンサイズにする
@@ -78,10 +80,18 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return UIScreen.main.bounds.height
     }
     
+    // セルが選択された場合
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("せんい")
         tabBarController?.tabBar.isHidden = true
-        performSegue(withIdentifier: "toChatViewController", sender: nil)
+        performSegue(withIdentifier: "toChatViewController", sender: communityKey[indexPath.row])
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toChatViewController" {
+            let chatViewController = segue.destination as! ChatViewController
+            chatViewController.communityId = (sender as! String)
+        }
     }
 
     /*
