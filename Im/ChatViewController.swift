@@ -18,6 +18,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var ref: DatabaseReference!
     var communityId: String!
+    var messageArr:[[String:Any]] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +33,16 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // 自作セルをテーブルビューに登録する
         let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
         tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
+        
+        ref.child("messages").observe(.childAdded, with: { (snapshot) -> Void in
+            let val = snapshot.value as! [String:[String:Any]]
+            print("テスト")
+            print(val.values)
+            self.messageArr += val.values
+            
+            // データの追加
+            self.tableView.reloadData()
+        })
     }
     
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -41,11 +52,13 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         cell.backgroundColor = UIColor.clear
         name.backgroundColor = UIColor.clear
         text.backgroundColor = UIColor.clear
+//        print(messageArr[indexPath.row])
+        text.text = (messageArr[indexPath.row]["message"] as! String)
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return messageArr.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -55,7 +68,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBAction func postMessage(_ sender: UIButton) {
         // TextFieldから文字を取得
         let message = textField.text
-        self.ref.child("messages").child(communityId).setValue(["user":RootTabBarController.userId,"message":message])
+        let key = ref.child("messages").childByAutoId().key
+        self.ref.child("messages").child(communityId).child(key!).setValue(["user":RootTabBarController.userId,"message":message])
         // TextFieldの中身をクリア
         textField.text = ""
     }
