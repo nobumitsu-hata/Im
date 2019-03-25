@@ -8,39 +8,37 @@
 
 import UIKit
 import Firebase
-import FirebaseUI
+//import FirebaseUI
 
-class ViewController: UIViewController, FUIAuthDelegate {
-
-    var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    let providers: [FUIAuthProvider] = [
-        FUIGoogleAuth(),
-        ]
+    var imagePickUpButton:UIButton = UIButton()
+    var picker: UIImagePickerController! = UIImagePickerController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // authUIのデリゲート
-        self.authUI.delegate = self
-        self.authUI.providers = providers
     }
     
-    @objc func AuthButtonTapped(sender : AnyObject) {
-        // FirebaseUIのViewの取得
-        let authViewController = self.authUI.authViewController()
-        // FirebaseUIのViewの表示
-        self.present(authViewController, animated: true, completion: nil)
-    }
+    //basicボタンが押されたら呼ばれます
+//    func imagePickUpButtonClicked(sender: UIButton){
+//
+//        //PhotoLibraryから画像を選択
+//        picker.sourceType = UIImagePickerController.SourceType.photoLibrary
+//
+//        //デリゲートを設定する
+//        picker.delegate = self
+//
+//        //現れるピッカーNavigationBarの文字色を設定する
+//        picker.navigationBar.tintColor = UIColor.white
+//
+//        //現れるピッカーNavigationBarの背景色を設定する
+//        picker.navigationBar.barTintColor = UIColor.gray
+//
+//        //ピッカーを表示する
+//        present(picker, animated: true, completion: nil)
+//    }
     
-    //　認証画面から離れたときに呼ばれる（キャンセルボタン押下含む）
-    public func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?){
-        // 認証に成功した場合
-        if error == nil {
-            self.performSegue(withIdentifier: "toTopView", sender: self)
-        }
-        // エラー時の処理をここに書く
-    }
-
+    
 
 }
 

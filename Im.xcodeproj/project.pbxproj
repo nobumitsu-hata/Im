@@ -26,6 +26,8 @@
 		52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */; };
 		52838D43223F2C1900CD3C50 /* ChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */; };
 		52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D44223F319500CD3C50 /* ChatViewController.swift */; };
+		52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D4622462EA400CD3C50 /* CreateViewController.swift */; };
+		52838D4922487FD700CD3C50 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52838D4822487FD700CD3C50 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +74,8 @@
 		52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatTableViewCell.xib; sourceTree = "<group>"; };
 		52838D44223F319500CD3C50 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		52838D4622462EA400CD3C50 /* CreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
+		52838D4822487FD700CD3C50 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		61B5262E30067EBCBBD10BC9 /* Pods-ImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImTests.release.xcconfig"; path = "Target Support Files/Pods-ImTests/Pods-ImTests.release.xcconfig"; sourceTree = "<group>"; };
 		6A3E9C13257F126F3465C779 /* Pods-Im.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.debug.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.debug.xcconfig"; sourceTree = "<group>"; };
 		72BA2461F0542D9E517A1970 /* Pods-Im.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.release.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.release.xcconfig"; sourceTree = "<group>"; };
@@ -84,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52838D4922487FD700CD3C50 /* CoreLocation.framework in Frameworks */,
 				2A6DEF0A25C86B519B7BD652 /* Pods_Im.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -136,6 +141,7 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				52838D4622462EA400CD3C50 /* CreateViewController.swift */,
 				52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */,
 				52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */,
 				52838D44223F319500CD3C50 /* ChatViewController.swift */,
@@ -172,6 +178,7 @@
 		56C79381B5BB28C985BE2F77 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				52838D4822487FD700CD3C50 /* CoreLocation.framework */,
 				1C901B0705F05D07D86F7E1D /* Pods_Im.framework */,
 				939F3B6E8443BC2D676D45DD /* Pods_ImTests.framework */,
 				374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */,
@@ -464,6 +471,7 @@
 			files = (
 				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
+				52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */,
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,

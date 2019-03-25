@@ -24,7 +24,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H9b-cF-Ina" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-748" y="-270"/>
+            <point key="canvasLocation" x="-748" y="-179"/>
         </scene>
         <!--Home View Controller-->
         <scene sceneID="vw7-2q-Kjs">
@@ -57,7 +57,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1iE-fM-hFs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-748" y="-935.08245877061472"/>
+            <point key="canvasLocation" x="-748" y="-945"/>
         </scene>
         <!--Root Tab Bar Controller-->
         <scene sceneID="MDn-4Q-hPt">
@@ -71,6 +71,7 @@
                     <connections>
                         <segue destination="AxI-Mn-rOd" kind="relationship" relationship="viewControllers" id="Fgm-CM-5sX"/>
                         <segue destination="JUx-II-n1x" kind="relationship" relationship="viewControllers" id="PYI-UG-hSF"/>
+                        <segue destination="VR7-1j-BC4" kind="relationship" relationship="viewControllers" id="5du-RD-lry"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h4E-6B-kxa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -146,31 +147,84 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pem-GE-744" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="133.59999999999999" y="-528.48575712143929"/>
+            <point key="canvasLocation" x="84" y="-946"/>
         </scene>
-        <!--View Controller-->
+        <!--Item-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CreateViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="CreateViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p9H-8t-ukG" customClass="GIDSignInButton">
-                                <rect key="frame" x="67" y="189" width="240" height="128"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Qf8-cx-m6S">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                            </imageView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fez-Vn-Viw">
+                                <rect key="frame" x="40" y="120" width="295" height="22"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wdn-sh-RgV">
+                                <rect key="frame" x="137.5" y="577" width="100" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="U1h-Ac-4Yi"/>
+                                    <constraint firstAttribute="height" constant="40" id="f6b-wx-0Xz"/>
+                                </constraints>
+                                <state key="normal" title="投稿">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="createCommunity:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nhc-6s-buJ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wdn-sh-RgV" secondAttribute="bottom" constant="50" id="B55-12-flF"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Qf8-cx-m6S" secondAttribute="bottom" id="IoU-Ei-chg"/>
+                            <constraint firstItem="Qf8-cx-m6S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="SUD-pP-CCW"/>
+                            <constraint firstItem="wdn-sh-RgV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Spa-WV-Gx9"/>
+                            <constraint firstItem="fez-Vn-Viw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="ZS2-r9-Bm0"/>
+                            <constraint firstItem="fez-Vn-Viw" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="h9j-3G-uF9"/>
+                            <constraint firstItem="Qf8-cx-m6S" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="nF7-46-Kag"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Qf8-cx-m6S" secondAttribute="trailing" id="soO-Sf-cb5"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fez-Vn-Viw" secondAttribute="trailing" constant="40" id="y8r-fe-hFg"/>
+                            <constraint firstItem="fez-Vn-Viw" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="yEM-8e-jDZ"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Item" id="Evf-iD-rAB"/>
+                    <connections>
+                        <outlet property="nameTextField" destination="fez-Vn-Viw" id="spn-fO-tuF"/>
+                        <outlet property="selectedImageView" destination="Qf8-cx-m6S" id="llg-UN-bPx"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="133.59999999999999" y="580.65967016491754"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="WbS-Zb-e3x">
+            <objects>
+                <viewController id="VR7-1j-BC4" customClass="ViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8Va-Cp-aIU">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="dPZ-5M-2ZQ"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="" image="Create" selectedImage="Create" id="ldZ-60-8M6"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rqx-EO-gYt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-748" y="583"/>
         </scene>
     </scenes>
     <resources>
+        <image name="Create" width="37.5" height="37.5"/>
         <image name="Home" width="50" height="50"/>
         <image name="Message" width="37.5" height="37.5"/>
     </resources>

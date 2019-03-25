@@ -31,6 +31,10 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>コミュニティー作成または参加のため位置情報を取得します</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>カメラロールから取得</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
