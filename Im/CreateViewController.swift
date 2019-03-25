@@ -55,20 +55,20 @@ class CreateViewController: UIViewController {
             } else {
             // 成功
                 print("Data saved successfully!")
-//                let storage = Storage.storage()
-//                let storageRef = storage.reference().child("communities")
-//                // UIImagePNGRepresentationでUIImageをNSDataに変換
-//                if let data = self.selectedImageView.image!.pngData() {
-//                    let reference = storageRef.child((self.selectedImageView.image?.accessibilityIdentifier)!)
-//                    reference.putData(data, metadata: nil, completion: { metaData, error in
-//                        print(metaData as Any)
-//                        print(error as Any)
-//                    })
-//                }
-//                // 画像を空にする
-//                self.selectedImageView.image = nil
-//                // 閉じる
-//                self.dismiss(animated: true)
+                let storage = Storage.storage()
+                let storageRef = storage.reference().child("communities")
+                // UIImagePNGRepresentationでUIImageをNSDataに変換
+                if let data = self.selectedImageView.image!.pngData() {
+                    let reference = storageRef.child(key!+"."+self.selectedImageType)
+                    reference.putData(data, metadata: nil, completion: { metaData, error in
+                        print(metaData as Any)
+                        print(error as Any)
+                    })
+                }
+                // 画像を空にする
+                self.selectedImageView.image = nil
+                // 閉じる
+                self.dismiss(animated: true)
             }
         }
         
