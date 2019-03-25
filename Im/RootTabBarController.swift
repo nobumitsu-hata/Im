@@ -93,9 +93,11 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let image = info[.originalImage] as? UIImage {
+            let imageType = (info[.imageURL] as! NSURL).absoluteString! as NSString
             let storyboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
             let nextView = storyboard.instantiateViewController(withIdentifier: "CreateViewController") as! CreateViewController
             nextView.selectedImage = image
+            nextView.selectedImageType = imageType.pathExtension
             self.dismiss(animated: false)
             self.present(nextView, animated: true, completion: nil)
         } else{

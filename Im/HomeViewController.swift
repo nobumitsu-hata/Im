@@ -56,7 +56,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         // Tag番号 1 で UILabel インスタンスの生成
         let titleLabel = cell.viewWithTag(1) as! UILabel
-        let title = self.communityVal[indexPath.row]["title"] as! String
+        let title = self.communityVal[indexPath.row]["name"] as! String
         titleLabel.textColor = UIColor.blue
         titleLabel.text = String(describing: title)
         

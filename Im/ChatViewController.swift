@@ -34,25 +34,25 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
         tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
         
-        ref.child("messages").observe(.childAdded, with: { (snapshot) -> Void in
-            let val = snapshot.value as! [String:[String:Any]]
-            print("テスト")
-            print(val.values)
-            self.messageArr += val.values
+        ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
+            print(snapshot.value)
+            let val = snapshot.value as! [String:Any]
             
+            self.messageArr.append(val)
+            print(self.messageArr)
             // データの追加
             self.tableView.reloadData()
         })
     }
     
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! ChatTableViewCell
         let name = cell.viewWithTag(2) as! UILabel
         let text = cell.viewWithTag(3) as! UITextView
         cell.backgroundColor = UIColor.clear
         name.backgroundColor = UIColor.clear
         text.backgroundColor = UIColor.clear
-//        print(messageArr[indexPath.row])
         text.text = (messageArr[indexPath.row]["message"] as! String)
         return cell
     }

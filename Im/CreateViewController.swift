@@ -14,14 +14,18 @@ import FirebaseDatabase
 class CreateViewController: UIViewController {
     
     var locationManager: CLLocationManager!
-    var selectedImage: UIImage?
+    var selectedImage: UIImage!
+    var selectedImageType: String!
     @IBOutlet weak var selectedImageView: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
+    
+    var ref: DatabaseReference!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
-        
+        // 初期化
+        ref = Database.database().reference()
         setupLocationManager()
         
         let border = CALayer()
@@ -37,7 +41,36 @@ class CreateViewController: UIViewController {
         selectedImageView.contentMode = UIView.ContentMode.scaleAspectFit
     }
 
+    // コミュニティー作成ボタンを押した場合
     @IBAction func createCommunity(_ sender: UIButton) {
+        let name = nameTextField.text
+        // ユニークキー自動生成
+        let key = ref.child("communities").childByAutoId().key
+        // DBに書き込み
+        self.ref.child("communities").child(key!).setValue(["name":name!,"img":key!+"."+selectedImageType,"radius":200]) {
+            (error:Error?, ref:DatabaseReference) in
+            // エラー
+            if let error = error {
+                print("Data could not be saved: \(error).")
+            } else {
+            // 成功
+                print("Data saved successfully!")
+//                let storage = Storage.storage()
+//                let storageRef = storage.reference().child("communities")
+//                // UIImagePNGRepresentationでUIImageをNSDataに変換
+//                if let data = self.selectedImageView.image!.pngData() {
+//                    let reference = storageRef.child((self.selectedImageView.image?.accessibilityIdentifier)!)
+//                    reference.putData(data, metadata: nil, completion: { metaData, error in
+//                        print(metaData as Any)
+//                        print(error as Any)
+//                    })
+//                }
+//                // 画像を空にする
+//                self.selectedImageView.image = nil
+//                // 閉じる
+//                self.dismiss(animated: true)
+            }
+        }
         
     }
     
@@ -72,30 +105,36 @@ extension CreateViewController: CLLocationManagerDelegate {
         print("latitude: \(latitude!)\nlongitude: \(longitude!)")
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined:
-            print("ユーザーはこのアプリケーションに関してまだ選択を行っていません")
-            // 許可を求めるコードを記述する（後述）
-            break
-        case .denied:
-            print("ローケーションサービスの設定が「無効」になっています (ユーザーによって、明示的に拒否されています）")
-            // 「設定 > プライバシー > 位置情報サービス で、位置情報サービスの利用を許可して下さい」を表示する
-            break
-        case .restricted:
-            print("このアプリケーションは位置情報サービスを使用できません(ユーザによって拒否されたわけではありません)")
-            // 「このアプリは、位置情報を取得できないために、正常に動作できません」を表示する
-            break
-        case .authorizedAlways:
-            print("常時、位置情報の取得が許可されています。")
-            // 位置情報取得の開始処理
-            break
-        case .authorizedWhenInUse:
-            print("起動時のみ、位置情報の取得が許可されています。")
-            // 位置情報取得の開始処理
-            break
-        }
+    // textfile以外の部分をタッチ
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // キーボードを閉じる
+        self.view.endEditing(true)
     }
+    
+//    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+//        switch status {
+//        case .notDetermined:
+//            print("ユーザーはこのアプリケーションに関してまだ選択を行っていません")
+//            // 許可を求めるコードを記述する（後述）
+//            break
+//        case .denied:
+//            print("ローケーションサービスの設定が「無効」になっています (ユーザーによって、明示的に拒否されています）")
+//            // 「設定 > プライバシー > 位置情報サービス で、位置情報サービスの利用を許可して下さい」を表示する
+//            break
+//        case .restricted:
+//            print("このアプリケーションは位置情報サービスを使用できません(ユーザによって拒否されたわけではありません)")
+//            // 「このアプリは、位置情報を取得できないために、正常に動作できません」を表示する
+//            break
+//        case .authorizedAlways:
+//            print("常時、位置情報の取得が許可されています。")
+//            // 位置情報取得の開始処理
+//            break
+//        case .authorizedWhenInUse:
+//            print("起動時のみ、位置情報の取得が許可されています。")
+//            // 位置情報取得の開始処理
+//            break
+//        }
+//    }
 }
 
 
