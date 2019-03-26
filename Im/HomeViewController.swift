@@ -62,7 +62,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let img  = cell.viewWithTag(2) as! UIImageView
         let storageRef = storage.reference()
-        let perfumeRef = storageRef.child("perfume.jpg")
+        let perfumeRef = storageRef.child("communities").child(self.communityVal[indexPath.row]["img"] as! String)
         img.sd_setImage(with: perfumeRef)
         
         return cell
