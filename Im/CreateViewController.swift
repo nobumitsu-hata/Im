@@ -19,6 +19,8 @@ class CreateViewController: UIViewController {
     @IBOutlet weak var selectedImageView: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
     
+    var latitude: String!
+    var longitude: String!
     var ref: DatabaseReference!
     
     override func viewDidLoad() {
@@ -47,7 +49,7 @@ class CreateViewController: UIViewController {
         // ユニークキー自動生成
         let key = ref.child("communities").childByAutoId().key
         // DBに書き込み
-        self.ref.child("communities").child(key!).setValue(["name":name!,"img":key!+"."+selectedImageType,"radius":200]) {
+        self.ref.child("communities").child(key!).setValue(["name":name!,"img":key!+"."+selectedImageType]) {
             (error:Error?, ref:DatabaseReference) in
             // エラー
             if let error = error {
@@ -61,6 +63,7 @@ class CreateViewController: UIViewController {
                 if let data = self.selectedImageView.image!.pngData() {
                     let reference = storageRef.child(key!+"."+self.selectedImageType)
                     reference.putData(data, metadata: nil, completion: { metaData, error in
+                        self.ref.child("locations").child(key!).setValue(["latitude":self.latitude, "longitude":self.longitude, "radius":200])
                         print(metaData as Any)
                         print(error as Any)
                     })
@@ -99,8 +102,8 @@ extension CreateViewController: CLLocationManagerDelegate {
     // 位置情報を取得・更新するたびに呼ばれる
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations.first
-        let latitude = location?.coordinate.latitude
-        let longitude = location?.coordinate.longitude
+        latitude = String(describing: location!.coordinate.latitude)
+        longitude = String(describing: location!.coordinate.longitude)
         
         print("latitude: \(latitude!)\nlongitude: \(longitude!)")
     }
