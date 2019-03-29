@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import FirebaseUI
+import CoreLocation
 
 class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -17,24 +18,45 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var ref: DatabaseReference!
     var storage: Storage!
-    var communityKey:[String] = []
+    var communityKey:String = ""
     var communityVal:[[String:Any]] = []
-    
+
     func setupFirebase() {
         storage = Storage.storage()
         
         ref = Database.database().reference()
-        ref.child("communities").observeSingleEvent(of: .value, with: { (snapshot) in
-            // Get user value
-            let val = snapshot.value as! [String:[String:Any]]
-//            let community =
-            self.communityVal += val.values
-            self.communityKey += val.keys
-            self.tableView.reloadData()
+        ref.child("locations").observeSingleEvent(of: .value, with: { (snapshot) in
             
-        }) { (error) in
-            print(error.localizedDescription)
-        }
+            let snapshotVal = snapshot.value as! [String:[String:Any]]
+            
+            for (key, value) in snapshotVal {
+                let latitude = value["latitude"] as! String
+                let longitude = value["longitude"] as! String
+                
+                let baseLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
+                let targetLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
+                let distanceLocation = baseLocation.distance(from: targetLocation)
+                print("距離は \(distanceLocation)")
+                
+                let radius = value["radius"] as! Double
+                // 現在地が目的地の許容範囲内かどうか
+                if radius < distanceLocation {
+                    continue
+                }
+                
+                self.ref.child("communities").child(key).observeSingleEvent(of: .value, with: { (snapshot) in
+                    let val = snapshot.value as! [String:Any]
+                    self.communityVal.append(val)
+                    self.communityKey = snapshot.key
+                    self.tableView.reloadData()
+                    
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
+            }
+            
+        })
+        
     }
     
     override func viewDidLoad() {
@@ -84,7 +106,7 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("せんい")
         tabBarController?.tabBar.isHidden = true
-        performSegue(withIdentifier: "toChatViewController", sender: communityKey[indexPath.row])
+        performSegue(withIdentifier: "toChatViewController", sender: communityKey)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -93,15 +115,5 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
             chatViewController.communityId = (sender as! String)
         }
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

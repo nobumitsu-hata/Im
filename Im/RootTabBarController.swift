@@ -9,12 +9,18 @@
 import UIKit
 import Firebase
 import FirebaseUI
+import CoreLocation
 
 class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     static var userId = ""
     var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
     var picker: UIImagePickerController! = UIImagePickerController()
+    
+    // 位置情報
+    var locationManager: CLLocationManager!
+    static var latitude: Double!
+    static var longitude: Double!
     
     let providers: [FUIAuthProvider] = [
         FUIEmailAuth(),
@@ -39,7 +45,26 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         // authUIのデリゲート
         self.authUI.delegate = self
         self.authUI.providers = providers
+        setupLocationManager()
+    }
+    
+    func setupLocationManager() {
+        // 初期化
+        locationManager = CLLocationManager()
+        // 初期化に成功しているかどうか
+        guard let locationManager = locationManager else { return }
+        // 位置情報を許可するリクエスト
+        locationManager.requestWhenInUseAuthorization()
         
+        let status = CLLocationManager.authorizationStatus()
+        // ユーザから「アプリ使用中の位置情報取得」の許可が得られた場合
+        if status == .authorizedWhenInUse {
+            locationManager.delegate = self
+            // 管理マネージャが位置情報を更新するペース
+            locationManager.distanceFilter = 20// メートル単位
+            // 位置情報の取得を開始
+            locationManager.startUpdatingLocation()
+        }
     }
     
     func checkLoggedIn() {
@@ -119,6 +144,19 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         let authViewController = self.authUI.authViewController()
         // FirebaseUIのViewの表示
         self.present(authViewController, animated: true, completion: nil)
+    }
+
+}
+
+extension RootTabBarController: CLLocationManagerDelegate {
+    
+    // 位置情報を取得・更新するたびに呼ばれる
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.first
+        RootTabBarController.latitude = location!.coordinate.latitude
+        RootTabBarController.longitude = location!.coordinate.longitude
+        
+        print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
     }
 
 }

@@ -95,6 +95,12 @@ class CreateViewController: UIViewController {
             locationManager.startUpdatingLocation()
         }
     }
+    
+    // textfile以外の部分をタッチ
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // キーボードを閉じる
+        self.view.endEditing(true)
+    }
 }
 
 extension CreateViewController: CLLocationManagerDelegate {
@@ -108,11 +114,7 @@ extension CreateViewController: CLLocationManagerDelegate {
         print("latitude: \(latitude!)\nlongitude: \(longitude!)")
     }
     
-    // textfile以外の部分をタッチ
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // キーボードを閉じる
-        self.view.endEditing(true)
-    }
+    
     
 //    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
 //        switch status {
@@ -139,8 +141,6 @@ extension CreateViewController: CLLocationManagerDelegate {
 //        }
 //    }
 }
-
-
 //extension UIColor {
 //    class func rgba(red: Int, green: Int, blue: Int, alpha: CGFloat) -> UIColor{
 //        return UIColor(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alpha)
