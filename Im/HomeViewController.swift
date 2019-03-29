@@ -26,34 +26,29 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         ref = Database.database().reference()
         ref.child("locations").observe(DataEventType.childAdded, with: { (snapshot) in
-//        ref.child("locations").observeSingleEvent(of: .value, with: { (snapshot) in
-            print(snapshot)
-            print("テスト")
+
             let snapshotVal = snapshot.value as! [String:Any]
-//
-//            for (key, value) in snapshotVal {
-                let latitude = snapshotVal["latitude"] as! String
-                let longitude = snapshotVal["longitude"] as! String
-//
-                let baseLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
-                let targetLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
-                let distanceLocation = baseLocation.distance(from: targetLocation)
-                print("距離は \(distanceLocation)")
-//
-                let radius = snapshotVal["radius"] as! Double
-                // 現在地が目的地の許容範囲内かどうか
-                if radius >= distanceLocation {
-                    self.ref.child("communities").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
-                        let val = snapshot.value as! [String:Any]
-                        self.communityVal.append(val)
-                        self.communityKey = snapshot.key
-                        self.tableView.reloadData()
-                        
-                    }) { (error) in
-                        print(error.localizedDescription)
-                    }
+            let latitude = snapshotVal["latitude"] as! String
+            let longitude = snapshotVal["longitude"] as! String
+
+            let baseLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
+            let targetLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
+            let distanceLocation = baseLocation.distance(from: targetLocation)
+            print("距離は \(distanceLocation)")
+
+            let radius = snapshotVal["radius"] as! Double
+            // 現在地が目的地の許容範囲内かどうか
+            if radius >= distanceLocation {
+                self.ref.child("communities").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
+                    let val = snapshot.value as! [String:Any]
+                    self.communityVal.append(val)
+                    self.communityKey = snapshot.key
+                    self.tableView.reloadData()
+                    
+                }) { (error) in
+                    print(error.localizedDescription)
                 }
-//            }
+            }
             
         })
         
@@ -63,12 +58,21 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        
+//        UIApplication.isstatus
         // 自作セルをテーブルビューに登録する
         let communityXib = UINib(nibName: "CommunityTableViewCell", bundle: nil)
         tableView.register(communityXib, forCellReuseIdentifier: "communityCell")
         
         setupFirebase()
+    }
+    
+//    override var StatusBarHidden: UIViewController? {
+//        return self.HomeViewController
+//    }
+    
+    override var prefersStatusBarHidden:Bool {
+        // trueの場合はステータスバー非表示
+        return true;
     }
     
     //各セルの要素を設定する
