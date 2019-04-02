@@ -28,6 +28,7 @@
 		52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D44223F319500CD3C50 /* ChatViewController.swift */; };
 		52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D4622462EA400CD3C50 /* CreateViewController.swift */; };
 		52838D4922487FD700CD3C50 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52838D4822487FD700CD3C50 /* CoreLocation.framework */; };
+		52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D4A224F2D9200CD3C50 /* ScrollViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		52838D44223F319500CD3C50 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		52838D4622462EA400CD3C50 /* CreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
 		52838D4822487FD700CD3C50 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		52838D4A224F2D9200CD3C50 /* ScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewController.swift; sourceTree = "<group>"; };
 		61B5262E30067EBCBBD10BC9 /* Pods-ImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImTests.release.xcconfig"; path = "Target Support Files/Pods-ImTests/Pods-ImTests.release.xcconfig"; sourceTree = "<group>"; };
 		6A3E9C13257F126F3465C779 /* Pods-Im.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.debug.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.debug.xcconfig"; sourceTree = "<group>"; };
 		72BA2461F0542D9E517A1970 /* Pods-Im.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.release.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.release.xcconfig"; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				52838D4A224F2D9200CD3C50 /* ScrollViewController.swift */,
 				52838D4622462EA400CD3C50 /* CreateViewController.swift */,
 				52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */,
 				52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */,
@@ -476,6 +479,7 @@
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
 				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,
+				52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */,
 				52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */,
 				52838D382237905D00CD3C50 /* CommunityTableViewCell.swift in Sources */,
 			);

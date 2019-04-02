@@ -83,7 +83,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if viewController is HomeViewController {
+        if viewController is ScrollViewController {
 
         } else {
             if self.authCheck {

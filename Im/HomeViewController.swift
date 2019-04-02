@@ -58,17 +58,13 @@ class HomeViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-//        UIApplication.isstatus
+
         // 自作セルをテーブルビューに登録する
         let communityXib = UINib(nibName: "CommunityTableViewCell", bundle: nil)
         tableView.register(communityXib, forCellReuseIdentifier: "communityCell")
         
         setupFirebase()
     }
-    
-//    override var StatusBarHidden: UIViewController? {
-//        return self.HomeViewController
-//    }
     
     override var prefersStatusBarHidden:Bool {
         // trueの場合はステータスバー非表示

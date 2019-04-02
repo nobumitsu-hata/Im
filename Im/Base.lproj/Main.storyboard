@@ -26,6 +26,37 @@
             </objects>
             <point key="canvasLocation" x="-748" y="-179"/>
         </scene>
+        <!--Scroll View Controller-->
+        <scene sceneID="TKb-Lu-kLY">
+            <objects>
+                <viewController id="1UV-LJ-b9a" customClass="ScrollViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XKz-Xa-gMI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="biK-vU-IWr">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="biK-vU-IWr" firstAttribute="leading" secondItem="6tV-Tj-LO3" secondAttribute="leading" id="8Hp-BV-oJJ"/>
+                            <constraint firstItem="6tV-Tj-LO3" firstAttribute="trailing" secondItem="biK-vU-IWr" secondAttribute="trailing" id="CLR-8E-Zn2"/>
+                            <constraint firstItem="6tV-Tj-LO3" firstAttribute="bottom" secondItem="biK-vU-IWr" secondAttribute="bottom" constant="-49" id="hXw-aj-mAC"/>
+                            <constraint firstItem="biK-vU-IWr" firstAttribute="top" secondItem="6tV-Tj-LO3" secondAttribute="top" id="yFd-8w-UYt"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6tV-Tj-LO3"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="" image="Home" selectedImage="Home" id="2C5-Uj-1dk"/>
+                    <connections>
+                        <outlet property="scrollView" destination="biK-vU-IWr" id="B9C-zg-Hzi"/>
+                        <segue destination="Xkd-pN-RYu" kind="presentation" identifier="toChatViewController" id="gQ7-bb-Iyk"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kwc-Hd-Xue" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-682.39999999999998" y="-947.67616191904051"/>
+        </scene>
         <!--Home View Controller-->
         <scene sceneID="vw7-2q-Kjs">
             <objects>
@@ -52,12 +83,11 @@
                     <tabBarItem key="tabBarItem" tag="1" title="" image="Home" selectedImage="Home" id="bM8-Z8-nQM"/>
                     <connections>
                         <outlet property="tableView" destination="F6E-iP-lE6" id="gBL-1S-1C4"/>
-                        <segue destination="Xkd-pN-RYu" kind="presentation" identifier="toChatViewController" id="Exa-gZ-cvv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1iE-fM-hFs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-748" y="-945"/>
+            <point key="canvasLocation" x="-626" y="-1716"/>
         </scene>
         <!--Root Tab Bar Controller-->
         <scene sceneID="MDn-4Q-hPt">
@@ -69,7 +99,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="AxI-Mn-rOd" kind="relationship" relationship="viewControllers" id="Fgm-CM-5sX"/>
+                        <segue destination="1UV-LJ-b9a" kind="relationship" relationship="viewControllers" id="R6p-G6-oxX"/>
                         <segue destination="JUx-II-n1x" kind="relationship" relationship="viewControllers" id="PYI-UG-hSF"/>
                         <segue destination="VR7-1j-BC4" kind="relationship" relationship="viewControllers" id="5du-RD-lry"/>
                     </connections>
