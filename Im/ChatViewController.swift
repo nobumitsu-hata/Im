@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 
-class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate {
+class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
 
     
     @IBOutlet weak var scrollView: UIScrollView!
@@ -23,6 +23,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var messageArr:[[String:Any]] = []
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
     var test:CGRect = CGRect(x: 0, y: 0, width: 0, height: 0)
+    var testCounter = 0
     
     override func viewWillAppear(_ animated: Bool) {
         
@@ -38,6 +39,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
+        self.textField.delegate = self
+        
+        textField.returnKeyType = .done
         
         self.view.backgroundColor = UIColor.clear
         tableView.backgroundColor = UIColor.clear
@@ -64,8 +68,29 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
             self.messageArr.append(val)
             print(self.messageArr)
+//            let oldContentSize = self.tableView.contentSize.height
             // データの追加
             self.tableView.reloadData()
+//            DispatchQueue.main.async {
+//                if self.testCounter > 0 {
+//
+//                    // ノーアニメで新しく読み込んだ次の内容が先頭に来るように移動
+//                    print("個数")
+////                    print(self.messageArr.count)
+////                    self.tableView.scrollToRow(at: IndexPath(row: self.messageArr.count, section: 0),at:UITableView.ScrollPosition.bottom,animated: false)
+////                    let newContentSize = self.tableView.contentSize.height
+////                    let dif = newContentSize - oldContentSize
+////                    print(dif)
+////                    // 前回の先頭からのオフセット分ずらす
+////                    self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentOffset.y + 80)
+//
+//                } else {
+//                    let test = self.tableView.contentSize.height - self.tableView.frame.size.height
+//                    self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
+//                }
+//
+//            }
+            
         })
     }
     
@@ -87,6 +112,11 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         text.textContainerInset = UIEdgeInsets.zero
         text.textContainer.lineFragmentPadding = 0
         text.text = (messageArr[indexPath.row]["message"] as! String)
+        
+        text.delegate = self
+        let height = text.sizeThatFits(CGSize(width: text.frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
+        text.heightAnchor.constraint(equalToConstant: height).isActive = true
+        
         return cell
     }
     
@@ -94,17 +124,12 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return messageArr.count
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
-    }
+//    func tableView(_ table: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 49
+//    }
     
-    @IBAction func postMessage(_ sender: UIButton) {
-        // TextFieldから文字を取得
-        let message = textField.text
-        let key = ref.child("messages").childByAutoId().key
-        self.ref.child("messages").child(communityId).child(key!).setValue(["user":RootTabBarController.userId,"message":message])
-        // TextFieldの中身をクリア
-        textField.text = ""
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 49 //自動設定
     }
     
     @IBAction func tapScreen(_ sender: Any) {
@@ -136,5 +161,30 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
         scrollView.contentOffset.y = 0
+    }
+    
+    //Enterを押したらキーボードが閉じるようにするためのコードです。
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // TextFieldから文字を取得
+        let message = textField.text
+        if message == "" {
+            return false
+        }
+        let key = ref.child("messages").childByAutoId().key
+        self.ref.child("messages").child(communityId).child(key!).setValue(["user":RootTabBarController.userId,"message":message])
+        // TextFieldの中身をクリア
+        textField.text = ""
+        print("リターン")
+//        let test = self.tableView.contentSize.height - self.tableView.frame.size.height
+        testCounter = 1
+        
+//        print("スクロール")
+//        print(self.tableView.contentSize.height)
+//        print(self.tableView.frame.size.height)
+//        print(test)
+//        self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
+
+        textField.resignFirstResponder()
+        return true
     }
 }
