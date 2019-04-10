@@ -25,6 +25,10 @@ class AccountViewController: UIViewController {
             colorOne: UIColor(displayP3Red: 23/255, green: 234/255, blue: 217/255, alpha: 1.0),
             colorTwo: UIColor(displayP3Red: 96/255, green: 120/255, blue: 234/255, alpha: 1.0)
         )
+        
+        // 角丸にする
+        self.imgView.layer.cornerRadius = self.imgView.frame.size.width * 0.5
+        self.imgView.clipsToBounds = true
         // ナビゲーションを透明にする処理
         self.navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController!.navigationBar.shadowImage = UIImage()

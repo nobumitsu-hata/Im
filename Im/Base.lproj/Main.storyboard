@@ -256,6 +256,9 @@
                                 <state key="normal" title="完了">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="saveProfile:" destination="PF4-Yc-dXY" eventType="touchUpInside" id="3Uy-SS-adz"/>
+                                </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mV6-Lz-4ZO">
                                 <rect key="frame" x="87.5" y="164" width="200" height="200"/>
@@ -267,27 +270,32 @@
                                             <constraint firstAttribute="height" constant="200" id="qcH-AV-GSt"/>
                                         </constraints>
                                     </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Camera" translatesAutoresizingMaskIntoConstraints="NO" id="n3T-aY-esn">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gfG-fh-Ur5">
                                         <rect key="frame" x="80" y="80" width="40" height="40"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="a4h-eq-RzR"/>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="40" id="dQJ-SQ-vG0"/>
-                                            <constraint firstAttribute="width" constant="40" id="fqR-id-s9g"/>
-                                            <constraint firstAttribute="height" constant="40" id="lgp-iq-AJI"/>
+                                            <constraint firstAttribute="height" constant="40" id="PBL-kC-del"/>
+                                            <constraint firstAttribute="width" constant="40" id="To3-8E-FI4"/>
                                         </constraints>
-                                    </imageView>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" image="Camera">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="selectImg:" destination="PF4-Yc-dXY" eventType="touchUpInside" id="XEx-Qr-8r8"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="5mJ-1S-j7x"/>
-                                    <constraint firstItem="n3T-aY-esn" firstAttribute="top" secondItem="mV6-Lz-4ZO" secondAttribute="top" constant="80" id="6C2-mG-HzI"/>
+                                    <constraint firstAttribute="trailing" secondItem="gfG-fh-Ur5" secondAttribute="trailing" constant="80" id="5xR-D2-ys8"/>
+                                    <constraint firstItem="gfG-fh-Ur5" firstAttribute="leading" secondItem="mV6-Lz-4ZO" secondAttribute="leading" constant="80" id="81a-P4-JLp"/>
+                                    <constraint firstItem="gfG-fh-Ur5" firstAttribute="top" secondItem="mV6-Lz-4ZO" secondAttribute="top" constant="80" id="VDV-t2-FYr"/>
                                     <constraint firstItem="gc7-to-hcb" firstAttribute="top" secondItem="mV6-Lz-4ZO" secondAttribute="top" id="ViI-tp-fqe"/>
                                     <constraint firstAttribute="trailing" secondItem="gc7-to-hcb" secondAttribute="trailing" id="ae8-Z1-bBy"/>
-                                    <constraint firstAttribute="trailing" secondItem="n3T-aY-esn" secondAttribute="trailing" constant="80" id="ceX-m4-yxf"/>
+                                    <constraint firstAttribute="bottom" secondItem="gfG-fh-Ur5" secondAttribute="bottom" constant="80" id="iq7-yH-Swo"/>
                                     <constraint firstItem="gc7-to-hcb" firstAttribute="leading" secondItem="mV6-Lz-4ZO" secondAttribute="leading" id="lIN-CQ-cjz"/>
-                                    <constraint firstItem="n3T-aY-esn" firstAttribute="leading" secondItem="mV6-Lz-4ZO" secondAttribute="leading" constant="80" id="lXz-IC-QF4"/>
                                     <constraint firstAttribute="bottom" secondItem="gc7-to-hcb" secondAttribute="bottom" id="mSJ-PE-Up2"/>
-                                    <constraint firstAttribute="bottom" secondItem="n3T-aY-esn" secondAttribute="bottom" constant="80" id="oU3-RS-Ovu"/>
                                     <constraint firstAttribute="width" constant="200" id="zdZ-7A-Ivo"/>
                                 </constraints>
                             </view>
@@ -310,7 +318,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hfW-LJ-8YT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="84" y="1290"/>
+            <point key="canvasLocation" x="84" y="1289.5052473763119"/>
         </scene>
         <!--Chat View Controller-->
         <scene sceneID="1QC-0y-3W0">
