@@ -22,12 +22,16 @@ class TestViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.dataSource = self
         
         self.tableView.rowHeight = UITableView.automaticDimension
-        self.tableView.estimatedRowHeight = 100000
+        self.tableView.estimatedRowHeight = 60
         
         // 自作セルをテーブルビューに登録する
         let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
         tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
-        // Do any additional setup after loading the view.
+
+        self.tableView.reloadData()
+        let test = self.tableView.contentSize.height - self.tableView.frame.size.height
+        self.tableView.contentOffset = CGPoint(x: 0, y: test)
+
     }
     
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -56,9 +60,6 @@ class TestViewController: UIViewController, UITableViewDelegate, UITableViewData
         text.text = testArr[indexPath.row]
         text.sizeToFit()
         
-//        let height = text.sizeThatFits(CGSize(width: text.frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
-//        text.heightAnchor.constraint(equalToConstant: height).isActive = true
-        
         return cell
     }
     
@@ -66,14 +67,7 @@ class TestViewController: UIViewController, UITableViewDelegate, UITableViewData
         return testArr.count
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
-    */
-
 }

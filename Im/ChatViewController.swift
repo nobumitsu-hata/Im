@@ -13,6 +13,7 @@ import FirebaseDatabase
 class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
 
     
+    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var inputWrap: UIView!
@@ -50,7 +51,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         textField.backgroundColor = UIColor.clear
         
         self.tableView.rowHeight = UITableView.automaticDimension
-        self.tableView.estimatedRowHeight = 100000
         
         // ボーダー設定
         let border = CALayer()
@@ -69,37 +69,35 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
         
         // メッセージ取得
-//        ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
-        ref.child("messages").child(communityId).observeSingleEvent(of: .value, with: { (snapshot) in
+        ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
+//        self.ref.child("messages").child(communityId).observeSingleEvent(of: .value, with: { (snapshot) in
         
             let val = snapshot.value as! [String:Any]
-            print(Array(val.values))
-            self.messageArr = Array(val.values) as! [[String : Any]]
-            
-//            self.messageArr.append(val)
-//            print(self.messageArr) v
-//            let oldContentSize = self.tableView.contentSize.height
+//            self.messageArr = Array(val.values) as! [[String : Any]]
+            self.messageArr.append(val)
+            let oldContentSize = self.tableView.contentSize.height
             // データの追加
-            
+            self.tableView.reloadData()
             DispatchQueue.main.async {
-                self.tableView.reloadData()
-//                if self.testCounter > 0 {
-//
-//                    // ノーアニメで新しく読み込んだ次の内容が先頭に来るように移動
-//                    print("個数")
-////                    print(self.messageArr.count)
-////                    self.tableView.scrollToRow(at: IndexPath(row: self.messageArr.count, section: 0),at:UITableView.ScrollPosition.bottom,animated: false)
-////                    let newContentSize = self.tableView.contentSize.height
-////                    let dif = newContentSize - oldContentSize
-////                    print(dif)
-////                    // 前回の先頭からのオフセット分ずらす
-////                    self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentOffset.y + 80)
-//
-//                } else {
-//                    let test = self.tableView.contentSize.height - self.tableView.frame.size.height
-//                    self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
-//                }
-//
+            
+                self.tableView.performBatchUpdates({
+
+                }) { (finished) in
+                    print("reload完了しました🙂")
+                    if self.testCounter > 0 {
+                        
+                        let newContentSize = self.tableView.contentSize.height
+                        let dif = newContentSize - oldContentSize
+                        // 前回の先頭からのオフセット分ずらす
+                        self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentOffset.y + dif)
+
+                    } else {
+                        let test = self.tableView.contentSize.height - self.tableView.frame.size.height
+//                        self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
+                        self.tableView.contentOffset = CGPoint(x: 0, y: test)
+                    }
+                }
+            
             }
             
         })
@@ -108,13 +106,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! ChatTableViewCell
-//        let imgView = cell.viewWithTag(1) as! UIImageView
-//        let name = cell.viewWithTag(2) as! UILabel
-//        let text = cell.viewWithTag(3) as! UITextView
-        
         let imgView = cell.userImg as! UIImageView
         let name = cell.userName as! UILabel
-        let text = cell.userMessage as! UILabel
+        let textView = cell.userMessage as! UILabel
         
 //        text.isEditable = false
 //        text.delegate = self
@@ -124,15 +118,12 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // 配色
         cell.backgroundColor = UIColor.clear
         name.backgroundColor = UIColor.clear
-        text.backgroundColor = UIColor.clear
+        textView.backgroundColor = UIColor.clear
         // paddingを消す
 //        text.textContainerInset = UIEdgeInsets.zero
 //        text.textContainer.lineFragmentPadding = 0
-        text.text = (messageArr[indexPath.row]["message"] as! String)
-        text.sizeToFit()
-        
-//        let height = text.sizeThatFits(CGSize(width: text.frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
-//        text.heightAnchor.constraint(equalToConstant: height).isActive = true
+        textView.text = (messageArr[indexPath.row]["message"] as! String)
+        textView.sizeToFit()
         
         return cell
     }
@@ -141,13 +132,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return messageArr.count
     }
     
-//    func tableView(_ table: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 49
-//    }
-    
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 49 //自動設定
-//    }
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
+    }
     
     @IBAction func tapScreen(_ sender: Any) {
         // キーボードを閉じる
@@ -172,6 +159,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // キーボードの位置の方が上の場合
         if txtLimit >= kbdLimit {
             // 上にスライド
+            print(txtLimit - kbdLimit)
             scrollView.contentOffset.y = txtLimit - kbdLimit
         }
     }
@@ -191,16 +179,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         self.ref.child("messages").child(communityId).child(key!).setValue(["user":RootTabBarController.userId,"message":message])
         // TextFieldの中身をクリア
         textField.text = ""
-        print("リターン")
-//        let test = self.tableView.contentSize.height - self.tableView.frame.size.height
         testCounter = 1
-        
-//        print("スクロール")
-//        print(self.tableView.contentSize.height)
-//        print(self.tableView.frame.size.height)
-//        print(test)
-//        self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
-
         textField.resignFirstResponder()
         return true
     }
