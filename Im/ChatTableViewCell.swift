@@ -9,7 +9,11 @@
 import UIKit
 
 class ChatTableViewCell: UITableViewCell, UITextViewDelegate {
-
+    
+    @IBOutlet weak var userImg: UIImageView!
+    @IBOutlet weak var userName: UILabel!
+    @IBOutlet weak var userMessage: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

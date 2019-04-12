@@ -43,10 +43,14 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         textField.returnKeyType = .done
         
+        // 背景色設定
         self.view.backgroundColor = UIColor.clear
         tableView.backgroundColor = UIColor.clear
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
+        
+        self.tableView.rowHeight = UITableView.automaticDimension
+        self.tableView.estimatedRowHeight = 100000
         
         // ボーダー設定
         let border = CALayer()
@@ -56,22 +60,29 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         border.cornerRadius = 20
         textField.layer.addSublayer(border)
         textField.attributedPlaceholder = NSAttributedString(string: "メッセージを入力", attributes: [NSAttributedString.Key.foregroundColor : UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.5)])
-
+        
+        // 初期化
         ref = Database.database().reference()
+        
         // 自作セルをテーブルビューに登録する
         let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
         tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
         
-        ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
-            
+        // メッセージ取得
+//        ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
+        ref.child("messages").child(communityId).observeSingleEvent(of: .value, with: { (snapshot) in
+        
             let val = snapshot.value as! [String:Any]
+            print(Array(val.values))
+            self.messageArr = Array(val.values) as! [[String : Any]]
             
-            self.messageArr.append(val)
-            print(self.messageArr)
+//            self.messageArr.append(val)
+//            print(self.messageArr) v
 //            let oldContentSize = self.tableView.contentSize.height
             // データの追加
-            self.tableView.reloadData()
-//            DispatchQueue.main.async {
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
 //                if self.testCounter > 0 {
 //
 //                    // ノーアニメで新しく読み込んだ次の内容が先頭に来るように移動
@@ -89,7 +100,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //                    self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
 //                }
 //
-//            }
+            }
             
         })
     }
@@ -97,10 +108,16 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! ChatTableViewCell
-        let imgView = cell.viewWithTag(1) as! UIImageView
-        let name = cell.viewWithTag(2) as! UILabel
-        let text = cell.viewWithTag(3) as! UITextView
+//        let imgView = cell.viewWithTag(1) as! UIImageView
+//        let name = cell.viewWithTag(2) as! UILabel
+//        let text = cell.viewWithTag(3) as! UITextView
         
+        let imgView = cell.userImg as! UIImageView
+        let name = cell.userName as! UILabel
+        let text = cell.userMessage as! UILabel
+        
+//        text.isEditable = false
+//        text.delegate = self
         // 画像設定
         let img = UIImage(named: "User")
         imgView.image = img
@@ -109,13 +126,13 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         name.backgroundColor = UIColor.clear
         text.backgroundColor = UIColor.clear
         // paddingを消す
-        text.textContainerInset = UIEdgeInsets.zero
-        text.textContainer.lineFragmentPadding = 0
+//        text.textContainerInset = UIEdgeInsets.zero
+//        text.textContainer.lineFragmentPadding = 0
         text.text = (messageArr[indexPath.row]["message"] as! String)
+        text.sizeToFit()
         
-        text.delegate = self
-        let height = text.sizeThatFits(CGSize(width: text.frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
-        text.heightAnchor.constraint(equalToConstant: height).isActive = true
+//        let height = text.sizeThatFits(CGSize(width: text.frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
+//        text.heightAnchor.constraint(equalToConstant: height).isActive = true
         
         return cell
     }
@@ -128,9 +145,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        return 49
 //    }
     
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 49 //自動設定
-    }
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 49 //自動設定
+//    }
     
     @IBAction func tapScreen(_ sender: Any) {
         // キーボードを閉じる

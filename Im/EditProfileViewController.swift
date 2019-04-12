@@ -16,6 +16,9 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     var ref: DatabaseReference!
     var picker: UIImagePickerController! = UIImagePickerController()
     var nowName: String!
+    var changeFlg = false
+    var selectedImageType: String!
+    let storage = Storage.storage()
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var textField: UITextField!
     
@@ -79,11 +82,14 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let image = info[.originalImage] as? UIImage {
+            let imageType = (info[.imageURL] as! NSURL).absoluteString! as NSString
             let imageCropVC = RSKImageCropViewController(image: image, cropMode: .circle)
             imageCropVC.moveAndScaleLabel.text = "切り取り範囲を選択"
             imageCropVC.cancelButton.setTitle("キャンセル", for: .normal)
             imageCropVC.chooseButton.setTitle("完了", for: .normal)
             imageCropVC.delegate = self
+            changeFlg = true
+            selectedImageType = imageType.pathExtension
             self.dismiss(animated: false)
             present(imageCropVC, animated: true)
         } else {
@@ -94,12 +100,34 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     
     @IBAction func saveProfile(_ sender: Any) {
         let getName = textField.text
+        let userID = RootTabBarController.userId
+        // 名前の変更がある場合
         if getName != nowName {
-            let userID = RootTabBarController.userId
-            let post = ["name": getName]
-            let childUpdates = ["/users/\(userID)": post]
-            ref.updateChildValues(childUpdates)
+//            let post = ["name": getName]
+            let childUpdates = ["/users/\(userID)/name/": getName]
+            ref.updateChildValues(childUpdates as [AnyHashable : Any])
         }
+        if changeFlg {
+            let childUpdates = ["/users/\(userID)/img/": userID+"."+selectedImageType]
+            ref.updateChildValues(childUpdates as [AnyHashable : Any])
+            let storageRef = storage.reference().child("users")
+            // UIImagePNGRepresentationでUIImageをNSDataに変換
+            if let data = self.imgView.image!.pngData() {
+                let reference = storageRef.child(userID+"."+self.selectedImageType)
+                reference.putData(data, metadata: nil, completion: { metaData, error in
+                    
+                })
+            }
+            // 一つ前のViewControllerに戻る
+            navigationController?.popViewController(animated: true)
+        }
+        
+    }
+    
+    // textfile以外の部分をタッチ
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // キーボードを閉じる
+        self.view.endEditing(true)
     }
 }
 

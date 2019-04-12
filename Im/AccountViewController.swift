@@ -13,6 +13,7 @@ import FirebaseDatabase
 class AccountViewController: UIViewController {
     
     var ref: DatabaseReference!
+    var storage: Storage!
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var editBtn: UIButton!
@@ -25,6 +26,9 @@ class AccountViewController: UIViewController {
             colorOne: UIColor(displayP3Red: 23/255, green: 234/255, blue: 217/255, alpha: 1.0),
             colorTwo: UIColor(displayP3Red: 96/255, green: 120/255, blue: 234/255, alpha: 1.0)
         )
+        
+        // 初期化
+        storage = Storage.storage()
         
         // 角丸にする
         self.imgView.layer.cornerRadius = self.imgView.frame.size.width * 0.5
@@ -39,15 +43,19 @@ class AccountViewController: UIViewController {
     
     func setupFirebase() {
         ref = Database.database().reference()
-        ref.child("users").observeSingleEvent(of: .value, with: { (snapshot) in
-            print(snapshot.exists())
+        // ユーザー情報取得
+        ref.child("users").child(RootTabBarController.userId).observeSingleEvent(of: .value, with: { (snapshot) in
             if snapshot.exists() {
-                
+                let val = snapshot.value as! [String:Any]
+                let storageRef = self.storage.reference()
+                let imgRef = storageRef.child("users").child(val["img"] as! String)
+                // セット
+                self.imgView.sd_setImage(with: imgRef)
+                self.nameLabel.text = (val["name"] as! String)
             } else {
                 // 画像設定
                 let img = UIImage(named: "UserImg")
                 self.imgView.image = img
-                
                 self.nameLabel.text =  "未設定"
             }
         }) { (error) in

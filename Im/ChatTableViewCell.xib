@@ -35,27 +35,34 @@
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" tag="3" contentMode="scaleToFill" text="Lorem" translatesAutoresizingMaskIntoConstraints="NO" id="HJp-SI-3BZ">
-                        <rect key="frame" x="60" y="32" width="260" height="17"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
-                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                    </textView>
+                    <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4S5-R3-oST">
+                        <rect key="frame" x="60" y="32" width="260" height="16.5"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="16.5" id="U4P-gh-vZ9"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="bdt-wt-BLb" secondAttribute="trailing" id="AYT-nN-sV3"/>
                     <constraint firstItem="bdt-wt-BLb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="HdY-ND-Ojg"/>
-                    <constraint firstItem="HJp-SI-3BZ" firstAttribute="leading" secondItem="91M-ji-nEn" secondAttribute="trailing" constant="15" id="XgQ-9y-dgD"/>
+                    <constraint firstAttribute="bottom" secondItem="4S5-R3-oST" secondAttribute="bottom" id="Puy-HF-xpB"/>
+                    <constraint firstItem="4S5-R3-oST" firstAttribute="leading" secondItem="91M-ji-nEn" secondAttribute="trailing" constant="15" id="Vbz-KX-a4b"/>
                     <constraint firstItem="bdt-wt-BLb" firstAttribute="leading" secondItem="91M-ji-nEn" secondAttribute="trailing" constant="15" id="YPj-rq-OmW"/>
-                    <constraint firstAttribute="trailing" secondItem="HJp-SI-3BZ" secondAttribute="trailing" id="bfb-pT-hZZ"/>
                     <constraint firstItem="91M-ji-nEn" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="gWY-xT-bJz"/>
-                    <constraint firstAttribute="bottom" secondItem="HJp-SI-3BZ" secondAttribute="bottom" id="jj2-0P-Tm9"/>
+                    <constraint firstAttribute="trailing" secondItem="4S5-R3-oST" secondAttribute="trailing" id="iAr-rz-WIm"/>
                     <constraint firstItem="91M-ji-nEn" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="q7a-Sg-4o6"/>
-                    <constraint firstItem="HJp-SI-3BZ" firstAttribute="top" secondItem="bdt-wt-BLb" secondAttribute="bottom" constant="5" id="rQe-VA-lgc"/>
+                    <constraint firstItem="4S5-R3-oST" firstAttribute="top" secondItem="bdt-wt-BLb" secondAttribute="bottom" constant="5" id="tQF-rb-4C9"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="userImg" destination="91M-ji-nEn" id="Dkq-3n-4jr"/>
+                <outlet property="userMessage" destination="4S5-R3-oST" id="TqE-7p-KBm"/>
+                <outlet property="userName" destination="bdt-wt-BLb" id="NRC-aX-p9e"/>
+            </connections>
             <point key="canvasLocation" x="137.59999999999999" y="-3.1484257871064472"/>
         </tableViewCell>
     </objects>
