@@ -88,8 +88,8 @@ class ScrollViewController: UIViewController {
                     // コミュニティー画像設定
                     let img  = communityView.viewWithTag(2) as! UIImageView
                     let storageRef = self.storage.reference()
-                    let perfumeRef = storageRef.child("communities").child(val["img"] as! String)
-                    img.sd_setImage(with: perfumeRef)
+                    let imgData = storageRef.child("communities").child(val["img"] as! String)
+                    img.sd_setImage(with: imgData)
                     img.isUserInteractionEnabled = true
                     
                     let gesture = MyTapGestureRecognizer(target: self, action: #selector(ScrollViewController.btnClick(sender:forEvent:)))

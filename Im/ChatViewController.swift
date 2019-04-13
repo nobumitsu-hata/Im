@@ -9,10 +9,9 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import FirebaseUI
 
 class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
-
-    
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var tableView: UITableView!
@@ -20,6 +19,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var textField: UITextField!
     
     var ref: DatabaseReference!
+    var storage: StorageReference!
     var communityId: String!
     var messageArr:[[String:Any]] = []
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
@@ -63,6 +63,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         // 初期化
         ref = Database.database().reference()
+        storage = Storage.storage().reference()
         
         // 自作セルをテーブルビューに登録する
         let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
@@ -110,11 +111,19 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let name = cell.userName as! UILabel
         let textView = cell.userMessage as! UILabel
         
+        
+        ref.child("users").child(messageArr[indexPath.row]["user"] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
+            let val = snapshot.value as! [String:Any]
+            print(val)
+            name.text = (val["name"] as! String)
+            let getImg = self.storage.child("users").child(val["img"] as! String)
+            imgView.sd_setImage(with: getImg)
+        })
 //        text.isEditable = false
 //        text.delegate = self
         // 画像設定
-        let img = UIImage(named: "User")
-        imgView.image = img
+//        let img = UIImage(named: "User")
+//        imgView.image = img
         // 配色
         cell.backgroundColor = UIColor.clear
         name.backgroundColor = UIColor.clear

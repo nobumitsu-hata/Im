@@ -17,6 +17,10 @@ class ChatTableViewCell: UITableViewCell, UITextViewDelegate {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        // 角丸にする
+        self.userImg.layer.cornerRadius = self.userImg.frame.size.width * 0.5
+        self.userImg.clipsToBounds = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
