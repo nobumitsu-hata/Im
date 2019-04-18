@@ -17,7 +17,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
-    
+    var testd: String!
     var ref: DatabaseReference!
     var storage: StorageReference!
     var communityId: String!
@@ -27,8 +27,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var testCounter = 0
     
     override func viewWillAppear(_ animated: Bool) {
-        
         super.viewWillAppear(animated)
+        
+        self.navigationController!.navigationBar.isHidden = true
         
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -107,32 +108,40 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! ChatTableViewCell
-        let imgView = cell.userImg as! UIImageView
-        let name = cell.userName as! UILabel
-        let textView = cell.userMessage as! UILabel
+        let imgView = cell.userImg
+        let name = cell.userName
+        let textView = cell.userMessage
         
         
         ref.child("users").child(messageArr[indexPath.row]["user"] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
             let val = snapshot.value as! [String:Any]
             print(val)
-            name.text = (val["name"] as! String)
+            name!.text = (val["name"] as! String)
             let getImg = self.storage.child("users").child(val["img"] as! String)
-            imgView.sd_setImage(with: getImg)
+            imgView!.sd_setImage(with: getImg)
         })
+        
+        let tapGesture = UserTapGestureRecognizer(
+            target: self,
+            action: #selector(ChatViewController.tapImg(_:)))
+        
+        tapGesture.user = (self.messageArr[indexPath.row]["user"] as! String)
+        //            tapGesture.delegate = self
+        
+        imgView?.isUserInteractionEnabled = true
+        imgView!.addGestureRecognizer(tapGesture)
+        
 //        text.isEditable = false
 //        text.delegate = self
-        // 画像設定
-//        let img = UIImage(named: "User")
-//        imgView.image = img
         // 配色
         cell.backgroundColor = UIColor.clear
-        name.backgroundColor = UIColor.clear
-        textView.backgroundColor = UIColor.clear
+        name!.backgroundColor = UIColor.clear
+        textView!.backgroundColor = UIColor.clear
         // paddingを消す
 //        text.textContainerInset = UIEdgeInsets.zero
 //        text.textContainer.lineFragmentPadding = 0
-        textView.text = (messageArr[indexPath.row]["message"] as! String)
-        textView.sizeToFit()
+        textView!.text = (messageArr[indexPath.row]["message"] as! String)
+        textView!.sizeToFit()
         
         return cell
     }
@@ -149,6 +158,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // キーボードを閉じる
         self.view.endEditing(true)
     }
+    //    @IBAction func tapScreen(_ sender: Any) {
+    
+//    }
     
     @objc func handleKeyboardWillShowNotification(_ notification: Notification) {
         
@@ -160,7 +172,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let txtLimit = inputWrap.frame.origin.y + inputWrap.frame.height + 8.0
         // キーボードの上辺
         let kbdLimit = myBoundSize.height - keyboardScreenEndFrame.size.height
-        
         
         print("テキストフィールドの下辺：(\(txtLimit))")
         print("キーボードの上辺：(\(kbdLimit))")
@@ -175,6 +186,35 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
         scrollView.contentOffset.y = 0
+    }
+    
+    // DM画面にページ遷移
+    @objc func tapImg(_ sender: UserTapGestureRecognizer) {
+        print("タップ")
+        // idが自分と同じ場合
+        let getId = sender.user!
+        if getId == RootTabBarController.userId {
+            return
+        }
+        // ページ遷移
+        performSegue(withIdentifier: "toDMViewController", sender: getId)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toDMViewController" {
+            let dmViewController = segue.destination as! DMViewController
+            let transition = CATransition()
+            transition.duration = 0.33
+            transition.type = CATransitionType.push
+            transition.subtype = CATransitionSubtype.fromRight
+            transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeIn)
+            view.window!.layer.add(transition, forKey: kCATransition)
+            dmViewController.receiver = (sender as! String)
+            ref.child("users").child(sender as! String).observeSingleEvent(of: .value, with: { (snapshot) in
+                let val = snapshot.value as! [String:String]
+                dmViewController.receiverInfo = val
+            })
+        }
     }
     
     //Enterを押したらキーボードが閉じるようにするためのコードです。
@@ -192,4 +232,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         textField.resignFirstResponder()
         return true
     }
+}
+
+class UserTapGestureRecognizer: UITapGestureRecognizer {
+    var user: String?
 }

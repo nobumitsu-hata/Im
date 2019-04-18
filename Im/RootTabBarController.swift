@@ -8,12 +8,16 @@
 
 import UIKit
 import Firebase
+import FirebaseDatabase
 import FirebaseUI
 import CoreLocation
 
 class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     static var userId = ""
+    static var userInfo:[String:String] = [:]
+    var authCheck = false
+    var ref: DatabaseReference!
     var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
     var picker: UIImagePickerController! = UIImagePickerController()
     
@@ -28,10 +32,11 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         FUIPhoneAuth(authUI:FUIAuth.defaultAuthUI()!),
         ]
     
-    var authCheck = false
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        ref = Database.database().reference()
         checkLoggedIn()
     }
 
@@ -70,11 +75,15 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     func checkLoggedIn() {
         Auth.auth().addStateDidChangeListener{auth, user in
             if user != nil{
-                //サインインしている
+                // ログインしている
                 print("ログイン中")
                 print(user!.uid)
                 RootTabBarController.userId = user!.uid
                 self.authCheck = true
+                self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                    let val = snapshot.value as! [String:String]
+                    RootTabBarController.userInfo = val
+                })
             } else {
                 //サインインしていない
                 self.login()

@@ -33,6 +33,7 @@
 		52838D53225A914300CD3C50 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D52225A914300CD3C50 /* AccountViewController.swift */; };
 		52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */; };
 		52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D56225F796E00CD3C50 /* TestViewController.swift */; };
+		52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D5822625C1800CD3C50 /* DMViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +87,7 @@
 		52838D52225A914300CD3C50 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
 		52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		52838D56225F796E00CD3C50 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		52838D5822625C1800CD3C50 /* DMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMViewController.swift; sourceTree = "<group>"; };
 		61B5262E30067EBCBBD10BC9 /* Pods-ImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImTests.release.xcconfig"; path = "Target Support Files/Pods-ImTests/Pods-ImTests.release.xcconfig"; sourceTree = "<group>"; };
 		6A3E9C13257F126F3465C779 /* Pods-Im.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.debug.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.debug.xcconfig"; sourceTree = "<group>"; };
 		72BA2461F0542D9E517A1970 /* Pods-Im.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Im.release.xcconfig"; path = "Target Support Files/Pods-Im/Pods-Im.release.xcconfig"; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				52838D5822625C1800CD3C50 /* DMViewController.swift */,
 				52838D56225F796E00CD3C50 /* TestViewController.swift */,
 				52838D4A224F2D9200CD3C50 /* ScrollViewController.swift */,
 				52838D52225A914300CD3C50 /* AccountViewController.swift */,
@@ -495,6 +498,7 @@
 				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
 				52838D4D2254543C00CD3C50 /* ChatTextField.swift in Sources */,
 				52838D53225A914300CD3C50 /* AccountViewController.swift in Sources */,
+				52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */,
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
 				52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */,
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,

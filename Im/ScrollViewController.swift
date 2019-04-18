@@ -126,7 +126,8 @@ class ScrollViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toChatViewController" {
-            let chatViewController = segue.destination as! ChatViewController
+            let nav = segue.destination as! UINavigationController
+            let chatViewController = nav.topViewController as! ChatViewController
             chatViewController.communityId = (sender as! String)
         }
     }
