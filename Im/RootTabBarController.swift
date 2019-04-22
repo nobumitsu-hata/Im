@@ -37,6 +37,13 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         ref = Database.database().reference()
+        
+//        let firebaseAuth = Auth.auth()
+//        do {
+//            try firebaseAuth.signOut()
+//        } catch let signOutError as NSError {
+//            print ("Error signing out: %@", signOutError)
+//        }
         checkLoggedIn()
     }
 
@@ -46,6 +53,8 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         UITabBar.appearance().backgroundImage = UIImage()
         
         self.delegate = self
+        
+        UITabBar.appearance().unselectedItemTintColor = UIColor.white
         
         // authUIのデリゲート
         self.authUI.delegate = self
@@ -81,12 +90,15 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
                 RootTabBarController.userId = user!.uid
                 self.authCheck = true
                 self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                    let val = snapshot.value as! [String:String]
+                    print("ああああ")
+                    print(snapshot.value)
+                    let val = snapshot.value as! [String:String]// エラー箇所
                     RootTabBarController.userInfo = val
                 })
             } else {
                 //サインインしていない
                 self.login()
+                print("通過C")
             }
         }
     }
@@ -141,8 +153,14 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         
     //　認証画面から離れたときに呼ばれる（キャンセルボタン押下含む）
     public func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?){
+        print("通過B")
         // 認証に成功した場合
         if error == nil {
+            print("通過")
+//            print(user)
+            print(user?.email)
+            print(user?.photoURL)
+            self.ref.child("users").child(user!.uid).setValue(["img":"user.png","name":"未設定"])
 //            self.performSegue(withIdentifier: "toTopView", sender: self)
         }
         // エラー時の処理をここに書く

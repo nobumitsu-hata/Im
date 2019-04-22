@@ -41,7 +41,8 @@ class DMViewController: JSQMessagesViewController {
         super.viewDidLoad()
         
         automaticallyScrollsToMostRecentMessage = true
-        
+        self.collectionView.backgroundColor = UIColor.black
+//        self.inputToolbar.contentView.textView.backgroundColor = UIColor.clear
         //吹き出しの設定
         let bubbleFactory = JSQMessagesBubbleImageFactory()
         self.incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor.jsq_messageBubbleLightGray())

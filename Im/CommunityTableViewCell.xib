@@ -23,7 +23,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="474.5"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bJa-eh-lGJ">
-                        <rect key="frame" x="15" y="30" width="290" height="21"/>
+                        <rect key="frame" x="30" y="30" width="260" height="21"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                         <nil key="textColor"/>
@@ -31,7 +31,7 @@
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="bJa-eh-lGJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="59A-um-6DT"/>
+                    <constraint firstItem="bJa-eh-lGJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="30" id="59A-um-6DT"/>
                     <constraint firstItem="w5P-bD-DxH" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Cvc-v8-8t5"/>
                     <constraint firstAttribute="bottom" secondItem="w5P-bD-DxH" secondAttribute="bottom" id="JWF-0U-jmM"/>
                     <constraint firstItem="w5P-bD-DxH" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="VBQ-cm-Zt2"/>

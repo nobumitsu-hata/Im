@@ -129,12 +129,14 @@ class ScrollViewController: UIViewController {
             let nav = segue.destination as! UINavigationController
             let chatViewController = nav.topViewController as! ChatViewController
             chatViewController.communityId = (sender as! String)
+            print("テスト")
         }
     }
     
     @objc func btnClick(sender:MyTapGestureRecognizer, forEvent event: UIEvent) {
 //        print(sender.targetString)
         tabBarController?.tabBar.isHidden = true
+        print("ムカつく")
         performSegue(withIdentifier: "toChatViewController", sender: sender.targetString)
     }
 
