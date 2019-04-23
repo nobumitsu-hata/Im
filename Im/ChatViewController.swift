@@ -25,6 +25,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
     var test:CGRect = CGRect(x: 0, y: 0, width: 0, height: 0)
     var testCounter = 0
+    var getId = ""
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -196,28 +197,29 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @objc func tapImg(_ sender: UserTapGestureRecognizer) {
         print("タップ")
         // idが自分と同じ場合
-        let getId = sender.user!
+        getId = sender.user!
         if getId == RootTabBarController.userId {
             return
         }
-        // ページ遷移
-        performSegue(withIdentifier: "toDMViewController", sender: getId)
+        ref.child("users").child(getId).observeSingleEvent(of: .value, with: { (snapshot) in
+            let val = snapshot.value as! [String:String]
+            // ページ遷移
+            self.performSegue(withIdentifier: "toDMViewController", sender: val)
+        })
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toDMViewController" {
             let dmViewController = segue.destination as! DMViewController
-            let transition = CATransition()
-            transition.duration = 0.33
-            transition.type = CATransitionType.push
-            transition.subtype = CATransitionSubtype.fromRight
-            transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeIn)
-            view.window!.layer.add(transition, forKey: kCATransition)
-            dmViewController.receiver = (sender as! String)
-            ref.child("users").child(sender as! String).observeSingleEvent(of: .value, with: { (snapshot) in
-                let val = snapshot.value as! [String:String]
-                dmViewController.receiverInfo = val
-            })
+//            let transition = CATransition()
+//            transition.duration = 0.33
+//            transition.type = CATransitionType.push
+//            transition.subtype = CATransitionSubtype.fromRight
+//            transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeIn)
+//            view.window!.layer.add(transition, forKey: kCATransition)
+            dmViewController.receiver = getId
+            dmViewController.receiverInfo = sender as! [String : String]
         }
     }
     

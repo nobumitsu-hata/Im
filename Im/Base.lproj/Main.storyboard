@@ -356,7 +356,55 @@
             </objects>
             <point key="canvasLocation" x="38" y="-949"/>
         </scene>
-        <!--Chat View Controller-->
+        <!--Root View Controller-->
+        <scene sceneID="7lB-iN-Gin">
+            <objects>
+                <tableViewController id="tkc-2f-mQF" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="bMe-Hp-xmm">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="ijM-KJ-CpF">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ijM-KJ-CpF" id="2sz-sj-D8T">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="tkc-2f-mQF" id="ltR-U1-np3"/>
+                            <outlet property="delegate" destination="tkc-2f-mQF" id="K40-Y6-WQD"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="Afw-ZB-xk8"/>
+                    <connections>
+                        <segue destination="yYk-ZF-sIZ" kind="show" id="jd0-yb-u9M"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oSc-Dn-SbZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="716" y="-1310"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="YKE-Db-gUe">
+            <objects>
+                <navigationController id="0Wx-Dp-0fz" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="GJt-gZ-vRR">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="tkc-2f-mQF" kind="relationship" relationship="rootViewController" id="DNl-5J-qwB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7Jk-j1-uHS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-238" y="-1310"/>
+        </scene>
+        <!--い-->
         <scene sceneID="1QC-0y-3W0">
             <objects>
                 <viewController storyboardIdentifier="ChatViewController" modalPresentationStyle="overCurrentContext" id="Xkd-pN-RYu" customClass="ChatViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
@@ -422,7 +470,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="BlT-3T-lMb"/>
                     </view>
-                    <navigationItem key="navigationItem" id="pUB-BY-pYY"/>
+                    <navigationItem key="navigationItem" title="い" id="pUB-BY-pYY"/>
                     <connections>
                         <outlet property="inputWrap" destination="3X3-Rl-d72" id="YdJ-Jb-rG2"/>
                         <outlet property="scrollView" destination="HZR-Bu-oSc" id="AZd-j8-fxq"/>
@@ -543,29 +591,28 @@
             </objects>
         </scene>
         <!--View Controller-->
+        <scene sceneID="cCU-zm-hyO">
+            <objects>
+                <viewController id="yYk-ZF-sIZ" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rVU-eg-ll7">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="9Bk-yx-XCN"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1uE-Y0-RBd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1666" y="-1452"/>
+        </scene>
+        <!--こんにちは-->
         <scene sceneID="CR1-zo-Ion">
             <objects>
-                <viewController id="9Iz-gB-6Uy" customClass="DMViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="こんにちは" id="9Iz-gB-6Uy" customClass="DMViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="v3a-Nx-ugo">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uvz-YA-VWT">
-                                <rect key="frame" x="0.0" y="64" width="375" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="F5t-vi-ccN"/>
-                                </constraints>
-                                <items>
-                                    <navigationItem title="Title" id="EJC-io-juP"/>
-                                </items>
-                            </navigationBar>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="uvz-YA-VWT" firstAttribute="trailing" secondItem="kXA-Le-SIC" secondAttribute="trailing" id="X24-JM-4zt"/>
-                            <constraint firstItem="uvz-YA-VWT" firstAttribute="top" secondItem="kXA-Le-SIC" secondAttribute="top" id="hGm-oc-ZeA"/>
-                            <constraint firstItem="uvz-YA-VWT" firstAttribute="leading" secondItem="kXA-Le-SIC" secondAttribute="leading" id="zqW-26-Dwp"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="kXA-Le-SIC"/>
                     </view>
                 </viewController>

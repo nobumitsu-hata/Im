@@ -15,6 +15,7 @@ import JSQMessagesViewController
 class DMViewController: JSQMessagesViewController {
     
     var dbRef:DatabaseReference!
+    var storage: StorageReference!
     var receiver: String!
     var receiverInfo:[String:String] = [:]
     var dmId = ""
@@ -28,30 +29,65 @@ class DMViewController: JSQMessagesViewController {
     var outgoingAvatar: JSQMessagesAvatarImage!
     
     override func viewWillAppear(_ animated: Bool) {
+        // 初期化
         dbRef = Database.database().reference()
+        storage = Storage.storage().reference()
+        // ユーザー情報セット
         self.senderId = RootTabBarController.userId
         self.senderDisplayName = RootTabBarController.userInfo["name"]!
+        
         //メッセージデータの配列を初期化
         self.messages = []
+        // ナビバー表示
         self.navigationController!.navigationBar.isHidden = false
+        self.title = receiverInfo["name"]
+        // ナビゲーションバーのテキストを変更する
+        self.navigationController?.navigationBar.titleTextAttributes = [
+            // 文字の色
+            .foregroundColor: UIColor.white
+        ]
         setupFirebase()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         automaticallyScrollsToMostRecentMessage = true
-        self.collectionView.backgroundColor = UIColor.black
-//        self.inputToolbar.contentView.textView.backgroundColor = UIColor.clear
+        self.collectionView.backgroundColor = UIColor.black// 画面の背景色
+        // テキストフィールドの背景色
+        self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.0)
+        // 入力テキストの文字色
+        self.inputToolbar.contentView.textView.tintColor = UIColor.white
+        // 送信ボタンのテキスト変更
+        self.inputToolbar.contentView.rightBarButtonItem.setTitle("送信", for: .normal)
+        // 送信ボタンの文字色
+        self.inputToolbar.contentView.rightBarButtonItem.tintColor = UIColor.white
+        // 送信ボタンの文字色 アクティブ
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor.white, for: .normal)
+        // 入力欄の背景色
+        self.inputToolbar.contentView.backgroundColor = UIColor.black
+        // 境界線追加
+        self.inputToolbar.contentView.layer.addBorder(edge: .top, color: UIColor.white, thickness: 0.5)
+        // プレースホルダー
+        self.inputToolbar.contentView.textView.placeHolder = "メッセージを入力"
+        // テキストビューの文字色
+        self.inputToolbar.contentView.textView.textColor = UIColor.white
+        // 境界線削除
+        self.inputToolbar.contentView.textView.layer.borderWidth = 0
+        // 画像アイコンの変更
+        self.inputToolbar.contentView.leftBarButtonItem.setImage(UIImage(named: "PostImg"), for: .normal)
+        self.inputToolbar.contentView.leftBarButtonItemWidth = inputToolbar.contentView.leftBarButtonContainerView.frame.size.height / 128 * 137
         //吹き出しの設定
         let bubbleFactory = JSQMessagesBubbleImageFactory()
-        self.incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor.jsq_messageBubbleLightGray())
-        self.outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor.jsq_messageBubbleBlue())
+//        self.incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor(red: 229/255, green: 229/255, blue: 229/255, alpha: 1))
+        self.incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor.white)
+//        self.outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor.jsq_messageBubbleBlue())
+        self.outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor(red: 23/255, green: 232/255, blue: 252/255, alpha: 1))
+        
 
     }
     
     func setupFirebase() {
-        
         dbRef.child("dmMembers").child(RootTabBarController.userId).child(receiver).observeSingleEvent(of: .value, with: { (snapshot) in
             // 過去にDMしたことがある場合
             if snapshot.exists() {
@@ -127,6 +163,9 @@ class DMViewController: JSQMessagesViewController {
         //メッセージの送信処理を完了する(画面上にメッセージが表示される)
         self.finishReceivingMessage(animated: true)
         
+        //textFieldをクリアする
+        self.inputToolbar.contentView.textView.text = ""
+        
         //キーボードを閉じる
         self.view.endEditing(true)
     }
@@ -158,5 +197,55 @@ class DMViewController: JSQMessagesViewController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return messages!.count
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let message = messages![indexPath.row]
+        let cell = super.collectionView(collectionView, cellForItemAt: indexPath) as! JSQMessagesCollectionViewCell
+        
+        // 角丸にする
+        cell.avatarImageView.layer.cornerRadius = cell.avatarImageView.frame.size.width * 0.5
+        cell.avatarImageView.clipsToBounds = true
+        // ユーザー
+        if message.senderId == self.senderId {
+            let userIcon = self.storage.child("users").child(RootTabBarController.userInfo["img"]!)
+            cell.avatarImageView.sd_setImage(with: userIcon)
+//            cell.textView!.textColor = UIColor.white
+            cell.textView!.textColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        }
+        else {
+        // 相手
+            let receiverIcon = self.storage.child("users").child(receiverInfo["img"]!)
+            cell.avatarImageView.sd_setImage(with: receiverIcon)
+            cell.textView!.textColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        }
+        
+        return cell
+    }
+    
+    
+}
 
+extension CALayer {
+    
+    func addBorder(edge: UIRectEdge, color: UIColor, thickness: CGFloat) {
+        
+        let border = CALayer()
+        
+        switch edge {
+        case .top:
+            border.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: thickness)
+        case .bottom:
+            border.frame = CGRect(x: 0, y: frame.height - thickness, width: frame.width, height: thickness)
+        case .left:
+            border.frame = CGRect(x: 0, y: 0, width: thickness, height: frame.height)
+        case .right:
+            border.frame = CGRect(x: frame.width - thickness, y: 0, width: thickness, height: frame.height)
+        default:
+            break
+        }
+        
+        border.backgroundColor = color.cgColor;
+        
+        addSublayer(border)
+    }
 }
