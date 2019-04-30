@@ -17,6 +17,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
     var storage: StorageReference!
     var dmKeyArr:[String] = []
     var dmValArr:[String] = []
+    var receiverArr:[[String:String]] = []
     @IBOutlet weak var tableView: UITableView!
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,12 +61,16 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         let cell = table.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath) as! MessageTableViewCell
         ref.child("users").child(dmKeyArr[indexPath.row]).observeSingleEvent(of: .value, with: { (snapshot) in
             let val = snapshot.value as! [String:String]
+            self.receiverArr.append(val)
+            // 名前セット
             cell.name.text = val["name"]
+            // 画像取得
             let getImg = self.storage.child("users").child(val["img"]!)
             cell.imgView.sd_setImage(with: getImg)
             // 角丸にする
             cell.imgView.layer.cornerRadius = cell.imgView.frame.size.width * 0.5
             cell.imgView.clipsToBounds = true
+            // ラストメッセージ取得
             self.ref.child("directMessages").child(self.dmValArr[indexPath.row]).queryLimited(toLast: 1).observeSingleEvent(of: .value, with: { (snapshot) in
                 let snap = snapshot.value as! [String:Any]
                 let dt = Array(snap.values)
@@ -78,12 +83,34 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
             
         }
         
+        // 選択された背景色を白に設定
+        let cellSelectedBgView = UIView()
+        cellSelectedBgView.backgroundColor = UIColor.black
+        cell.selectedBackgroundView = cellSelectedBgView
+        
         return cell
     }
     
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dmKeyArr.count
+    }
+    
+    // Cell が選択された場合
+    func tableView(_ table: UITableView,didSelectRowAt indexPath: IndexPath) {
+        // DMViewController へ遷移するために Segue を呼び出す
+        performSegue(withIdentifier: "fromListToDMViewController",sender: indexPath.row)
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "fromListToDMViewController" {
+            let dmViewController = segue.destination as! DMViewController
+            print("レシ")
+            print(dmKeyArr[sender as! Int])
+            dmViewController.receiver = "uYGxXJ9tDsYz2P7BLCZSf25otPY2"
+            dmViewController.receiverInfo = receiverArr[sender as! Int]
+        }
     }
 
 }

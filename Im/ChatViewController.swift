@@ -212,12 +212,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toDMViewController" {
             let dmViewController = segue.destination as! DMViewController
-//            let transition = CATransition()
-//            transition.duration = 0.33
-//            transition.type = CATransitionType.push
-//            transition.subtype = CATransitionSubtype.fromRight
-//            transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeIn)
-//            view.window!.layer.add(transition, forKey: kCATransition)
             dmViewController.receiver = getId
             dmViewController.receiverInfo = sender as! [String : String]
         }
