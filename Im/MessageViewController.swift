@@ -40,6 +40,29 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
             // 文字の色
             .foregroundColor: UIColor.white
         ]
+        
+        //グラデーションの開始色
+        let topColor = UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0)
+        //グラデーションの開始色
+        let bottomColor = UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0)
+        
+        //グラデーションの色を配列で管理
+        let gradientColors: [CGColor] = [topColor.cgColor, bottomColor.cgColor]
+        
+        //グラデーションレイヤーを作成
+        let gradientLayer: CAGradientLayer = CAGradientLayer()
+        
+        //グラデーションの色をレイヤーに割り当てる
+        gradientLayer.colors = gradientColors
+        //グラデーションレイヤーをスクリーンサイズにする
+        gradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        // 上から下へグラデーション向きの設定
+        gradientLayer.startPoint = CGPoint.init(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint.init(x: 1, y: 1)
+        //グラデーションレイヤーをビューの一番下に配置
+        self.view.layer.insertSublayer(gradientLayer, at:0)
+        tableView.backgroundColor = UIColor.clear
+        
     }
     
     func setupFirebase() {
@@ -54,11 +77,17 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         }) { (error) in
             
         }
+        
+        ref.child("users").queryOrderedByValue().observeSingleEvent(of: .value, with: { (snapshot) in
+            let val = snapshot.value
+            print(val)
+        })
     }
     
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath) as! MessageTableViewCell
+        cell.backgroundColor = UIColor.clear
         ref.child("users").child(dmKeyArr[indexPath.row]).observeSingleEvent(of: .value, with: { (snapshot) in
             let val = snapshot.value as! [String:String]
             self.receiverArr.append(val)
@@ -82,6 +111,8 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         }) { (error) in
             
         }
+        
+        
         
         // 選択された背景色を白に設定
         let cellSelectedBgView = UIView()
