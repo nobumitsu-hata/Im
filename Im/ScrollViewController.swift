@@ -35,11 +35,11 @@ class ScrollViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         screenSize = UIScreen.main.bounds
-        
+        print("こんちは")
         // ページスクロールとするためにページ幅を合わせる
         scrollScreenWidth = screenSize.width
         scrollScreenHeight = screenSize.height
-        
+        self.view.setGradientLayer()
         setupFirebase()
         
     }
@@ -49,7 +49,6 @@ class ScrollViewController: UIViewController {
         
         // 自作セルをテーブルビューに登録する
         let communityXib = UINib(nibName: "CommunityTableViewCell", bundle: Bundle(for: type(of: self)))
-        
         
         // 描画開始の x,y 位置
         let px:CGFloat = 0.0
@@ -66,21 +65,21 @@ class ScrollViewController: UIViewController {
             let snapshotVal = snapshot.value as! [String:Any]
             let latitude = snapshotVal["latitude"] as! String
             let longitude = snapshotVal["longitude"] as! String
-            
+
             let baseLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
             let targetLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
             let distanceLocation = baseLocation.distance(from: targetLocation)
             print("距離は \(distanceLocation)")
-            
+
             let radius = snapshotVal["radius"] as! Double
             // 現在地が目的地の許容範囲内かどうか
             if radius >= distanceLocation {
                 self.ref.child("communities").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
+                    guard counter < 2 else {return}
                     let val = snapshot.value as! [String:Any]
                     self.communityVal.append(val)
                     self.communityKey.append(snapshot.key)
                     // コミュニティー名設定
-                    // Tag番号 1 で UILabel インスタンスの生成
                     let titleLabel = communityView.viewWithTag(1) as! UILabel
                     let title = val["name"] as! String
                     titleLabel.textColor = UIColor.white
@@ -92,24 +91,28 @@ class ScrollViewController: UIViewController {
                     img.sd_setImage(with: imgData)
                     img.isUserInteractionEnabled = true
                     
-                    let gesture = MyTapGestureRecognizer(target: self, action: #selector(ScrollViewController.btnClick(sender:forEvent:)))
+                    let gesture = MyTapGestureRecognizer(target: self, action: #selector(ScrollViewController.btnClick(_:)))
                     gesture.targetString = snapshot.key
                     communityView.addGestureRecognizer(gesture)
                     self.scrollView.addSubview(communityView)
-
+                    
                     // 描画開始設定
                     var viewFrame:CGRect = communityView.frame
                     viewFrame.size.width = self.scrollScreenWidth
                     viewFrame.size.height = self.scrollScreenHeight
                     viewFrame.origin = CGPoint(x: px, y: py)
                     communityView.frame = viewFrame
+//                    communityView.setGradientLayer()
                     // 次の描画位置設定
                     py += (self.screenSize.height)
 //                    communityView.addTarget(self, action: #selector(self.btnClick(btn: )), for: .touchUpInside)
                     counter += 1
                     // スクロール範囲の設定
                     let nHeight:CGFloat = self.scrollScreenHeight * CGFloat(counter)
+                    print("コンテントサイズ")
+                    print(nHeight)
                     self.scrollView.contentSize = CGSize(width: self.scrollScreenWidth, height: nHeight)
+                    
                 }) { (error) in
                     print(error.localizedDescription)
                 }
@@ -133,11 +136,9 @@ class ScrollViewController: UIViewController {
         }
     }
     
-    @objc func btnClick(sender:MyTapGestureRecognizer, forEvent event: UIEvent) {
-//        print(sender.targetString)
+    @objc func btnClick(_ sender:MyTapGestureRecognizer) {
         tabBarController?.tabBar.isHidden = true
-        print("ムカつく")
         performSegue(withIdentifier: "toChatViewController", sender: sender.targetString)
     }
-
+    
 }
