@@ -14,6 +14,7 @@ import FirebaseUI
 class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
     
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var coverView: UIView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
@@ -28,6 +29,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var testCounter = 0
     var getId = ""
     var keyboardOn = false
+    var offsetY:CGFloat = 0
+    var flg = false
+    var flg2 = true
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -45,15 +49,20 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tableView.delegate = self
         tableView.dataSource = self
         self.textField.delegate = self
         
+        // テーブルビュー反転
+//        tableView.transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 0)
+
         // 背景色設定
         self.view.backgroundColor = UIColor.clear
         tableView.backgroundColor = UIColor.clear
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
+        coverView.backgroundColor = UIColor(displayP3Red: 0/255, green: 0/255, blue: 0/255, alpha: 0.1)
         
         self.tableView.rowHeight = UITableView.automaticDimension
         
@@ -61,7 +70,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(self.closeModalView))
         downSwipeGesture.direction = .down
         view.addGestureRecognizer(downSwipeGesture)// ジェスチャーを登録
-        
+
         // ボーダー設定
         let border = CALayer()
         border.frame = CGRect(x: 0, y: 0, width:  textField.frame.size.width, height: textField.frame.size.height)
@@ -69,7 +78,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         border.borderWidth = CGFloat(1.5)
         border.cornerRadius = 20
         textField.layer.addSublayer(border)
-        
+
+        // プレースホルダー
         textField.attributedPlaceholder = NSAttributedString(string: "メッセージを入力", attributes: [NSAttributedString.Key.foregroundColor : UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.5)])
         
         // 初期化
@@ -82,57 +92,60 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         // メッセージ取得
         ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
-//        self.ref.child("messages").child(communityId).observeSingleEvent(of: .value, with: { (snapshot) in
-//            tableView.mask = 
-            let val = snapshot.value as! [String:Any]
-//            self.messageArr = Array(val.values) as! [[String : Any]]
-            self.messageArr.append(val)
-            let oldContentSize = self.tableView.contentSize.height
             
+            let val = snapshot.value as! [String:Any]
+            self.messageArr.append(val)
             // データの追加
             self.tableView.reloadData()
+            // グラデーション設定
+            let gradientLayer = CAGradientLayer()
+            gradientLayer.frame = self.tableView.superview!.bounds
+            let clearColor = UIColor.clear.cgColor
+            let whiteColor = UIColor.white.cgColor
+            gradientLayer.colors = [clearColor, clearColor, whiteColor, whiteColor]
+            gradientLayer.locations = [0.0, 0.4, 0.5, 1.0]
+            self.tableView.superview!.layer.mask = gradientLayer
+            self.tableView.backgroundColor = UIColor.clear
+            print("reload完了しました🙂")
+            
+            // スクロール中
             DispatchQueue.main.async {
-                let gradientLayer = CAGradientLayer()
-                gradientLayer.frame = self.tableView.superview!.bounds
-//                gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.cgColor]
-//                gradientLayer.locations = [0.0, 1.0]
-                let clearColor = UIColor.clear.cgColor
-                let whiteColor = UIColor.white.cgColor
-                
-                gradientLayer.colors = [clearColor, clearColor, whiteColor, whiteColor, whiteColor, whiteColor]
-                gradientLayer.locations = [0.0, 0.25, 0.4, 0.75, 0.85, 1.0]
-//                gradientLayer.startPoint = CGPoint(x: 0, y: 0)
-//                gradientLayer.endPoint = CGPoint(x: 0, y: 0.1)
-                self.tableView.superview!.layer.mask = gradientLayer
-                self.tableView.backgroundColor = UIColor.clear
                 self.tableView.performBatchUpdates({
-
+                    
                 }) { (finished) in
-                    print("reload完了しました🙂")
-                    if self.testCounter > 0 {
-
-                        let newContentSize = self.tableView.contentSize.height
-                        let dif = newContentSize - oldContentSize
-                        print("y座標")
-                        print(dif)
-                        print(self.tableView.contentOffset.y + dif)
-                        // 前回の先頭からのオフセット分ずらす
-                        self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentOffset.y + dif)
-
+                    let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
+                    if dif < 0 {
+                    // 下詰め
+                        self.tableView.contentInset = UIEdgeInsets(top: dif, left: 0, bottom: 0, right: 0)
                     } else {
-                        let test = self.tableView.contentSize.height - self.tableView.frame.size.height
-                        print("y座標初回")
-                        print(test)
-//                        self.tableView.setContentOffset(CGPoint(x:0, y:test), animated: false)
-                        self.tableView.contentOffset = CGPoint(x: 0, y: test)
+                    // 1番下までスクロール
+                        guard self.flg else {
+                            // マージン0
+                            self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                            self.tableView.contentOffset.y = dif
+                            self.flg = true
+                            return
+                        }
+                        // 1番下でじゃない場合
+                        guard self.flg2 else { return }
+                        self.tableView.contentOffset.y = dif// 1番下にスクロール
                     }
                 }
-
             }
-
         })
         
-        
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if tableView.cellForRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-2, section: 0)) != nil {
+            flg2 = false
+        }
+        guard tableView.cellForRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0)) != nil else {
+            return
+        }
+        print("1番下")
+        flg2 = true
+        // ここでリフレッシュのメソッドを呼ぶ
     }
     
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -172,7 +185,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        text.textContainer.lineFragmentPadding = 0
         textView!.text = (messageArr[indexPath.row]["message"] as! String)
         textView!.sizeToFit()
-
+        
+//        cell.transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 0)
         return cell
     }
 
@@ -181,7 +195,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return 52
     }
 
     @IBAction func tapScreen(_ sender: Any) {
@@ -260,6 +274,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     // ボタンで画面を閉じる
     @IBAction func closeModal(_ sender: Any) {
+        if keyboardOn { return }
         //呼び出し元のView Controllerを取得しパラメータを渡す
         let InfoVc = self.presentingViewController as! RootTabBarController
         InfoVc.tabBar.isHidden = false
@@ -269,7 +284,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // スワイプで画面を閉じる
     @objc func closeModalView() {
         if keyboardOn { return }
-        print("キーボード閉じる")
         //呼び出し元のView Controllerを取得しパラメータを渡す
         let InfoVc = self.presentingViewController as! RootTabBarController
         InfoVc.tabBar.isHidden = false
@@ -277,7 +291,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("タッチ")
         // キーボードを閉じる
         textField.resignFirstResponder()
     }
