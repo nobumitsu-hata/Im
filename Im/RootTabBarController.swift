@@ -15,7 +15,7 @@ import CoreLocation
 class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     static var userId = ""
-    static var userInfo:[String:String] = [:]
+    static var userInfo:[String:Any] = [:]
     var authCheck = false
     var ref: DatabaseReference!
     var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
@@ -88,7 +88,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
                 RootTabBarController.userId = user!.uid
                 self.authCheck = true
                 self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                    let val = snapshot.value as! [String:String]// エラー箇所
+                    let val = snapshot.value as! [String:Any]// エラー箇所
                     RootTabBarController.userInfo = val
                 })
             } else {

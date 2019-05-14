@@ -54,15 +54,18 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.dataSource = self
         self.textField.delegate = self
         
-        // テーブルビュー反転
-//        tableView.transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 0)
-
         // 背景色設定
         self.view.backgroundColor = UIColor.clear
         tableView.backgroundColor = UIColor.clear
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
-        coverView.backgroundColor = UIColor(displayP3Red: 0/255, green: 0/255, blue: 0/255, alpha: 0.1)
+        coverView.backgroundColor = UIColor.clear
+
+        //グラデーションの開始色
+        let startColor = UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 0.3)
+        //グラデーションの開始色
+        let endColor = UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 0.3)
+        scrollView.setGradient(startColor: startColor, endColor: endColor, radius: 0)
         
         self.tableView.rowHeight = UITableView.automaticDimension
         
@@ -102,8 +105,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             gradientLayer.frame = self.tableView.superview!.bounds
             let clearColor = UIColor.clear.cgColor
             let whiteColor = UIColor.white.cgColor
-            gradientLayer.colors = [clearColor, clearColor, whiteColor, whiteColor]
-            gradientLayer.locations = [0.0, 0.4, 0.5, 1.0]
+            gradientLayer.colors = [clearColor, whiteColor, whiteColor]
+            gradientLayer.locations = [0.45, 0.55, 1.0]
             self.tableView.superview!.layer.mask = gradientLayer
             self.tableView.backgroundColor = UIColor.clear
             print("reload完了しました🙂")
