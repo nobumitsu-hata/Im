@@ -11,6 +11,10 @@
 		1B9AB54033FCA510BD91A66D /* Pods_ImUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */; };
 		2A6DEF0A25C86B519B7BD652 /* Pods_Im.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C901B0705F05D07D86F7E1D /* Pods_Im.framework */; };
 		526C6CE222891DFF00BE61E4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */; };
+		526C6CE4228AF21800BE61E4 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */; };
+		526C6CE6228BFAB600BE61E4 /* EditProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */; };
+		526C6CE8228C246400BE61E4 /* DatePickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE7228C246400BE61E4 /* DatePickerKeyboard.swift */; };
+		526C6CEA228C5A3200BE61E4 /* PickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE9228C5A3200BE61E4 /* PickerKeyboard.swift */; };
 		52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D0022368D3700CD3C50 /* AppDelegate.swift */; };
 		52838D0322368D3700CD3C50 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D0222368D3700CD3C50 /* ViewController.swift */; };
 		52838D0622368D3700CD3C50 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52838D0422368D3700CD3C50 /* Main.storyboard */; };
@@ -64,6 +68,10 @@
 		1C901B0705F05D07D86F7E1D /* Pods_Im.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Im.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ImUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
+		526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
+		526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileTableViewCell.swift; sourceTree = "<group>"; };
+		526C6CE7228C246400BE61E4 /* DatePickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerKeyboard.swift; sourceTree = "<group>"; };
+		526C6CE9228C5A3200BE61E4 /* PickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerKeyboard.swift; sourceTree = "<group>"; };
 		52838CFD22368D3700CD3C50 /* Im.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Im.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52838D0022368D3700CD3C50 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		52838D0222368D3700CD3C50 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -164,6 +172,8 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */,
+				526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */,
 				52FD3C0022797A1200746600 /* RoomNavigationController.swift */,
 				52FD3BFE227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift */,
 				52FD3BF82276205700746600 /* MessageTableViewCell.swift */,
@@ -186,6 +196,8 @@
 				52838D3A2237921A00CD3C50 /* HomeViewController.swift */,
 				52838D3E2238D26B00CD3C50 /* MessageViewController.swift */,
 				52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */,
+				526C6CE7228C246400BE61E4 /* DatePickerKeyboard.swift */,
+				526C6CE9228C5A3200BE61E4 /* PickerKeyboard.swift */,
 			);
 			path = Im;
 			sourceTree = "<group>";
@@ -519,7 +531,9 @@
 				52838D53225A914300CD3C50 /* AccountViewController.swift in Sources */,
 				52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */,
 				526C6CE222891DFF00BE61E4 /* ProfileTableViewCell.swift in Sources */,
+				526C6CE8228C246400BE61E4 /* DatePickerKeyboard.swift in Sources */,
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
+				526C6CEA228C5A3200BE61E4 /* PickerKeyboard.swift in Sources */,
 				52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */,
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
@@ -527,9 +541,11 @@
 				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,
 				52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */,
 				52FD3BFA2276205700746600 /* MessageTableViewCell.swift in Sources */,
+				526C6CE6228BFAB600BE61E4 /* EditProfileTableViewCell.swift in Sources */,
 				52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */,
 				52FD3BFF227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift in Sources */,
 				52838D382237905D00CD3C50 /* CommunityTableViewCell.swift in Sources */,
+				526C6CE4228AF21800BE61E4 /* PlaceHolderTextView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

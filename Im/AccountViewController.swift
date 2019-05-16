@@ -134,7 +134,12 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.performSegue(withIdentifier: "toEditProfileViewController", sender: nil)
     }
     
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toEditProfileViewController" {
+            let dmViewController = segue.destination as! EditProfileViewController
+            dmViewController.belongsData = belongsDic
+        }
+    }
 }
 
 extension UIView {
@@ -185,6 +190,25 @@ extension UIView {
         gradientLayer.colors = gradientColors
         //グラデーションレイヤーをスクリーンサイズにする
         gradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        // 上から下へグラデーション向きの設定
+        gradientLayer.startPoint = CGPoint.init(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint.init(x: 1, y: 1)
+        // 角丸
+        gradientLayer.cornerRadius = radius
+        //グラデーションレイヤーをビューの一番下に配置
+        layer.insertSublayer(gradientLayer, at:0)
+    }
+    
+    func borderGradient(startColor: UIColor, endColor: UIColor, radius:CGFloat) {
+        
+        //グラデーションの色を配列で管理
+        let gradientColors: [CGColor] = [startColor.cgColor, endColor.cgColor]
+        //グラデーションレイヤーを作成
+        let gradientLayer: CAGradientLayer = CAGradientLayer()
+        //グラデーションの色をレイヤーに割り当てる
+        gradientLayer.colors = gradientColors
+        //グラデーションレイヤーをスクリーンサイズにする
+        gradientLayer.frame = CGRect(x: 0, y: frame.size.height - 1, width: frame.size.width, height: 1)
         // 上から下へグラデーション向きの設定
         gradientLayer.startPoint = CGPoint.init(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint.init(x: 1, y: 1)

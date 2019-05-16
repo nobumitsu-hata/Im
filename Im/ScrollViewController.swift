@@ -75,7 +75,7 @@ class ScrollViewController: UIViewController {
             // 現在地が目的地の許容範囲内かどうか
             if radius >= distanceLocation {
                 self.ref.child("communities").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
-                    guard counter < 2 else {return}
+                    guard counter < 3 else {return}
                     let val = snapshot.value as! [String:Any]
                     self.communityVal.append(val)
                     self.communityKey.append(snapshot.key)
