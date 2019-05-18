@@ -10,7 +10,7 @@ import UIKit
 
 class DatePickerKeyboard: UITextField {
 
-    private var datePicker: UIDatePicker!
+    var datePicker: UIDatePicker!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -26,8 +26,7 @@ class DatePickerKeyboard: UITextField {
         datePicker.date = Date()
         datePicker.datePickerMode = .date
         datePicker.locale = Locale(identifier: "ja")
-        datePicker.addTarget(self, action: #selector(setText), for: .valueChanged)
-        
+        datePicker.maximumDate = NSDate() as Date
         inputView = datePicker
         inputAccessoryView = createToolbar()
     }
@@ -63,6 +62,7 @@ class DatePickerKeyboard: UITextField {
         resignFirstResponder()
     }
     
+    // 削除
     @objc private func cancel() {
         text = ""
         resignFirstResponder()

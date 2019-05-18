@@ -16,6 +16,11 @@ class EditProfileTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        let imageView = UIImageView()
+        let image = UIImage(named: "Picker")
+        imageView.image = image
+        valField.rightView = imageView
+        valField.rightViewMode = UITextField.ViewMode.always
         valField.textColor = UIColor.white
         keyLbl.textColor = UIColor.white
     }

@@ -19,13 +19,16 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     var changeFlg = false
     var selectedImageType: String!
     let storage = Storage.storage()
-    
+    var customCell:[EditProfileTableViewCell] = []
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
     var communityArr:[String] = ["選択してください"]
     var friendsArr:[String] = ["選択してください", "いる", "いない"]
     var levelsArr:[String] = ["選択してください"]
     var belongsData:[String:Any] = [:]
     var communityKey:[String] = []
+    var levelDic:[String:Any] = [:]
+    let friendDic:[String:Any] = ["選択してください":"", "いる":true, "いない": false]
+    var saveFlg = true
     
     @IBOutlet weak var wrapperView: UIView!
     @IBOutlet weak var mainView: UIView!
@@ -34,7 +37,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     @IBOutlet weak var saveBtn: UIBarButtonItem!
     @IBOutlet weak var imgBtn: UIButton!
     @IBOutlet weak var introduction: UITextView!
-    @IBOutlet weak var birthdayField: UITextField!
+    @IBOutlet weak var birthdayField: DatePickerKeyboard!
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -42,6 +45,20 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         self.navigationController?.navigationBar.tintColor = UIColor.white
         tableView.delegate = self
         tableView.dataSource = self
+        
+        let imageView = UIImageView()
+        let image = UIImage(named: "Picker")
+        imageView.image = image
+        imageView.frame = CGRect(x: CGFloat(birthdayField.frame.size.width - 50), y: CGFloat(30), width: CGFloat(25), height: CGFloat(25))
+        birthdayField.rightView = imageView
+        birthdayField.rightViewMode = UITextField.ViewMode.always
+        
+        birthdayField.datePicker.addTarget(self, action: #selector(setText), for: .valueChanged)
+        
+        for i in 0 ..< 3 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "EditProfileCell", for: NSIndexPath(row: i, section: 0) as IndexPath) as! EditProfileTableViewCell
+            customCell.append(cell)
+        }
 
         // グラデーションセット
         self.view.setGradientLayer()
@@ -77,6 +94,14 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         setupFirebase()
     }
     
+    // datePickerの日付けをtextFieldのtextに反映させる
+    @objc private func setText() {
+        let f = DateFormatter()
+        f.dateStyle = .long
+        f.locale = Locale(identifier: "ja")
+        birthdayField.text = f.string(from: birthdayField.datePicker.date)
+    }
+    
     func setupFirebase() {
         ref = Database.database().reference()
         if RootTabBarController.userInfo["img"] as? String != "" {
@@ -97,8 +122,8 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                 // ファンレベル選択項目設定
                 self.ref.child("levels").observeSingleEvent(of: .value, with: { (snapshot) in
                     if snapshot.exists() {
-                        let val = snapshot.value as! [String:Any]
-                        var valArr = Array(val.values) as! [[String:Any]]
+                        self.levelDic = snapshot.value as! [String:Any]
+                        var valArr = Array(self.levelDic.values) as! [[String:Any]]
                         valArr.sort{($0["index"] as! Int) < ($1["index"] as! Int)}// ソート
                         self.levelsArr += valArr.map({(($0["name"]) as? String)!})
                         self.tableView.reloadData()
@@ -142,35 +167,8 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
 
     }
     
-    @IBAction func saveProfile(_ sender: Any) {
-        let getName = nameField.text
-        let userID = RootTabBarController.userId
-        // 名前の変更がある場合
-        if getName != nowName {
-//            let post = ["name": getName]
-            let childUpdates = ["/users/\(userID)/name/": getName]
-            ref.updateChildValues(childUpdates as [AnyHashable : Any])
-        }
-        if changeFlg {
-            let childUpdates = ["/users/\(userID)/img/": userID+"."+selectedImageType]
-            ref.updateChildValues(childUpdates as [AnyHashable : Any])
-            let storageRef = storage.reference().child("users")
-            // UIImagePNGRepresentationでUIImageをNSDataに変換
-            if let data = self.imgView.image!.pngData() {
-                let reference = storageRef.child(userID+"."+self.selectedImageType)
-                reference.putData(data, metadata: nil, completion: { metaData, error in
-                    
-                })
-            }
-            // 一つ前のViewControllerに戻る
-            navigationController?.popViewController(animated: true)
-        }
-        
-    }
-    
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // セル生成
-        let cell = table.dequeueReusableCell(withIdentifier: "EditProfileCell", for: indexPath) as! EditProfileTableViewCell
+        let cell = customCell[indexPath.row]
         cell.backgroundColor = UIColor.clear
 
         cell.keyLbl.text = belongsArr[indexPath.row]
@@ -202,6 +200,65 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         // キーボードを閉じる
         self.view.endEditing(true)
     }
+    
+    // 名前 判定
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if nameField.text == "" {
+            saveBtn.tintColor = UIColor.gray
+            saveFlg = false
+        } else {
+            saveBtn.tintColor = UIColor.white
+            saveFlg = true
+        }
+        return true
+    }
+    
+    // 紹介文 文字数制限
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text.count > 150 {
+            saveBtn.tintColor = UIColor.gray
+            saveFlg = false
+        } else {
+            saveBtn.tintColor = UIColor.white
+            saveFlg = true
+        }
+        
+    }
+    
+    @IBAction func saveProfile(_ sender: Any) {
+        // 取得
+        let name = nameField.text
+        let birthday = birthdayField.text
+        let intro = introduction.text
+        let community = customCell[0].valField.text
+        let friend = friendDic[customCell[1].valField.text!]
+        let level = findKeyForValue(value: customCell[2].valField.text!, dictionary: levelDic as! [String: [String:Any]])
+        // バリデーション
+        guard name != "" else { return }
+        if friend as? String != "" && community == "" { return }
+        if level != "" && community == "" { return }
+        // 更新
+        let childUpdates = ["/users/\(RootTabBarController.userId)/": ["name": name, "birthday": birthday, "introduction": intro]]
+        ref.updateChildValues(childUpdates as [AnyHashable : Any])
+        let belongsUpdates = ["/users/\(RootTabBarController.userId)/": [community: ["friend": friend, "level": level]]]
+        ref.updateChildValues(belongsUpdates as [AnyHashable : Any])
+        // 一つ前のViewControllerに戻る
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func findKeyForValue(value: String, dictionary: [String: [String:Any]]) ->String?
+    {
+        for (key, dic) in dictionary
+        {
+            if dic["name"] as? String == value
+            {
+                return key
+            }
+        }
+        return ""
+    }
+    
+    
 }
 
 extension EditProfileViewController: RSKImageCropViewControllerDelegate {
@@ -214,4 +271,20 @@ extension EditProfileViewController: RSKImageCropViewControllerDelegate {
         dismiss(animated: true)
         imgView.image = croppedImage
     }
+}
+
+protocol PickerViewKeyboardDelegate : class{
+//    func titlesOfPickerViewKeyboard(sender: PickerKeyboard) -> Array<String>
+//    func initSelectedRow(sender: PickerKeyboard) -> Int
+//    func didCancel(sender: PickerKeyboard)
+    func didDone(sender: PickerKeyboard, selectedData: String)
+}
+
+extension EditProfileViewController: PickerViewKeyboardDelegate {
+
+    
+    func didDone(sender: PickerKeyboard, selectedData: String) {
+        print(selectedData)
+    }
+    
 }

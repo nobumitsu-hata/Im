@@ -9,12 +9,17 @@
 import UIKit
 
 class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource {
-
+    
+    //SampleViewDelegateのインスタンスを宣言
+    weak var del: PickerViewKeyboardDelegate?
+    
+//    var del: PickerViewKeyboardDelegate?
     var pickerView: UIPickerView = UIPickerView()
     var list:[String] = []
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        
         inputView = pickerView
         inputAccessoryView = createToolbar()
         pickerView.delegate = self
@@ -22,6 +27,7 @@ class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource 
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         inputView = pickerView
         inputAccessoryView = createToolbar()
         pickerView.delegate = self
@@ -57,6 +63,7 @@ class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource 
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.del?.didDone(sender: self, selectedData: "テスト")
         text = list[row]
     }
     
@@ -77,4 +84,13 @@ class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource 
     override func caretRect(for position: UITextPosition) -> CGRect {
         return CGRect(x: 0, y: 0, width: 0, height: 0)
     }
+    
+    
 }
+
+//protocol PickerViewKeyboardDelegate {
+////    func titlesOfPickerViewKeyboard(sender: PickerViewKeyboard) -> Array<String>
+////    func initSelectedRow(sender: PickerViewKeyboard) -> Int
+////    func didCancel(sender: PickerViewKeyboard)
+//    func didDone(sender: PickerViewKeyboard, selectedData: String)
+//}
