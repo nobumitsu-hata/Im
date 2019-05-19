@@ -399,25 +399,43 @@
                                                         <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
-                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sYd-T4-GF0" customClass="PlaceHolderTextView" customModule="Im" customModuleProvider="target">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="TlI-CD-wFz">
                                                         <rect key="frame" x="0.0" y="180" width="260" height="60"/>
+                                                        <subviews>
+                                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sYd-T4-GF0" customClass="PlaceHolderTextView" customModule="Im" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="0.0" width="227" height="60"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="60" id="jku-PC-3TD"/>
+                                                                </constraints>
+                                                                <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
+                                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
+                                                                <userDefinedRuntimeAttributes>
+                                                                    <userDefinedRuntimeAttribute type="string" keyPath="placeHolder" value="自己紹介を入力"/>
+                                                                </userDefinedRuntimeAttributes>
+                                                            </textView>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="120" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bp3-cs-JuH">
+                                                                <rect key="frame" x="230" y="40" width="30" height="20"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="9Qv-Pt-icN"/>
+                                                                    <constraint firstAttribute="height" constant="20" id="BxG-9f-Gwe"/>
+                                                                </constraints>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                        </subviews>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="60" id="jku-PC-3TD"/>
+                                                            <constraint firstAttribute="height" constant="60" id="oZJ-wa-SbR"/>
                                                         </constraints>
-                                                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
-                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                                        <userDefinedRuntimeAttributes>
-                                                            <userDefinedRuntimeAttribute type="string" keyPath="placeHolder" value="自己紹介を入力"/>
-                                                        </userDefinedRuntimeAttributes>
-                                                    </textView>
+                                                    </stackView>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="sYd-T4-GF0" firstAttribute="leading" secondItem="7KF-1Z-tBk" secondAttribute="leading" id="1DG-YE-5zY"/>
-                                                    <constraint firstAttribute="trailing" secondItem="sYd-T4-GF0" secondAttribute="trailing" id="KkV-98-Up1"/>
+                                                    <constraint firstAttribute="trailing" secondItem="TlI-CD-wFz" secondAttribute="trailing" id="DSd-h5-zqG"/>
                                                     <constraint firstAttribute="trailing" secondItem="WAV-N3-agI" secondAttribute="trailing" id="Rfv-e7-Ud2"/>
                                                     <constraint firstItem="3s4-3t-aqN" firstAttribute="leading" secondItem="7KF-1Z-tBk" secondAttribute="leading" id="cRy-Th-Jpb"/>
                                                     <constraint firstAttribute="trailing" secondItem="3s4-3t-aqN" secondAttribute="trailing" id="mjC-Jb-ogP"/>
+                                                    <constraint firstItem="TlI-CD-wFz" firstAttribute="leading" secondItem="7KF-1Z-tBk" secondAttribute="leading" id="rd1-fn-8al"/>
                                                     <constraint firstItem="WAV-N3-agI" firstAttribute="leading" secondItem="7KF-1Z-tBk" secondAttribute="leading" id="ujh-YM-27y"/>
                                                 </constraints>
                                             </stackView>
@@ -439,7 +457,7 @@
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="O9u-6W-Dxk">
                                                         <rect key="frame" x="0.0" y="0.0" width="260" height="16"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <fontDescription key="fontDescription" name="HiraginoSans-W6" family="Hiragino Sans" pointSize="16"/>
+                                                        <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="好きなチーム" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oL8-e5-ARd">
@@ -456,7 +474,7 @@
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="2M5-cC-Hjs">
                                                         <rect key="frame" x="0.0" y="0.0" width="260" height="16"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <fontDescription key="fontDescription" name="HiraginoSans-W6" family="Hiragino Sans" pointSize="16"/>
+                                                        <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="観戦仲間" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SF3-4m-TEl">
@@ -473,7 +491,7 @@
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="vCh-xQ-VO5">
                                                         <rect key="frame" x="0.0" y="0.0" width="260" height="16"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <fontDescription key="fontDescription" name="HiraginoSans-W6" family="Hiragino Sans" pointSize="16"/>
+                                                        <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ファンレベル" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y6e-Q9-Tqh">
@@ -516,9 +534,13 @@
                     </navigationItem>
                     <connections>
                         <outlet property="birthdayField" destination="3s4-3t-aqN" id="Gw9-xk-WWR"/>
+                        <outlet property="communityField" destination="O9u-6W-Dxk" id="6Ur-ag-kWB"/>
+                        <outlet property="counter" destination="bp3-cs-JuH" id="3gd-9m-lBL"/>
+                        <outlet property="friendField" destination="2M5-cC-Hjs" id="vVR-gH-lzg"/>
                         <outlet property="imgBtn" destination="T1i-un-oXF" id="CLW-Um-bag"/>
                         <outlet property="imgView" destination="p5S-5R-9k9" id="HBk-ra-MBY"/>
                         <outlet property="introduction" destination="sYd-T4-GF0" id="spI-98-Pyk"/>
+                        <outlet property="levelField" destination="vCh-xQ-VO5" id="vQN-Ho-oR4"/>
                         <outlet property="mainView" destination="yWa-dH-Bgi" id="hpP-XQ-cZo"/>
                         <outlet property="nameField" destination="WAV-N3-agI" id="j9k-8P-Mz3"/>
                         <outlet property="saveBtn" destination="aAt-QZ-HI9" id="jAR-79-2gn"/>
@@ -880,6 +902,6 @@
         <image name="UserOn" width="18" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="AFv-tB-guI"/>
+        <segue reference="5sE-30-nXO"/>
     </inferredMetricsTieBreakers>
 </document>

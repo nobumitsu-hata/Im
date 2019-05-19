@@ -11,24 +11,23 @@ import Firebase
 import FirebaseDatabase
 import RSKImageCropper
 
-class EditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,UITextViewDelegate, UITableViewDelegate, UITableViewDataSource {
+class EditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, UITextFieldDelegate {
     
     var ref: DatabaseReference!
     var picker: UIImagePickerController! = UIImagePickerController()
-    var nowName: String!
     var changeFlg = false
     var selectedImageType: String!
     let storage = Storage.storage()
-    var customCell:[EditProfileTableViewCell] = []
-    let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
-    var communityArr:[String] = ["選択してください"]
-    var friendsArr:[String] = ["選択してください", "いる", "いない"]
-    var levelsArr:[String] = ["選択してください"]
-    var belongsData:[String:Any] = [:]
+    var belongsData:[String] = []
     var communityKey:[String] = []
+    var communityDic:[String:Any] = [:]
     var levelDic:[String:Any] = [:]
+    var belongsVal:[String] = []
     let friendDic:[String:Any] = ["選択してください":"", "いる":true, "いない": false]
     var saveFlg = true
+    var pickerViewArr:[UIPickerView] = [UIPickerView(), UIPickerView(), UIPickerView()]
+    var textFieldArr:[UITextField] = []
+    var list:[[String]] = [["選択してください"], ["選択してください", "いる", "いない"], ["選択してください"]]
     
     @IBOutlet weak var wrapperView: UIView!
     @IBOutlet weak var mainView: UIView!
@@ -38,13 +37,25 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     @IBOutlet weak var imgBtn: UIButton!
     @IBOutlet weak var introduction: UITextView!
     @IBOutlet weak var birthdayField: DatePickerKeyboard!
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var communityField: UITextField!
+    @IBOutlet weak var friendField: UITextField!
+    @IBOutlet weak var levelField: UITextField!
+    @IBOutlet weak var counter: UILabel!
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        setupFirebase()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = UIColor.white
-        tableView.delegate = self
-        tableView.dataSource = self
+        
+        nameField.delegate = self
+        introduction.delegate = self
+        
+        initField(textField: communityField, num: 0)
+        initField(textField: friendField, num: 1)
+        initField(textField: levelField, num: 2)
         
         let imageView = UIImageView()
         let image = UIImage(named: "Picker")
@@ -55,11 +66,6 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         
         birthdayField.datePicker.addTarget(self, action: #selector(setText), for: .valueChanged)
         
-        for i in 0 ..< 3 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "EditProfileCell", for: NSIndexPath(row: i, section: 0) as IndexPath) as! EditProfileTableViewCell
-            customCell.append(cell)
-        }
-
         // グラデーションセット
         self.view.setGradientLayer()
         nameField.borderGradient(
@@ -67,8 +73,8 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             endColor: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0),
             radius: 0
         )
-        introduction.delegate = self
-        introduction.superview!.borderGradient(
+        
+        introduction.superview!.introductionGradient(
             startColor: UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
             endColor: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0),
             radius: 0
@@ -82,16 +88,42 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         self.imgView.layer.cornerRadius = self.imgView.frame.size.width * 0.5
         self.imgView.clipsToBounds = true
         
+        introduction.textContainerInset = UIEdgeInsets.zero
+        introduction.textContainer.lineFragmentPadding = 0
+        
         imgBtn.imageEdgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)// ボタンの画像縮小
         wrapperView.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.2)
         wrapperView.layer.cornerRadius = 20
         mainView.layer.cornerRadius = 20
-        tableView.backgroundColor = UIColor.clear
         
         nameField.text = RootTabBarController.userInfo["name"] as? String
         introduction.text = RootTabBarController.userInfo["introduction"] as? String
 
-        setupFirebase()
+    }
+    
+    func initField (textField: UITextField, num: Int) {
+        
+        pickerViewArr[num].delegate = self
+        pickerViewArr[num].dataSource = self
+        pickerViewArr[num].tag = num
+        
+        let i = list[num].index(of: belongsVal[num])
+        if  i !=  nil {
+            pickerViewArr[num].selectRow(i!, inComponent: 0, animated: false)
+        }
+        
+        textField.inputView = pickerViewArr[num]
+        textField.inputAccessoryView = createToolbar()
+ 
+        let imageView = UIImageView()
+        let image = UIImage(named: "Picker")
+        imageView.image = image
+        imageView.frame = CGRect(x: CGFloat(textField.frame.size.width - 50), y: CGFloat(30), width: CGFloat(25), height: CGFloat(25))
+        textField.rightView = imageView
+        textField.rightViewMode = UITextField.ViewMode.always
+        
+        textField.text = belongsVal[num]
+        textFieldArr.append(textField)
     }
     
     // datePickerの日付けをtextFieldのtextに反映させる
@@ -115,18 +147,29 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         // コミュニティー選択項目設定
         ref.child("communities").observeSingleEvent(of: .value, with: { (snapshot) in
             if snapshot.exists() {
-                let val = snapshot.value as! [String:Any]
-                self.communityKey = Array(val.keys)
-                let arr = Array(val.values) as! [[String:String]]
-                self.communityArr += arr.map({($0["name"])!})
+                self.communityDic = snapshot.value as! [String:Any]
+                self.communityKey = Array(self.communityDic.keys)
+                let arr = Array(self.communityDic.values) as! [[String:String]]
+                self.list[0] += arr.map({($0["name"])!})
+                
+                let i = self.list[0].index(of: self.belongsVal[0])
+                if  i !=  nil {
+                    self.pickerViewArr[0].selectRow(i!, inComponent: 0, animated: false)
+                }
+                self.communityField.inputView = self.pickerViewArr[0]
                 // ファンレベル選択項目設定
                 self.ref.child("levels").observeSingleEvent(of: .value, with: { (snapshot) in
                     if snapshot.exists() {
                         self.levelDic = snapshot.value as! [String:Any]
                         var valArr = Array(self.levelDic.values) as! [[String:Any]]
                         valArr.sort{($0["index"] as! Int) < ($1["index"] as! Int)}// ソート
-                        self.levelsArr += valArr.map({(($0["name"]) as? String)!})
-                        self.tableView.reloadData()
+                        self.list[2] += valArr.map({(($0["name"]) as? String)!})
+                        
+                        let i = self.list[2].index(of: self.belongsVal[2])
+                        if  i !=  nil {
+                            self.pickerViewArr[2].selectRow(i!, inComponent: 0, animated: false)
+                        }
+                        self.levelField.inputView = self.pickerViewArr[2]
                     }
                 })
                 
@@ -167,34 +210,6 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
 
     }
     
-    func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = customCell[indexPath.row]
-        cell.backgroundColor = UIColor.clear
-
-        cell.keyLbl.text = belongsArr[indexPath.row]
-        cell.valField.text = belongsData[belongsArr[indexPath.row]] as? String
-        switch indexPath.row {
-        case 0:
-            cell.valField.list = communityArr
-        case 1:
-            cell.valField.list = friendsArr
-        case 2:
-            cell.valField.list = levelsArr
-        default:
-            print("")
-        }
-        cell.valField.pickerView.reloadAllComponents()
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return belongsData.count
-    }
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 43
-    }
-    
     // textfile以外の部分をタッチ
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // キーボードを閉じる
@@ -202,9 +217,20 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     }
     
     // 名前 判定
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        if nameField.text! == "" {
+            saveBtn.tintColor = UIColor.lightGray
+            saveFlg = false
+        } else {
+            saveBtn.tintColor = UIColor.white
+            saveFlg = true
+        }
+        return true
+        
+    }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if nameField.text == "" {
-            saveBtn.tintColor = UIColor.gray
+        if (textField.text! as NSString).replacingCharacters(in: range, with: string) == "" {
+            saveBtn.tintColor = UIColor.lightGray
             saveFlg = false
         } else {
             saveBtn.tintColor = UIColor.white
@@ -215,38 +241,54 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     
     // 紹介文 文字数制限
     func textViewDidChange(_ textView: UITextView) {
-        if textView.text.count > 150 {
+        let dif = 120 - textView.text.count
+        counter.text = String(dif)
+        if textView.text.count > 120 {
+            counter.textColor = UIColor.red
             saveBtn.tintColor = UIColor.gray
             saveFlg = false
         } else {
+            counter.textColor = UIColor(displayP3Red: 51/255, green: 51/255, blue: 51/255, alpha: 1.0)
             saveBtn.tintColor = UIColor.white
             saveFlg = true
         }
-        
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange,
+                  replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder() //キーボードを閉じる
+            return false
+        }
+        return true
     }
     
     @IBAction func saveProfile(_ sender: Any) {
+        guard saveFlg else { return }
+        print("保存")
         // 取得
         let name = nameField.text
         let birthday = birthdayField.text
         let intro = introduction.text
-        let community = customCell[0].valField.text
-        let friend = friendDic[customCell[1].valField.text!]
-        let level = findKeyForValue(value: customCell[2].valField.text!, dictionary: levelDic as! [String: [String:Any]])
-        // バリデーション
-        guard name != "" else { return }
-        if friend as? String != "" && community == "" { return }
-        if level != "" && community == "" { return }
+        let community = findKeyForValue(value: communityField.text!, dictionary: communityDic as! [String : [String : Any]])
+        let friend = friendDic[friendField.text!]
+        let level = findKeyForValue(value: levelField.text!, dictionary: levelDic as! [String: [String:Any]])
+
         // 更新
-        let childUpdates = ["/users/\(RootTabBarController.userId)/": ["name": name, "birthday": birthday, "introduction": intro]]
+        let childUpdates = ["/users/\(RootTabBarController.userId)/": ["name": name, "birthday": birthday, "introduction": intro, "img": RootTabBarController.userInfo["img"]]]
         ref.updateChildValues(childUpdates as [AnyHashable : Any])
-        let belongsUpdates = ["/users/\(RootTabBarController.userId)/": [community: ["friend": friend, "level": level]]]
-        ref.updateChildValues(belongsUpdates as [AnyHashable : Any])
+        if community != "" {
+            let belongsUpdates = ["/belongs/\(RootTabBarController.userId)/": [community: ["friend": friend, "level": level]]]
+            ref.updateChildValues(belongsUpdates as [AnyHashable : Any])
+        } else {
+            let belongsUpdates = ["/users/\(RootTabBarController.userId)/": nil] as [String : Any?]
+            ref.updateChildValues(belongsUpdates as [AnyHashable : Any])
+        }
         // 一つ前のViewControllerに戻る
         navigationController?.popViewController(animated: true)
     }
     
-    func findKeyForValue(value: String, dictionary: [String: [String:Any]]) ->String?
+    func findKeyForValue(value: String, dictionary: [String: [String:Any]]) ->String
     {
         for (key, dic) in dictionary
         {
@@ -273,18 +315,53 @@ extension EditProfileViewController: RSKImageCropViewControllerDelegate {
     }
 }
 
-protocol PickerViewKeyboardDelegate : class{
-//    func titlesOfPickerViewKeyboard(sender: PickerKeyboard) -> Array<String>
-//    func initSelectedRow(sender: PickerKeyboard) -> Int
-//    func didCancel(sender: PickerKeyboard)
-    func didDone(sender: PickerKeyboard, selectedData: String)
-}
-
-extension EditProfileViewController: PickerViewKeyboardDelegate {
-
+extension EditProfileViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
-    func didDone(sender: PickerKeyboard, selectedData: String) {
-        print(selectedData)
+    // キーボードのアクセサリービューを作成する
+    func createToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+        toolbar.frame = CGRect(x: 0, y: 0, width: pickerViewArr[0].frame.width, height: 44)
+        
+        let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: self, action: nil)
+        space.width = 12
+        let flexSpaceItem = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        let doneButtonItem = UIBarButtonItem(title: "完了",style: .done, target: self, action: #selector(done))
+        let toolbarItems = [flexSpaceItem, doneButtonItem, space]
+        
+        toolbar.setItems(toolbarItems, animated: true)
+        
+        return toolbar
     }
     
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return list[pickerView.tag].count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return list[pickerView.tag][row]
+    }
+    // 選択時
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // 観戦仲間もしくはファンレベルが選択中にコミュニティーが未選択の場合
+        if pickerView.tag > 0 && row > 0 && communityField.text == list[0][0] {
+            saveBtn.tintColor = UIColor.lightGray
+            saveFlg = false
+        } else if pickerView.tag == 0 && row == 0 && (friendField.text != list[1][0] || levelField.text != list[2][0]) {
+            saveBtn.tintColor = UIColor.lightGray
+            saveFlg = false
+        } else {
+            saveBtn.tintColor = UIColor.white
+            saveFlg = true
+        }
+        textFieldArr[pickerView.tag].text = list[pickerView.tag][row]
+    }
+    
+    @objc func done() {
+        // キーボードを閉じる
+        self.view.endEditing(true)
+    }
 }

@@ -21,9 +21,8 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var introduction: UITextView!
     @IBOutlet weak var tableView: UITableView!
-    
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
-    var belongsDic = ["好きなチーム": "未設定", "観戦仲間": "未設定", "ファンレベル":"未設定"]
+    var belongsVal = ["未設定", "未設定", "未設定"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,18 +85,29 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.ref.child("belongs").child(RootTabBarController.userId).observeSingleEvent(of: .value, with: { (snapshot) in
                 if snapshot.exists() {
                     let belongsVal = snapshot.value as! [String:Any]
-                    let keyArr = Array(belongsVal.keys)
+                    let keyArr = Array(belongsVal.keys)// コミュニティーID
                     self.ref.child("communities").child(keyArr[0]).observeSingleEvent(of: .value, with: { (snapshot) in
+                        // 好きなチーム
                         let communityVal = snapshot.value as! [String:Any]
-                        self.belongsDic["好きなチーム"] = (communityVal["name"] as! String)
-                        let test = belongsVal[keyArr[0]] as! [String: Any]
-                        self.belongsDic["ファンレベル"] = test["level"] as? String
-                        if (test["friend"] != nil && test["friend"] as? String != "未設定") {
-                            self.belongsDic["観戦仲間"] = "いる"
+                        self.belongsVal[0] = communityVal["name"] as! String
+                        
+                        let info = belongsVal[keyArr[0]] as! [String: Any]
+                        
+                        // 観戦仲間
+                        if (info["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
+                        else if info["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
+                        
+                        // ファンレベル
+                        if info["level"] as! String != "" {
+                            self.ref.child("levels").child(info["level"] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
+                                if snapshot.exists() {
+                                    let levelVal = snapshot.value as? [String:Any]
+                                    self.belongsVal[2] = levelVal?["name"] as! String
+                                    self.tableView.reloadData()
+                                }
+                            })
                         }
-                        if test["friend"] as? Bool == false {
-                            self.belongsDic["観戦仲間"] = "いない"
-                        }
+                        
                         self.tableView.reloadData()
                     })
                 } else {
@@ -117,13 +127,13 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.backgroundColor = UIColor.clear
         
         cell.keyLbl.text = belongsArr[indexPath.row]
-        cell.valLbl.text = belongsDic[belongsArr[indexPath.row]]
+        cell.valLbl.text = belongsVal[indexPath.row]
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return belongsDic.count
+        return belongsVal.count
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -136,8 +146,13 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toEditProfileViewController" {
-            let dmViewController = segue.destination as! EditProfileViewController
-            dmViewController.belongsData = belongsDic
+            let editProfileViewController = segue.destination as! EditProfileViewController
+            for i in 0..<3 {
+                if belongsVal[i] == "未設定" {
+                    belongsVal[i] = "選択してください"
+                }
+            }
+            editProfileViewController.belongsVal = belongsVal
         }
     }
 }
@@ -199,6 +214,25 @@ extension UIView {
         layer.insertSublayer(gradientLayer, at:0)
     }
     
+    func introductionGradient(startColor: UIColor, endColor: UIColor, radius:CGFloat) {
+        
+        //グラデーションの色を配列で管理
+        let gradientColors: [CGColor] = [startColor.cgColor, endColor.cgColor]
+        //グラデーションレイヤーを作成
+        let gradientLayer: CAGradientLayer = CAGradientLayer()
+        //グラデーションの色をレイヤーに割り当てる
+        gradientLayer.colors = gradientColors
+        //グラデーションレイヤーをスクリーンサイズにする
+        gradientLayer.frame = CGRect(x: 0, y: frame.size.height - 1, width: bounds.size.width - 30, height: 1)
+        // 上から下へグラデーション向きの設定
+        gradientLayer.startPoint = CGPoint.init(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint.init(x: 1, y: 1)
+        // 角丸
+        gradientLayer.cornerRadius = radius
+        //グラデーションレイヤーをビューの一番下に配置
+        layer.insertSublayer(gradientLayer, at:0)
+    }
+    
     func borderGradient(startColor: UIColor, endColor: UIColor, radius:CGFloat) {
         
         //グラデーションの色を配列で管理
@@ -208,7 +242,7 @@ extension UIView {
         //グラデーションの色をレイヤーに割り当てる
         gradientLayer.colors = gradientColors
         //グラデーションレイヤーをスクリーンサイズにする
-        gradientLayer.frame = CGRect(x: 0, y: frame.size.height - 1, width: frame.size.width, height: 1)
+        gradientLayer.frame = CGRect(x: 0, y: frame.size.height - 1, width: bounds.size.width, height: 1)
         // 上から下へグラデーション向きの設定
         gradientLayer.startPoint = CGPoint.init(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint.init(x: 1, y: 1)

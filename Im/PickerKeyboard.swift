@@ -10,10 +10,6 @@ import UIKit
 
 class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource {
     
-    //SampleViewDelegateのインスタンスを宣言
-    weak var del: PickerViewKeyboardDelegate?
-    
-//    var del: PickerViewKeyboardDelegate?
     var pickerView: UIPickerView = UIPickerView()
     var list:[String] = []
 
@@ -32,6 +28,13 @@ class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource 
         inputAccessoryView = createToolbar()
         pickerView.delegate = self
         pickerView.dataSource = self
+        
+        let imageView = UIImageView()
+        let image = UIImage(named: "Picker")
+        imageView.image = image
+        imageView.frame = CGRect(x: CGFloat(frame.size.width - 50), y: CGFloat(30), width: CGFloat(25), height: CGFloat(25))
+        rightView = imageView
+        rightViewMode = UITextField.ViewMode.always
     }
     
     // キーボードのアクセサリービューを作成する
@@ -63,7 +66,6 @@ class PickerKeyboard: UITextField, UIPickerViewDelegate, UIPickerViewDataSource 
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.del?.didDone(sender: self, selectedData: "テスト")
         text = list[row]
     }
     

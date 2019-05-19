@@ -19,8 +19,8 @@ import UIKit
     }
     
     /// [プレースホルダー]ラベル
-    private lazy var placeHolderLabel: UILabel = UILabel(frame: CGRect(x: 6.0,
-                                                                       y: 6.0,
+    private lazy var placeHolderLabel: UILabel = UILabel(frame: CGRect(x: 0,
+                                                                       y: 0,
                                                                        width: 0.0,
                                                                        height: 0.0))
     
