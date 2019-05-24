@@ -14,10 +14,12 @@ import FirebaseUI
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+//    let db = Firestore.firestore()
     
     override init() {
         super.init()
         FirebaseApp.configure()
+        
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

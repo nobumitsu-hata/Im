@@ -242,6 +242,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     // 紹介文 文字数制限
     func textViewDidChange(_ textView: UITextView) {
         let dif = 120 - textView.text.count
+        textView.text = textView.text.replacingOccurrences(of: "\n", with: " ")
         counter.text = String(dif)
         if textView.text.count > 120 {
             counter.textColor = UIColor.red
@@ -254,14 +255,14 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         }
     }
     
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange,
-                  replacementText text: String) -> Bool {
-        if text == "\n" {
-            textView.resignFirstResponder() //キーボードを閉じる
-            return false
-        }
-        return true
-    }
+//    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange,
+//                  replacementText text: String) -> Bool {
+//        if text == "\n" {
+//            textView.resignFirstResponder() //キーボードを閉じる
+//            return false
+//        }
+//        return true
+//    }
     
     @IBAction func saveProfile(_ sender: Any) {
         guard saveFlg else { return }

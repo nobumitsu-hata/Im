@@ -137,10 +137,8 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "fromListToDMViewController" {
             let dmViewController = segue.destination as! DMViewController
-            print("レシ")
-            print(dmKeyArr[sender as! Int])
-            dmViewController.receiver = "uYGxXJ9tDsYz2P7BLCZSf25otPY2"
-            dmViewController.receiverInfo = receiverArr[sender as! Int]
+            dmViewController.partnerId = "uYGxXJ9tDsYz2P7BLCZSf25otPY2"
+            dmViewController.partnerData = receiverArr[sender as! Int]
         }
     }
 

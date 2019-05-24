@@ -39,6 +39,9 @@
 		52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */; };
 		52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D56225F796E00CD3C50 /* TestViewController.swift */; };
 		52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D5822625C1800CD3C50 /* DMViewController.swift */; };
+		52F43861229460DE004D3C41 /* PrivateChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F43860229460DE004D3C41 /* PrivateChatViewController.swift */; };
+		52F43863229470DD004D3C41 /* ChatUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F43862229470DD004D3C41 /* ChatUser.swift */; };
+		52F438652294732C004D3C41 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F438642294732C004D3C41 /* ChatMessage.swift */; };
 		52FD3BFA2276205700746600 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FD3BF82276205700746600 /* MessageTableViewCell.swift */; };
 		52FD3BFB2276205700746600 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52FD3BF92276205700746600 /* MessageTableViewCell.xib */; };
 		52FD3BFF227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FD3BFE227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift */; };
@@ -102,6 +105,9 @@
 		52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		52838D56225F796E00CD3C50 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		52838D5822625C1800CD3C50 /* DMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMViewController.swift; sourceTree = "<group>"; };
+		52F43860229460DE004D3C41 /* PrivateChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateChatViewController.swift; sourceTree = "<group>"; };
+		52F43862229470DD004D3C41 /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
+		52F438642294732C004D3C41 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		52FD3BF82276205700746600 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		52FD3BF92276205700746600 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
 		52FD3BFE227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPercentDrivenInteractiveTransition.swift; sourceTree = "<group>"; };
@@ -179,6 +185,9 @@
 				52FD3BF82276205700746600 /* MessageTableViewCell.swift */,
 				52FD3BF92276205700746600 /* MessageTableViewCell.xib */,
 				52838D5822625C1800CD3C50 /* DMViewController.swift */,
+				52F43860229460DE004D3C41 /* PrivateChatViewController.swift */,
+				52F438642294732C004D3C41 /* ChatMessage.swift */,
+				52F43862229470DD004D3C41 /* ChatUser.swift */,
 				52838D56225F796E00CD3C50 /* TestViewController.swift */,
 				52838D4A224F2D9200CD3C50 /* ScrollViewController.swift */,
 				52838D52225A914300CD3C50 /* AccountViewController.swift */,
@@ -411,14 +420,20 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Im/Pods-Im-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BoringSSL-GRPC/openssl_grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/InputBarAccessoryView/InputBarAccessoryView.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
+				"${BUILT_PRODUCTS_DIR}/MessageKit/MessageKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/RSKImageCropper/RSKImageCropper.framework",
 				"${BUILT_PRODUCTS_DIR}/ReverseExtension/ReverseExtension.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -426,14 +441,20 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl_grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/InputBarAccessoryView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RSKImageCropper.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReverseExtension.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -527,6 +548,7 @@
 				52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */,
 				52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */,
 				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
+				52F43863229470DD004D3C41 /* ChatUser.swift in Sources */,
 				52838D4D2254543C00CD3C50 /* ChatTextField.swift in Sources */,
 				52838D53225A914300CD3C50 /* AccountViewController.swift in Sources */,
 				52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */,
@@ -535,7 +557,9 @@
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
 				526C6CEA228C5A3200BE61E4 /* PickerKeyboard.swift in Sources */,
 				52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */,
+				52F43861229460DE004D3C41 /* PrivateChatViewController.swift in Sources */,
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
+				52F438652294732C004D3C41 /* ChatMessage.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
 				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,

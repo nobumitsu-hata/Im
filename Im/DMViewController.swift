@@ -14,14 +14,14 @@ import JSQMessagesViewController
 
 class DMViewController: JSQMessagesViewController {
     
-    var dbRef:DatabaseReference!
+    private let db = Firestore.firestore()
+    private let storageRef = Storage.storage().reference()
     var storage: StorageReference!
-    var receiver: String!
-    var receiverInfo:[String:String] = [:]
-    var dmId = ""
-    var dmFlg = false// DMがスタートしているかどうか
+    var partnerId = ""
+    var partnerData:[String:String] = [:]
+    var createFlg = false
+    var chatId = ""
     
-    var selectedLbl: String!
     var messages: [JSQMessage]?
     var incomingBubble: JSQMessagesBubbleImage!
     var outgoingBubble: JSQMessagesBubbleImage!
@@ -30,17 +30,19 @@ class DMViewController: JSQMessagesViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         // 初期化
-        dbRef = Database.database().reference()
         storage = Storage.storage().reference()
+        
         // ユーザー情報セット
         self.senderId = RootTabBarController.userId
-        self.senderDisplayName = RootTabBarController.userInfo["name"]!
+        self.senderDisplayName = RootTabBarController.userInfo["name"] as? String
+        
+        getPrivateChatId()
         
         //メッセージデータの配列を初期化
         self.messages = []
         // ナビバー表示
         self.navigationController!.navigationBar.isHidden = false
-        self.title = receiverInfo["name"]
+        self.title = partnerData["name"]
         // ナビゲーションバーのテキストを変更する
         self.navigationController?.navigationBar.titleTextAttributes = [
             // 文字の色
@@ -53,111 +55,173 @@ class DMViewController: JSQMessagesViewController {
         super.viewDidLoad()
 
         automaticallyScrollsToMostRecentMessage = true
-        self.collectionView.backgroundColor = UIColor.black// 画面の背景色
-        // テキストフィールドの背景色
-        self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.0)
+        
+        self.view.setGradientLayer()
+        self.collectionView.backgroundColor = UIColor.clear// 画面の背景色
+        self.inputToolbar.backgroundColor = UIColor.clear
+        self.inputToolbar.contentView.backgroundColor = UIColor.clear
+        self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
+        
         // 入力テキストの文字色
-        self.inputToolbar.contentView.textView.tintColor = UIColor.white
+        self.inputToolbar.contentView.textView.tintColor = UIColor.clear
         // 送信ボタンのテキスト変更
         self.inputToolbar.contentView.rightBarButtonItem.setTitle("送信", for: .normal)
         // 送信ボタンの文字色
-        self.inputToolbar.contentView.rightBarButtonItem.tintColor = UIColor.white
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.7), for: .disabled)
         // 送信ボタンの文字色 アクティブ
         self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor.white, for: .normal)
         // 入力欄の背景色
-        self.inputToolbar.contentView.backgroundColor = UIColor.black
+        inputToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+        inputToolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
+        
+        setupStyle()
+        
+    }
+    
+    func getPrivateChatId() {
+        let val = RootTabBarController.userId.compare(partnerId).rawValue
+        if val < 0 {
+            chatId = RootTabBarController.userId + partnerId
+        } else {
+            chatId = partnerId + RootTabBarController.userId
+        }
+    }
+    
+    func setupStyle() {
         // 境界線追加
-        self.inputToolbar.contentView.layer.addBorder(edge: .top, color: UIColor.white, thickness: 0.5)
+        inputToolbar.contentView.isOpaque = false
+        inputToolbar.contentView.layer.addBorder(edge: .top, color: UIColor.white, thickness: 0.5)
         // プレースホルダー
-        self.inputToolbar.contentView.textView.placeHolder = "メッセージを入力"
+        inputToolbar.contentView.textView.placeHolder = "メッセージを入力"
         // テキストビューの文字色
-        self.inputToolbar.contentView.textView.textColor = UIColor.white
+        inputToolbar.contentView.textView.textColor = UIColor.white
         // 境界線削除
-        self.inputToolbar.contentView.textView.layer.borderWidth = 0
+        inputToolbar.contentView.textView.layer.borderWidth = 0
         // 画像アイコンの変更
-        self.inputToolbar.contentView.leftBarButtonItem.setImage(UIImage(named: "PostImg"), for: .normal)
-        self.inputToolbar.contentView.leftBarButtonItemWidth = inputToolbar.contentView.leftBarButtonContainerView.frame.size.height / 128 * 137
+        inputToolbar.contentView.leftBarButtonItem.setImage(UIImage(named: "PostImg"), for: .normal)
+        inputToolbar.contentView.leftBarButtonItemWidth = inputToolbar.contentView.leftBarButtonContainerView.frame.size.height / 128 * 137
         //吹き出しの設定
         let bubbleFactory = JSQMessagesBubbleImageFactory()
-//        self.incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor(red: 229/255, green: 229/255, blue: 229/255, alpha: 1))
-        self.incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor.white)
-//        self.outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor.jsq_messageBubbleBlue())
-        self.outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor(red: 23/255, green: 232/255, blue: 252/255, alpha: 1))
-        
-
+        incomingBubble = bubbleFactory!.incomingMessagesBubbleImage(with: UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.2))
+        outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor.white)
     }
     
     func setupFirebase() {
-        dbRef.child("dmMembers").child(RootTabBarController.userId).child(receiver).observeSingleEvent(of: .value, with: { (snapshot) in
-            // 過去にDMしたことがある場合
-            if snapshot.exists() {
-                self.dmFlg = true
-                self.dmId = snapshot.value as! String
-                // メッセージ取得
-                self.dbRef.child("directMessages").child(self.dmId).observe(.childAdded, with: { (snapshot) -> Void in
-                    let val = snapshot.value as! [String: String]
-                    var name = ""
-                    if val["sender"] == self.senderId {
-                        name = RootTabBarController.userInfo["name"]!
-                    } else  {
-                        name = self.receiverInfo["name"]!
-                    }
-                    let message = JSQMessage(senderId: val["sender"], displayName: name, text: val["message"])
-                    self.messages?.append(message!)
-                    self.finishReceivingMessage()
-                })
+        db.collection("privateChat").document(chatId).collection("messages").addSnapshotListener{ querySnapshot, error in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!)")
+                return
             }
-        })
+            
+            guard documents.count > 0 else {
+                print("カウントぜろ")
+                return
+            }
+
+            guard let snapshot = querySnapshot else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+
+            snapshot.documentChanges.forEach { diff in
+                switch diff.type {
+                    case .added:
+                        let messageData = diff.document.data()
+                        var name = ""
+                        if messageData["senderId"] as! String == RootTabBarController.userId {
+                            name = RootTabBarController.userInfo["name"] as! String
+                        } else {
+                            name = self.partnerData["name"] ?? ""
+                        }
+                        let message = JSQMessage(senderId: messageData["senderId"] as? String, displayName: name, text: messageData["message"] as? String)
+                        self.messages?.append(message!)
+                        //メッセージの送信処理を完了する(画面上にメッセージが表示される)
+                        self.finishReceivingMessage(animated: true)
+                        
+                        if self.createFlg { return }
+                        
+                        self.db.collection("privateChat").document(self.chatId).getDocument { (document, error) in
+                            if let document = document, document.exists {
+                                self.createFlg = true
+                                print("ルーム作成")
+                            } else {
+                                print("Document does not exist")
+                            }
+                        }
+                    print("追加した \(diff.document.data())")
+                    default:
+                        break
+                }
+            }
+
+        }
+
     }
     
-    // Sendボタンが押された時に呼ばれるメソッド
+//    override func didPressAccessoryButton(_ sender: UIButton!) {
+//        <#code#>
+//    }
+    
+    // 送信ボタンが押された時に呼ばれるメソッド
     override func didPressSend(_ button: UIButton, withMessageText text: String, senderId: String, senderDisplayName: String, date: Date) {
-
-        func postDM(dmKey:String) {
-            let messageKey = dbRef.child("directMessages").child(dmKey).childByAutoId().key
-            // メッセージをDBに追加
-            dbRef.child("directMessages").child(dmKey).child(messageKey!).setValue(["sender":senderId,"message":text]) {
-                (error:Error?, ref:DatabaseReference) in
-                if error != nil {
-                    return
-                }
-            }
-        }
         
-        // DMのやりとりが開始している場合
-        if dmFlg {
-            postDM(dmKey: dmId)
-        } else {
-            // DMが開始しているか再度確認
-            dbRef.child("dmMembers").child(RootTabBarController.userId).child(receiver).observeSingleEvent(of: .value, with: { (snapshot) in
-                self.dmFlg = true
-                // 相手から送られてDMが開始している場合
-                if snapshot.exists() {
-                    self.dmId = snapshot.value as! String
-                    postDM(dmKey: self.dmId)
+        guard text != "" else { return }
+        
+        var ref: DocumentReference? = nil
+        let timestamp = FieldValue.serverTimestamp()
+        ref = db.collection("privateChat").document(chatId).collection("messages").addDocument(data: [
+            "senderId": RootTabBarController.userId,
+            "type": "text",
+            "message": text,
+            "createTime": timestamp
+        ]) { err in
+            if let err = err {
+                print("Error adding document: \(err)")
+            } else {
+                print("Document added with ID: \(ref!.documentID)")
+                if self.createFlg {
+                    
+                    self.db.collection("privateChat").document(self.chatId).setData([
+                        "lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.userId
+                    ])
+                    
                 } else {
-                // これからDMが開始する場合
-                    // ユニークキー自動生成
-                    self.dmId = self.dbRef.child("directMessages").childByAutoId().key!
-                    // DMのリストに追加
-                    self.dbRef.child("dmMembers").child(RootTabBarController.userId).setValue([self.receiver: self.dmId])
-                    self.dbRef.child("dmMembers").child(self.receiver).setValue([RootTabBarController.userId: self.dmId])
-                    postDM(dmKey: self.dmId)
-                }
-                // このDMの監視スタート
-                self.dbRef.child("directMessages").child(self.dmId).observe(.childAdded, with: { (snapshot) -> Void in
-                    let val = snapshot.value as! [String: String]
-                    var name = ""
-                    if val["sender"] == self.senderId {
-                        name = RootTabBarController.userInfo["name"]!
-                    } else  {
-                        name = self.receiverInfo["name"]!
+                    // トランザクション
+                    self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                        
+                        // 個人チャットルーム作成
+                        transaction.setData(
+                            ["lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.userId],
+                            forDocument: self.db.collection("privateChat").document(self.chatId)
+                        )
+                        
+                        // ユーザーのプライベートチャットリストに追加
+                        let partnerRef: DocumentReference = self.db.collection("users").document(self.partnerId)
+                        let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
+                        transaction.setData(
+                            ["partnerRef" : partnerRef, "privateChatRef": privateChatRef],
+                            forDocument: self.db.document("users/\(RootTabBarController.userId)/privateChatPartners/\(String(describing: self.partnerId))")
+                        )
+                        
+                        // パートナーのプライベートチャットリストに追加
+                        let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.userId)
+                        transaction.setData(
+                            ["partnerRef" : userRef, "privateChatRef": privateChatRef],
+                            forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.userId)")
+                        )
+                        
+                        return nil
+                    }) { (object, error) in
+                        if let error = error {
+                            print("Transaction failed: \(error)")
+                        } else {
+                            self.createFlg = true
+                            print("Transaction successfully committed!")
+                        }
                     }
-                    let message = JSQMessage(senderId: val["sender"], displayName: name, text: val["message"])
-                    self.messages?.append(message!)
-                    self.finishReceivingMessage()
-                })
-            })
+                }
+
+            }
         }
         
         //メッセージの送信処理を完了する(画面上にメッセージが表示される)
@@ -207,16 +271,15 @@ class DMViewController: JSQMessagesViewController {
         cell.avatarImageView.clipsToBounds = true
         // ユーザー
         if message.senderId == self.senderId {
-            let userIcon = self.storage.child("users").child(RootTabBarController.userInfo["img"]!)
+            let userIcon = self.storage.child("users").child(RootTabBarController.userInfo["img"] as! String)
             cell.avatarImageView.sd_setImage(with: userIcon)
-//            cell.textView!.textColor = UIColor.white
             cell.textView!.textColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         }
         else {
         // 相手
-            let receiverIcon = self.storage.child("users").child(receiverInfo["img"]!)
-            cell.avatarImageView.sd_setImage(with: receiverIcon)
-            cell.textView!.textColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+            let partnerIcon = self.storage.child("users").child(partnerData["img"]!)
+            cell.avatarImageView.sd_setImage(with: partnerIcon)
+            cell.textView!.textColor = UIColor.white
         }
         
         return cell
@@ -247,5 +310,19 @@ extension CALayer {
         border.backgroundColor = color.cgColor;
         
         addSublayer(border)
+    }
+}
+
+
+extension UIView {
+    func parentViewController() -> UIViewController? {
+        var parentResponder: UIResponder? = self
+        while true {
+            guard let nextResponder = parentResponder?.next else { return nil }
+            if let viewController = nextResponder as? UIViewController {
+                return viewController
+            }
+            parentResponder = nextResponder
+        }
     }
 }

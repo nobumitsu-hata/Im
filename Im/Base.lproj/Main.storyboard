@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--メッセージ-->
+        <!--トーク-->
         <scene sceneID="vFA-G3-A6q">
             <objects>
                 <viewController id="JUx-II-n1x" customClass="MessageViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
@@ -33,7 +33,7 @@
                         <viewLayoutGuide key="safeArea" id="1a2-NW-rYA"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="MessageOff" selectedImage="MessageOn" id="f3h-4K-WWJ"/>
-                    <navigationItem key="navigationItem" title="メッセージ" id="umk-HS-psB"/>
+                    <navigationItem key="navigationItem" title="トーク" id="umk-HS-psB"/>
                     <connections>
                         <outlet property="tableView" destination="TCo-DV-Xgf" id="n5n-t6-b8r"/>
                         <segue destination="9Iz-gB-6Uy" kind="show" identifier="fromListToDMViewController" id="5sE-30-nXO"/>
