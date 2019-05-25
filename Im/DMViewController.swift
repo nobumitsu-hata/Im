@@ -11,8 +11,9 @@ import Firebase
 import FirebaseDatabase
 import FirebaseUI
 import JSQMessagesViewController
+import Photos
 
-class DMViewController: JSQMessagesViewController {
+class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     private let db = Firestore.firestore()
     private let storageRef = Storage.storage().reference()
@@ -21,6 +22,10 @@ class DMViewController: JSQMessagesViewController {
     var partnerData:[String:String] = [:]
     var createFlg = false
     var chatId = ""
+    let startTimestamp = NSDate().timeIntervalSince1970
+    var loadTimestamp:TimeInterval!
+    var firstFlg = true
+    var loadingFlg = true
     
     var messages: [JSQMessage]?
     var incomingBubble: JSQMessagesBubbleImage!
@@ -31,13 +36,12 @@ class DMViewController: JSQMessagesViewController {
     override func viewWillAppear(_ animated: Bool) {
         // 初期化
         storage = Storage.storage().reference()
-        
         // ユーザー情報セット
         self.senderId = RootTabBarController.userId
         self.senderDisplayName = RootTabBarController.userInfo["name"] as? String
-        
+
         getPrivateChatId()
-        
+        loadTimestamp = startTimestamp
         //メッセージデータの配列を初期化
         self.messages = []
         // ナビバー表示
@@ -48,6 +52,7 @@ class DMViewController: JSQMessagesViewController {
             // 文字の色
             .foregroundColor: UIColor.white
         ]
+        loadMoreMessages()
         setupFirebase()
     }
 
@@ -62,6 +67,7 @@ class DMViewController: JSQMessagesViewController {
         self.inputToolbar.contentView.backgroundColor = UIColor.clear
         self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
         
+//        JSQMessagesLabel.date
         // 入力テキストの文字色
         self.inputToolbar.contentView.textView.tintColor = UIColor.clear
         // 送信ボタンのテキスト変更
@@ -107,16 +113,14 @@ class DMViewController: JSQMessagesViewController {
     }
     
     func setupFirebase() {
-        db.collection("privateChat").document(chatId).collection("messages").addSnapshotListener{ querySnapshot, error in
+        
+        db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
             }
-            
-            guard documents.count > 0 else {
-                print("カウントぜろ")
-                return
-            }
+
+            guard documents.count > 0 else { return }
 
             guard let snapshot = querySnapshot else {
                 print("Error fetching documents: \(error!)")
@@ -133,22 +137,26 @@ class DMViewController: JSQMessagesViewController {
                         } else {
                             name = self.partnerData["name"] ?? ""
                         }
-                        let message = JSQMessage(senderId: messageData["senderId"] as? String, displayName: name, text: messageData["message"] as? String)
+                        
+                        var date = Date(timeIntervalSince1970: messageData["createTime"] as! TimeInterval)
+                        let dateStr = date.toStringWithCurrentLocale()
+                        date = DateFormatter.current("yyyy年MM月dd日 HH:mm").date(from: dateStr)!
+
+                        let message = JSQMessage(senderId: messageData["senderId"] as? String, senderDisplayName: name, date: date, text: messageData["message"] as? String)
                         self.messages?.append(message!)
                         //メッセージの送信処理を完了する(画面上にメッセージが表示される)
                         self.finishReceivingMessage(animated: true)
+
+//                        if self.createFlg { return }
                         
-                        if self.createFlg { return }
-                        
-                        self.db.collection("privateChat").document(self.chatId).getDocument { (document, error) in
-                            if let document = document, document.exists {
-                                self.createFlg = true
-                                print("ルーム作成")
-                            } else {
-                                print("Document does not exist")
-                            }
-                        }
-                    print("追加した \(diff.document.data())")
+//                        self.db.collection("privateChat").document(self.chatId).getDocument { (document, error) in
+//                            if let document = document, document.exists {
+//                                self.createFlg = true
+//                                print("ルーム作成")
+//                            } else {
+//                                print("Document does not exist")
+//                            }
+//                        }
                     default:
                         break
                 }
@@ -158,9 +166,66 @@ class DMViewController: JSQMessagesViewController {
 
     }
     
-//    override func didPressAccessoryButton(_ sender: UIButton!) {
-//        <#code#>
-//    }
+    func loadMoreMessages() {
+        db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isLessThan: loadTimestamp).order(by: "createTime", descending: true).limit(to: 10).getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+                return
+            }
+            
+            guard querySnapshot!.documents.count > 0 else {
+                print("読み込むメッセージはない")
+                return
+            }
+            
+            if querySnapshot!.documents.count < 10 {
+                self.loadingFlg = false
+                print("次は読み込まない")
+            }
+            
+            for document in querySnapshot!.documents {
+                print("\(document.documentID) => \(document.data())")
+                let messageData = document.data()
+                var name = ""
+                if messageData["senderId"] as! String == RootTabBarController.userId {
+                    name = RootTabBarController.userInfo["name"] as! String
+                } else {
+                    name = self.partnerData["name"] ?? ""
+                }
+                
+                self.loadTimestamp = messageData["createTime"] as? TimeInterval
+                print("タイムスタンプ")
+                print(self.loadTimestamp)
+                var date = Date(timeIntervalSince1970: messageData["createTime"] as! TimeInterval)
+                let dateStr = date.toStringWithCurrentLocale()
+                date = DateFormatter.current("yyyy年MM月dd日 HH:mm").date(from: dateStr)!
+                
+                let message = JSQMessage(senderId: messageData["senderId"] as? String, senderDisplayName: name, date: date, text: messageData["message"] as? String)
+                self.messages?.insert(message!, at: 0)
+
+            }
+            
+            if self.firstFlg {
+                //メッセージの送信処理を完了する(画面上にメッセージが表示される)
+                self.finishReceivingMessage(animated: false)
+                self.firstFlg = false
+            } else {
+                let oldOffset = self.collectionView.contentOffset.y
+                let oldHeight = self.collectionView.contentSize.height
+                let reverseOffset = oldHeight - oldOffset
+                self.collectionView.reloadData()
+                self.collectionView.layoutIfNeeded()
+                self.collectionView.contentOffset = CGPoint(x: 0.0, y: self.collectionView.contentSize.height - reverseOffset)
+                self.collectionView.setContentOffset(CGPoint(x: 0.0, y: self.collectionView.contentSize.height - reverseOffset - 44), animated: true)
+
+            }
+            
+        }
+    }
+    
+    override func didPressAccessoryButton(_ sender: UIButton!) {
+        let camera = Camera(delegate_: self)
+    }
     
     // 送信ボタンが押された時に呼ばれるメソッド
     override func didPressSend(_ button: UIButton, withMessageText text: String, senderId: String, senderDisplayName: String, date: Date) {
@@ -168,7 +233,7 @@ class DMViewController: JSQMessagesViewController {
         guard text != "" else { return }
         
         var ref: DocumentReference? = nil
-        let timestamp = FieldValue.serverTimestamp()
+        let timestamp = NSDate().timeIntervalSince1970
         ref = db.collection("privateChat").document(chatId).collection("messages").addDocument(data: [
             "senderId": RootTabBarController.userId,
             "type": "text",
@@ -234,6 +299,36 @@ class DMViewController: JSQMessagesViewController {
         self.view.endEditing(true)
     }
     
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if collectionView.cellForItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0)-1, section: 0)) != nil {
+            print("ご支援")
+        }
+    }
+    
+    // スクロールして途中で止まった場合のみ
+//    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+//        if decelerate == false {
+//            print("1番上")
+//        }
+//    }
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        print(scrollView.contentOffset.y)
+        if scrollView.contentOffset.y <= 0 {
+            print("呼ばれた")
+            if loadingFlg {
+                loadMoreMessages()
+            }
+        }
+    }
+    
+    // MARK: UIImagePickerController delegate
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        <#code#>
+    }
+    
+    // MARK: UICollectionView delegate
+    
     // アイテムごとに参照するメッセージデータを返す
     override func collectionView(_ collectionView: JSQMessagesCollectionView, messageDataForItemAt indexPath: IndexPath) -> JSQMessageData {
         return messages![indexPath.item]
@@ -262,10 +357,30 @@ class DMViewController: JSQMessagesViewController {
         return messages!.count
     }
     
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, attributedTextForCellTopLabelAt indexPath: IndexPath!) -> NSAttributedString! {
+        if indexPath.item % 3 == 0 {
+            let message = messages?[indexPath.row]
+            return NSAttributedString(string: (message?.date.toStringWithCurrentLocale())!)
+        }
+        return nil
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: JSQMessagesCollectionViewFlowLayout, heightForCellTopLabelAt indexPath: IndexPath!) -> CGFloat {
+        if indexPath.item % 3 == 0 {
+            return kJSQMessagesCollectionViewCellLabelHeightDefault
+        }
+        return 0.0
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: JSQMessagesCollectionViewFlowLayout, heightForCellBottomLabelAt indexPath: IndexPath!) -> CGFloat {
+        return kJSQMessagesCollectionViewCellLabelHeightDefault
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let message = messages![indexPath.row]
         let cell = super.collectionView(collectionView, cellForItemAt: indexPath) as! JSQMessagesCollectionViewCell
-        
+        // 日付 色
+        cell.cellTopLabel.textColor = UIColor.white
         // 角丸にする
         cell.avatarImageView.layer.cornerRadius = cell.avatarImageView.frame.size.width * 0.5
         cell.avatarImageView.clipsToBounds = true
@@ -325,4 +440,41 @@ extension UIView {
             parentResponder = nextResponder
         }
     }
+}
+
+extension Date {
+    
+    func toStringWithCurrentLocale() -> String {
+        
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone.current
+        formatter.locale = Locale.current
+        formatter.dateFormat = "yyyy年MM月dd日 HH:mm"
+        
+        return formatter.string(from: self)
+    }
+    
+}
+
+extension TimeZone {
+    static let gmt = TimeZone(secondsFromGMT: 0)!
+    static let jst = TimeZone(identifier: "Asia/Tokyo")!
+}
+
+extension Locale {
+    static let japan = Locale(identifier: "ja_JP")
+}
+
+extension DateFormatter {
+    static func current(_ dateFormat: String) -> DateFormatter {
+        let df = DateFormatter()
+        df.timeZone = TimeZone.gmt
+        df.locale = Locale.japan
+        df.dateFormat = dateFormat
+        return df
+    }
+}
+
+extension Date {
+    static var current: Date = Date(timeIntervalSinceNow: TimeInterval(TimeZone.jst.secondsFromGMT()))
 }

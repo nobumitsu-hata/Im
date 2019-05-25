@@ -10,6 +10,7 @@
 		0D8DEDFB380227D479E836D1 /* Pods_ImTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939F3B6E8443BC2D676D45DD /* Pods_ImTests.framework */; };
 		1B9AB54033FCA510BD91A66D /* Pods_ImUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */; };
 		2A6DEF0A25C86B519B7BD652 /* Pods_Im.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C901B0705F05D07D86F7E1D /* Pods_Im.framework */; };
+		525A31D522999E1700C9A2F9 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525A31D422999E1700C9A2F9 /* Camera.swift */; };
 		526C6CE222891DFF00BE61E4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */; };
 		526C6CE4228AF21800BE61E4 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */; };
 		526C6CE6228BFAB600BE61E4 /* EditProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */; };
@@ -70,6 +71,7 @@
 		0303D33FA1657131AFE00F20 /* Pods-ImUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImUITests.debug.xcconfig"; path = "Target Support Files/Pods-ImUITests/Pods-ImUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		1C901B0705F05D07D86F7E1D /* Pods_Im.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Im.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ImUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		525A31D422999E1700C9A2F9 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
 		526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				52FD3BF82276205700746600 /* MessageTableViewCell.swift */,
 				52FD3BF92276205700746600 /* MessageTableViewCell.xib */,
 				52838D5822625C1800CD3C50 /* DMViewController.swift */,
+				525A31D422999E1700C9A2F9 /* Camera.swift */,
 				52F43860229460DE004D3C41 /* PrivateChatViewController.swift */,
 				52F438642294732C004D3C41 /* ChatMessage.swift */,
 				52F43862229470DD004D3C41 /* ChatUser.swift */,
@@ -561,6 +564,7 @@
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
 				52F438652294732C004D3C41 /* ChatMessage.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
+				525A31D522999E1700C9A2F9 /* Camera.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
 				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,
 				52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */,

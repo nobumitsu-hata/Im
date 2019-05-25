@@ -251,8 +251,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toDMViewController" {
             let dmViewController = segue.destination as! DMViewController
-            dmViewController.receiver = getId
-            dmViewController.receiverInfo = sender as! [String : String]
+            dmViewController.partnerId = getId
+            dmViewController.partnerData = sender as! [String : String]
         }
     }
     
