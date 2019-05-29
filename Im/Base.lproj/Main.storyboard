@@ -43,10 +43,10 @@
             </objects>
             <point key="canvasLocation" x="38" y="-154"/>
         </scene>
-        <!--View Controller-->
+        <!--Login Test View Controller-->
         <scene sceneID="LAc-d7-XCQ">
             <objects>
-                <viewController id="MbJ-Zt-YsD" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginTestViewController" id="MbJ-Zt-YsD" customClass="LoginTestViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="t9Q-Ax-HSW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -122,6 +122,82 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1iE-fM-hFs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2636" y="-1084"/>
+        </scene>
+        <!--Login View Controller-->
+        <scene sceneID="nkF-qf-p0S">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" id="bGl-4i-tXx" customClass="LoginViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JSb-AH-f7w">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hbd-5d-o6s">
+                                <rect key="frame" x="0.0" y="213.5" width="375" height="240"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="tGF-QA-ohD">
+                                        <rect key="frame" x="62.5" y="15" width="250" height="210"/>
+                                        <subviews>
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="続けるにはImのアカウントが必要です" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XFB-ZX-G4m">
+                                                <rect key="frame" x="0.0" y="0.0" width="250" height="70"/>
+                                                <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                <fontDescription key="fontDescription" name="HiraginoSans-W6" family="Hiragino Sans" pointSize="18"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                            </textView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ImM-sp-T9I">
+                                                <rect key="frame" x="0.0" y="80" width="250" height="50"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hf5-1H-bUa">
+                                                        <rect key="frame" x="98" y="8" width="54" height="34"/>
+                                                        <state key="normal" title="Button"/>
+                                                        <connections>
+                                                            <action selector="facebookLogin:" destination="bGl-4i-tXx" eventType="touchUpInside" id="GOl-Kf-uMl"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="H6Q-PP-Me2"/>
+                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="centerX" secondItem="ImM-sp-T9I" secondAttribute="centerX" id="QBw-Rx-J2v"/>
+                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="centerY" secondItem="ImM-sp-T9I" secondAttribute="centerY" id="uta-MY-2CB"/>
+                                                </constraints>
+                                            </view>
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="登録した時点で、あなたは当社の利用規約とプライバシーポリシーを熟読し、同意したものとみなす" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="He8-VQ-s58">
+                                                <rect key="frame" x="0.0" y="140" width="250" height="70"/>
+                                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="12"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                            </textView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="250" id="RCm-rb-2MV"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="tGF-QA-ohD" firstAttribute="top" secondItem="hbd-5d-o6s" secondAttribute="top" constant="15" id="Ol9-W0-coK"/>
+                                    <constraint firstItem="tGF-QA-ohD" firstAttribute="centerX" secondItem="hbd-5d-o6s" secondAttribute="centerX" id="cOe-5C-8cT"/>
+                                    <constraint firstItem="tGF-QA-ohD" firstAttribute="centerY" secondItem="hbd-5d-o6s" secondAttribute="centerY" id="rkq-0k-MLy"/>
+                                    <constraint firstAttribute="bottom" secondItem="tGF-QA-ohD" secondAttribute="bottom" constant="15" id="vX1-HA-I4F"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" name="systemGreenColor" catalog="System" colorSpace="catalog"/>
+                        <constraints>
+                            <constraint firstItem="hbd-5d-o6s" firstAttribute="centerX" secondItem="JSb-AH-f7w" secondAttribute="centerX" id="2r2-Nb-lVK"/>
+                            <constraint firstItem="hbd-5d-o6s" firstAttribute="centerY" secondItem="JSb-AH-f7w" secondAttribute="centerY" id="GVW-y4-Wa0"/>
+                            <constraint firstItem="hbd-5d-o6s" firstAttribute="leading" secondItem="ThH-1K-Cng" secondAttribute="leading" id="sFP-Ch-9xz"/>
+                            <constraint firstItem="ThH-1K-Cng" firstAttribute="trailing" secondItem="hbd-5d-o6s" secondAttribute="trailing" id="vuM-p4-W6N"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="ThH-1K-Cng"/>
+                    </view>
+                    <connections>
+                        <outlet property="LoginBtns" destination="ImM-sp-T9I" id="9aN-lj-HWZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OLw-Hp-KjY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2295.1999999999998" y="-111.0944527736132"/>
         </scene>
         <!--Root Tab Bar Controller-->
         <scene sceneID="MDn-4Q-hPt">

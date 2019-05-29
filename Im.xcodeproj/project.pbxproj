@@ -10,6 +10,7 @@
 		0D8DEDFB380227D479E836D1 /* Pods_ImTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939F3B6E8443BC2D676D45DD /* Pods_ImTests.framework */; };
 		1B9AB54033FCA510BD91A66D /* Pods_ImUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */; };
 		2A6DEF0A25C86B519B7BD652 /* Pods_Im.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C901B0705F05D07D86F7E1D /* Pods_Im.framework */; };
+		52252FC6229C0EB70064D5A8 /* GalleryDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52252FC5229C0EB70064D5A8 /* GalleryDelegate.swift */; };
 		525A31D522999E1700C9A2F9 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525A31D422999E1700C9A2F9 /* Camera.swift */; };
 		526C6CE222891DFF00BE61E4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */; };
 		526C6CE4228AF21800BE61E4 /* PlaceHolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */; };
@@ -40,9 +41,10 @@
 		52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */; };
 		52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D56225F796E00CD3C50 /* TestViewController.swift */; };
 		52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D5822625C1800CD3C50 /* DMViewController.swift */; };
-		52F43861229460DE004D3C41 /* PrivateChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F43860229460DE004D3C41 /* PrivateChatViewController.swift */; };
-		52F43863229470DD004D3C41 /* ChatUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F43862229470DD004D3C41 /* ChatUser.swift */; };
-		52F438652294732C004D3C41 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F438642294732C004D3C41 /* ChatMessage.swift */; };
+		52EEBAE6229D73B800F16B29 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE5229D73B800F16B29 /* LoginViewController.swift */; };
+		52EEBAE8229D829400F16B29 /* LoginPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE7229D829400F16B29 /* LoginPresentationController.swift */; };
+		52EEBAEA229DAB7700F16B29 /* LoginTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE9229DAB7700F16B29 /* LoginTestViewController.swift */; };
+		52F2AE8B229AFACC0018707B /* PhotoMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F2AE8A229AFACC0018707B /* PhotoMediaItem.swift */; };
 		52FD3BFA2276205700746600 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FD3BF82276205700746600 /* MessageTableViewCell.swift */; };
 		52FD3BFB2276205700746600 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52FD3BF92276205700746600 /* MessageTableViewCell.xib */; };
 		52FD3BFF227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FD3BFE227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift */; };
@@ -71,6 +73,7 @@
 		0303D33FA1657131AFE00F20 /* Pods-ImUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImUITests.debug.xcconfig"; path = "Target Support Files/Pods-ImUITests/Pods-ImUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		1C901B0705F05D07D86F7E1D /* Pods_Im.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Im.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ImUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		52252FC5229C0EB70064D5A8 /* GalleryDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryDelegate.swift; sourceTree = "<group>"; };
 		525A31D422999E1700C9A2F9 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceHolderTextView.swift; sourceTree = "<group>"; };
@@ -107,9 +110,10 @@
 		52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		52838D56225F796E00CD3C50 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		52838D5822625C1800CD3C50 /* DMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMViewController.swift; sourceTree = "<group>"; };
-		52F43860229460DE004D3C41 /* PrivateChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateChatViewController.swift; sourceTree = "<group>"; };
-		52F43862229470DD004D3C41 /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
-		52F438642294732C004D3C41 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		52EEBAE5229D73B800F16B29 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		52EEBAE7229D829400F16B29 /* LoginPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPresentationController.swift; sourceTree = "<group>"; };
+		52EEBAE9229DAB7700F16B29 /* LoginTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginTestViewController.swift; sourceTree = "<group>"; };
+		52F2AE8A229AFACC0018707B /* PhotoMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMediaItem.swift; sourceTree = "<group>"; };
 		52FD3BF82276205700746600 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		52FD3BF92276205700746600 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
 		52FD3BFE227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPercentDrivenInteractiveTransition.swift; sourceTree = "<group>"; };
@@ -180,6 +184,7 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				52EEBAE5229D73B800F16B29 /* LoginViewController.swift */,
 				526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */,
 				526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */,
 				52FD3C0022797A1200746600 /* RoomNavigationController.swift */,
@@ -187,11 +192,10 @@
 				52FD3BF82276205700746600 /* MessageTableViewCell.swift */,
 				52FD3BF92276205700746600 /* MessageTableViewCell.xib */,
 				52838D5822625C1800CD3C50 /* DMViewController.swift */,
+				52252FC5229C0EB70064D5A8 /* GalleryDelegate.swift */,
 				525A31D422999E1700C9A2F9 /* Camera.swift */,
-				52F43860229460DE004D3C41 /* PrivateChatViewController.swift */,
-				52F438642294732C004D3C41 /* ChatMessage.swift */,
-				52F43862229470DD004D3C41 /* ChatUser.swift */,
 				52838D56225F796E00CD3C50 /* TestViewController.swift */,
+				52EEBAE9229DAB7700F16B29 /* LoginTestViewController.swift */,
 				52838D4A224F2D9200CD3C50 /* ScrollViewController.swift */,
 				52838D52225A914300CD3C50 /* AccountViewController.swift */,
 				526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */,
@@ -205,11 +209,13 @@
 				52838D0922368D3800CD3C50 /* LaunchScreen.storyboard */,
 				52838D0C22368D3800CD3C50 /* Info.plist */,
 				52838D342237846900CD3C50 /* RootTabBarController.swift */,
+				52EEBAE7229D829400F16B29 /* LoginPresentationController.swift */,
 				52838D3A2237921A00CD3C50 /* HomeViewController.swift */,
 				52838D3E2238D26B00CD3C50 /* MessageViewController.swift */,
 				52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */,
 				526C6CE7228C246400BE61E4 /* DatePickerKeyboard.swift */,
 				526C6CE9228C5A3200BE61E4 /* PickerKeyboard.swift */,
+				52F2AE8A229AFACC0018707B /* PhotoMediaItem.swift */,
 			);
 			path = Im;
 			sourceTree = "<group>";
@@ -424,13 +430,17 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Im/Pods-Im-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BoringSSL-GRPC/openssl_grpc.framework",
+				"${BUILT_PRODUCTS_DIR}/DACircularProgress/DACircularProgress.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/InputBarAccessoryView/InputBarAccessoryView.framework",
+				"${BUILT_PRODUCTS_DIR}/IDMPhotoBrowser/IDMPhotoBrowser.framework",
+				"${BUILT_PRODUCTS_DIR}/ImageViewer/ImageViewer.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
-				"${BUILT_PRODUCTS_DIR}/MessageKit/MessageKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Nuke/Nuke.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/RSKImageCropper/RSKImageCropper.framework",
 				"${BUILT_PRODUCTS_DIR}/ReverseExtension/ReverseExtension.framework",
@@ -439,19 +449,24 @@
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+				"${BUILT_PRODUCTS_DIR}/pop/pop.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl_grpc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DACircularProgress.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/InputBarAccessoryView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IDMPhotoBrowser.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ImageViewer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nuke.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RSKImageCropper.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReverseExtension.framework",
@@ -460,6 +475,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/pop.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -547,11 +563,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52EEBAE6229D73B800F16B29 /* LoginViewController.swift in Sources */,
 				52FD3C0122797A1200746600 /* RoomNavigationController.swift in Sources */,
 				52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */,
 				52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */,
 				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
-				52F43863229470DD004D3C41 /* ChatUser.swift in Sources */,
 				52838D4D2254543C00CD3C50 /* ChatTextField.swift in Sources */,
 				52838D53225A914300CD3C50 /* AccountViewController.swift in Sources */,
 				52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */,
@@ -559,16 +575,18 @@
 				526C6CE8228C246400BE61E4 /* DatePickerKeyboard.swift in Sources */,
 				52838D0322368D3700CD3C50 /* ViewController.swift in Sources */,
 				526C6CEA228C5A3200BE61E4 /* PickerKeyboard.swift in Sources */,
+				52F2AE8B229AFACC0018707B /* PhotoMediaItem.swift in Sources */,
 				52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */,
-				52F43861229460DE004D3C41 /* PrivateChatViewController.swift in Sources */,
+				52252FC6229C0EB70064D5A8 /* GalleryDelegate.swift in Sources */,
+				52EEBAE8229D829400F16B29 /* LoginPresentationController.swift in Sources */,
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
-				52F438652294732C004D3C41 /* ChatMessage.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
 				525A31D522999E1700C9A2F9 /* Camera.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
 				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,
 				52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */,
 				52FD3BFA2276205700746600 /* MessageTableViewCell.swift in Sources */,
+				52EEBAEA229DAB7700F16B29 /* LoginTestViewController.swift in Sources */,
 				526C6CE6228BFAB600BE61E4 /* EditProfileTableViewCell.swift in Sources */,
 				52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */,
 				52FD3BFF227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift in Sources */,
@@ -751,11 +769,121 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7GX9T9NHP4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/BoringSSL-GRPC\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/DACircularProgress\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseAuth\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseDatabase\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseFirestore\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstanceID\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseStorage\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseUI\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/IDMPhotoBrowser\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ImageViewer\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/JSQMessagesViewController\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/JSQSystemSoundPlayer\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Nuke\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Protobuf\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/RSKImageCropper\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ReverseExtension\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/gRPC-C++\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/gRPC-Core\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/leveldb-library\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/nanopb\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/pop\"",
+					"\"${PODS_ROOT}/FirebaseAnalytics/Frameworks\"",
+					"\"${PODS_ROOT}/GoogleAppMeasurement/Frameworks\"",
+					"\"${PODS_ROOT}/GoogleSignIn/Frameworks\"",
+				);
 				INFOPLIST_FILE = Im/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-l\"icucore\"",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"AudioToolbox\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreLocation\"",
+					"-framework",
+					"\"FIRAnalyticsConnector\"",
+					"-framework",
+					"\"FirebaseAnalytics\"",
+					"-framework",
+					"\"FirebaseCore\"",
+					"-framework",
+					"\"FirebaseCoreDiagnostics\"",
+					"-framework",
+					"\"FirebaseDatabase\"",
+					"-framework",
+					"\"FirebaseFirestore\"",
+					"-framework",
+					"\"FirebaseInstanceID\"",
+					"-framework",
+					"\"FirebaseStorage\"",
+					"-framework",
+					"\"FirebaseUI\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"GTMSessionFetcher\"",
+					"-framework",
+					"\"GoogleAppMeasurement\"",
+					"-framework",
+					"\"GoogleUtilities\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"JSQMessagesViewController\"",
+					"-framework",
+					"\"JSQSystemSoundPlayer\"",
+					"-framework",
+					"\"MapKit\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"Protobuf\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"StoreKit\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"UIKit\"",
+					"-framework",
+					"\"grpc\"",
+					"-framework",
+					"\"grpcpp\"",
+					"-framework",
+					"\"leveldb\"",
+					"-framework",
+					"\"nanopb\"",
+					"-framework",
+					"\"openssl_grpc\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.im.Im;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -776,6 +904,84 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-l\"icucore\"",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"AudioToolbox\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreLocation\"",
+					"-framework",
+					"\"FIRAnalyticsConnector\"",
+					"-framework",
+					"\"FirebaseAnalytics\"",
+					"-framework",
+					"\"FirebaseCore\"",
+					"-framework",
+					"\"FirebaseCoreDiagnostics\"",
+					"-framework",
+					"\"FirebaseDatabase\"",
+					"-framework",
+					"\"FirebaseFirestore\"",
+					"-framework",
+					"\"FirebaseInstanceID\"",
+					"-framework",
+					"\"FirebaseStorage\"",
+					"-framework",
+					"\"FirebaseUI\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"GTMSessionFetcher\"",
+					"-framework",
+					"\"GoogleAppMeasurement\"",
+					"-framework",
+					"\"GoogleUtilities\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"JSQMessagesViewController\"",
+					"-framework",
+					"\"JSQSystemSoundPlayer\"",
+					"-framework",
+					"\"MapKit\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"Protobuf\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"StoreKit\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"UIKit\"",
+					"-framework",
+					"\"grpc\"",
+					"-framework",
+					"\"grpcpp\"",
+					"-framework",
+					"\"leveldb\"",
+					"-framework",
+					"\"nanopb\"",
+					"-framework",
+					"\"openssl_grpc\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.im.Im;
 				PRODUCT_NAME = "$(TARGET_NAME)";

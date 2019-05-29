@@ -11,11 +11,16 @@ import Firebase
 import FirebaseDatabase
 import FirebaseUI
 import CoreLocation
+import FBSDKCoreKit
+import FBSDKLoginKit
 
 class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     static var userId = ""
+    static var UserId = ""
     static var userInfo:[String:Any] = [:]
+    static var UserInfo:[String:Any] = [:]
+    static var AuthCheck = false
     var authCheck = false
     var ref: DatabaseReference!
     var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
@@ -38,17 +43,20 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         super.viewWillAppear(true)
         ref = Database.database().reference()
         
-//        let firebaseAuth = Auth.auth()
-//        do {
-//            try firebaseAuth.signOut()
-//        } catch let signOutError as NSError {
-//            print ("Error signing out: %@", signOutError)
-//        }
+        // ログアウト
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError)
+        }
         checkLoggedIn()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("よろしく")
+        print(self.tabBarController?.viewControllers)
         UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().backgroundImage = UIImage()
         
@@ -82,52 +90,84 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
 //    }
     
     func checkLoggedIn() {
-        Auth.auth().addStateDidChangeListener{auth, user in
-            if user != nil{
-                // ログインしている
-                RootTabBarController.userId = user!.uid
-                self.authCheck = true
-                self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                    let val = snapshot.value as! [String:Any]// エラー箇所
-                    RootTabBarController.userInfo = val
-                })
-            } else {
-                //サインインしていない
-                self.login()
+        // FBログイン済みかチェック
+        if let token = AccessToken.current {
+            // FBのアクセストークンをFirebase認証情報に交換
+            let credential = FacebookAuthProvider.credential(withAccessToken: token.tokenString)
+            // Firebaseの認証
+            Auth.auth().signIn(with: credential) { (authResult, error) in
+                if error != nil {
+                    // エラー
+                    return
+                }
+                
+                // ログイン成功時の処理
+                
             }
+            return
+        } else {
+            print("ログインしてない")
         }
+//        Auth.auth().addStateDidChangeListener{auth, user in
+//            if user != nil{
+//                // ログインしている
+//                RootTabBarController.userId = user!.uid
+//                self.authCheck = true
+//                self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
+//                    let val = snapshot.value as! [String:Any]// エラー箇所
+//                    RootTabBarController.userInfo = val
+//                })
+//            } else {
+//                //サインインしていない
+//                self.login()
+//            }
+//        }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        if viewController is ScrollViewController {
-
-        } else {
-            if self.authCheck {
-                if viewController is ViewController { //もしShareTweetViewController.swiftをclass指定してあるページ行きのボタンをタップしたら
-//                    if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreateViewController"){ //withIdentifier: にはStory Board IDを設定
-                        print("モーダル")
-//                        tabBarController.present(newVC, animated: true, completion: nil)//newVCで設定したページに遷移
-                        //PhotoLibraryから画像を選択
-                        picker.sourceType = UIImagePickerController.SourceType.photoLibrary
-
-                        //デリゲートを設定する
-                        picker.delegate = self
-
-                        //現れるピッカーNavigationBarの文字色を設定する
-                        picker.navigationBar.tintColor = UIColor.white
-
-                        //現れるピッカーNavigationBarの背景色を設定する
-                        picker.navigationBar.barTintColor = UIColor.gray
-
-                        //ピッカーを表示する
-                        present(picker, animated: true, completion: nil)
-                        return false
-//                    }
-                }
+//        if viewController is ScrollViewController {
+//
+//        } else {
+            print("ページ遷移")
+            if RootTabBarController.AuthCheck {
+                print("ページ遷移2")
+//                if viewController is ViewController { //もしShareTweetViewController.swiftをclass指定してあるページ行きのボタンをタップしたら
+////                    if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreateViewController"){ //withIdentifier: にはStory Board IDを設定
+//                        print("モーダル")
+////                        tabBarController.present(newVC, animated: true, completion: nil)//newVCで設定したページに遷移
+//                        //PhotoLibraryから画像を選択
+//                        picker.sourceType = UIImagePickerController.SourceType.photoLibrary
+//
+//                        //デリゲートを設定する
+//                        picker.delegate = self
+//
+//                        //現れるピッカーNavigationBarの文字色を設定する
+//                        picker.navigationBar.tintColor = UIColor.white
+//
+//                        //現れるピッカーNavigationBarの背景色を設定する
+//                        picker.navigationBar.barTintColor = UIColor.gray
+//
+//                        //ピッカーを表示する
+//                        present(picker, animated: true, completion: nil)
+//                        return false
+////                    }
+//                }
+                return true
+            } else {
+                print("ページ遷移3")
+                let modalViewController = storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+                modalViewController.modalPresentationStyle = .custom
+                modalViewController.transitioningDelegate = self
+                present(modalViewController, animated: true, completion: nil)
             }
             return self.authCheck
-        }
-        return true
+//        }
+//        return true
+    }
+    
+    // iPhoneで表示させる場合に必要
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
     }
     
     //画像が選択された時に呼ばれる.
@@ -176,4 +216,10 @@ extension RootTabBarController: CLLocationManagerDelegate {
 //        print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
 //    }
 
+}
+
+extension RootTabBarController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return LoginPresentationController(presentedViewController: presented, presenting: presenting)
+    }
 }
