@@ -50,7 +50,20 @@
                     <view key="view" contentMode="scaleToFill" id="t9Q-Ax-HSW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aV1-R1-Mht">
+                                <rect key="frame" x="164.5" y="588" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="tapGoogleSingIn:" destination="MbJ-Zt-YsD" eventType="touchUpInside" id="b2V-G3-I83"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="aV1-R1-Mht" firstAttribute="centerX" secondItem="t9Q-Ax-HSW" secondAttribute="centerX" id="UfS-N1-gSG"/>
+                            <constraint firstItem="iST-0c-i2m" firstAttribute="bottom" secondItem="aV1-R1-Mht" secondAttribute="bottom" id="hOD-Sd-L1c"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="iST-0c-i2m"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="BellOff" selectedImage="BellOn" id="z6h-aZ-icb"/>
@@ -147,18 +160,36 @@
                                                 <rect key="frame" x="0.0" y="80" width="250" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hf5-1H-bUa">
-                                                        <rect key="frame" x="98" y="8" width="54" height="34"/>
+                                                        <rect key="frame" x="105" y="5" width="40" height="40"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="40" id="ZWR-Fc-KtE"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                        <state key="normal" image="Google"/>
+                                                        <connections>
+                                                            <action selector="tapGoogleSingIn:" destination="bGl-4i-tXx" eventType="touchUpInside" id="EIO-DT-9p7"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UCd-op-U5V">
+                                                        <rect key="frame" x="184" y="10" width="46" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="Vr3-Wo-tdE"/>
+                                                        </constraints>
                                                         <state key="normal" title="Button"/>
                                                         <connections>
-                                                            <action selector="facebookLogin:" destination="bGl-4i-tXx" eventType="touchUpInside" id="GOl-Kf-uMl"/>
+                                                            <action selector="tapTwitterLogin:" destination="bGl-4i-tXx" eventType="touchUpInside" id="od0-qm-kbh"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
                                                 <color key="backgroundColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="H6Q-PP-Me2"/>
-                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="centerX" secondItem="ImM-sp-T9I" secondAttribute="centerX" id="QBw-Rx-J2v"/>
-                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="centerY" secondItem="ImM-sp-T9I" secondAttribute="centerY" id="uta-MY-2CB"/>
+                                                    <constraint firstAttribute="trailing" secondItem="UCd-op-U5V" secondAttribute="trailing" constant="20" id="aYx-4l-dKU"/>
+                                                    <constraint firstItem="UCd-op-U5V" firstAttribute="centerY" secondItem="ImM-sp-T9I" secondAttribute="centerY" id="gSP-lk-VKn"/>
+                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="centerX" secondItem="ImM-sp-T9I" secondAttribute="centerX" id="lMp-Ip-Ncv"/>
+                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="centerY" secondItem="ImM-sp-T9I" secondAttribute="centerY" id="sG6-As-33D"/>
+                                                    <constraint firstItem="Hf5-1H-bUa" firstAttribute="top" secondItem="ImM-sp-T9I" secondAttribute="top" constant="5" id="sY7-Q5-LXX"/>
                                                 </constraints>
                                             </view>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="登録した時点で、あなたは当社の利用規約とプライバシーポリシーを熟読し、同意したものとみなす" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="He8-VQ-s58">
@@ -212,8 +243,8 @@
                     </tabBar>
                     <connections>
                         <segue destination="1UV-LJ-b9a" kind="relationship" relationship="viewControllers" id="R6p-G6-oxX"/>
-                        <segue destination="0Wx-Dp-0fz" kind="relationship" relationship="viewControllers" id="g99-5Y-eZm"/>
                         <segue destination="MbJ-Zt-YsD" kind="relationship" relationship="viewControllers" id="bcX-cK-X7U"/>
+                        <segue destination="0Wx-Dp-0fz" kind="relationship" relationship="viewControllers" id="g99-5Y-eZm"/>
                         <segue destination="vBG-aF-yVO" kind="relationship" relationship="viewControllers" id="s0V-7T-nC4"/>
                     </connections>
                 </tabBarController>
@@ -969,6 +1000,7 @@
         <image name="BellOn" width="25" height="25"/>
         <image name="Camera" width="256" height="256"/>
         <image name="Create" width="25" height="25"/>
+        <image name="Google" width="256" height="256"/>
         <image name="Home" width="50" height="50"/>
         <image name="HomeOff" width="25" height="25"/>
         <image name="HomeOn" width="25" height="25"/>

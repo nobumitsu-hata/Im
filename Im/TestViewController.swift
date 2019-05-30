@@ -11,74 +11,66 @@ import Firebase
 import FirebaseDatabase
 import FirebaseUI
 
-class TestViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class TestViewController: UIViewController {
 
+    var ref: DatabaseReference!
+    var storage: Storage!
+    @IBOutlet weak var imgView: UIImageView!
+    @IBOutlet weak var nameLbl: UILabel!
+    @IBOutlet weak var editBtn: UIButton!
+    @IBOutlet weak var mainView: UIView!
+    @IBOutlet weak var wrapperView: UIView!
+    @IBOutlet weak var introduction: UITextView!
     
-    var storage: StorageReference!
-    @IBOutlet weak var tableView: UITableView!
-    
-    
-    let testArr = ["s;klfjsal;fjasl;kfjas;lfjasl;kfjsal;kfjsal;dfjlsadfjsdal;fdkjsa;lkfjaaaaab","sdlafj", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "fdsaf", "lskfjas;lfkjsal;fkjsa;lkfjas;lkfjsl;kfjas;lfjsa;lkfjsal;jdfals;fjl;askdfjsa;lkaaaaaaaaaaaaaaaac"]
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.delegate = self
-        tableView.dataSource = self
+        // 編集ボタンカスタマイズ
+        //        editBtn.layer.cornerRadius = 10.0
+//        editBtn.setGradientBackground(
+//            colorOne: UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
+//            colorTwo: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0)
+//        )
         
-        storage = Storage.storage().reference()
+        // 初期化
+        storage = Storage.storage()
         
-        self.tableView.rowHeight = UITableView.automaticDimension
-        self.tableView.estimatedRowHeight = 60
+        self.view.setGradientLayer()
+//        wrapperView.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.2)
+//        wrapperView.layer.cornerRadius = 20
+//        mainView.layer.cornerRadius = 20
+        // 角丸にする
+//        self.imgView.layer.cornerRadius = self.imgView.frame.size.width * 0.5
+//        self.imgView.clipsToBounds = true
         
-        // 自作セルをテーブルビューに登録する
-        let chatXib = UINib(nibName: "CommunityTableViewCell", bundle: nil)
-        tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
-
-//        self.tableView.reloadData()
-//        let test = self.tableView.contentSize.height - self.tableView.frame.size.height
-//        self.tableView.contentOffset = CGPoint(x: 0, y: test)
+//        UIView.animate(withDuration: 0.3){
+//            self.introduction.isHidden = true //またはfalse
+//        }
+        self.introduction.isHidden = true //またはfalse
+        setupFirebase()
 
     }
     
-    func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // セル生成
-        let cell = table.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! CommunityTableViewCell
-                let imgView = cell.viewWithTag(2) as! UIImageView
-        //        let name = cell.viewWithTag(2) as! UILabel
-        //        let text = cell.viewWithTag(3) as! UITextView
-        
-        
-//        let imgView = cell.userImg as! UIImageView
-//        let name = cell.userName as! UILabel
-//        let text = cell.userMessage as! UILabel
-        
-        let getImg = storage.child("communities").child("-LcLgw1SEtq1xtq-6Hqy.jpeg")
-        
-        //        text.isEditable = false
-        //        text.delegate = self
-        // 画像設定
-        imgView.sd_setImage(with: getImg)
-//        let img = UIImage(named: "User")
-//        imgView.image = img
-        // 配色
-//        cell.backgroundColor = UIColor.clear
-//        name.backgroundColor = UIColor.clear
-//        text.backgroundColor = UIColor.clear
-        // paddingを消す
-//                text.textContainerInset = UIEdgeInsets.zero
-        //        text.textContainer.lineFragmentPadding = 0
-//        text.text = testArr[indexPath.row]
-//        text.sizeToFit()
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+    func setupFirebase() {
+        ref = Database.database().reference()
+        // ユーザー情報取得
+        ref.child("users").child("uYGxXJ9tDsYz2P7BLCZSf25otPY2").observeSingleEvent(of: .value, with: { (snapshot) in
+            if snapshot.exists() {
+                let val = snapshot.value as! [String:Any]
+                let storageRef = self.storage.reference()
+//                let imgRef = storageRef.child("users").child(val["img"] as! String)
+                // セット
+//                self.imgView.sd_setImage(with: imgRef)
+//                self.nameLbl.text = "はたぼー"
+            } else {
+                // 画像設定
+                let img = UIImage(named: "UserImg")
+                self.imgView.image = img
+//                self.nameLbl.text =  "未設定"
+            }
+        }) { (error) in
+            print(error.localizedDescription)
+        }
     }
 
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 60
-//    }
 }

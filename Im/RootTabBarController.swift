@@ -44,19 +44,18 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         ref = Database.database().reference()
         
         // ログアウト
-        let firebaseAuth = Auth.auth()
-        do {
-            try firebaseAuth.signOut()
-        } catch let signOutError as NSError {
-            print ("Error signing out: %@", signOutError)
-        }
+//        let firebaseAuth = Auth.auth()
+//        do {
+//            try firebaseAuth.signOut()
+//        } catch let signOutError as NSError {
+//            print ("Error signing out: %@", signOutError)
+//        }
         checkLoggedIn()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("よろしく")
-        print(self.tabBarController?.viewControllers)
+        
         UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().backgroundImage = UIImage()
         
@@ -67,6 +66,8 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         // authUIのデリゲート
         self.authUI.delegate = self
         self.authUI.providers = providers
+        
+        
 //        setupLocationManager()
     }
     
@@ -91,37 +92,38 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     
     func checkLoggedIn() {
         // FBログイン済みかチェック
-        if let token = AccessToken.current {
-            // FBのアクセストークンをFirebase認証情報に交換
-            let credential = FacebookAuthProvider.credential(withAccessToken: token.tokenString)
-            // Firebaseの認証
-            Auth.auth().signIn(with: credential) { (authResult, error) in
-                if error != nil {
-                    // エラー
-                    return
-                }
-                
-                // ログイン成功時の処理
-                
-            }
-            return
-        } else {
-            print("ログインしてない")
-        }
-//        Auth.auth().addStateDidChangeListener{auth, user in
-//            if user != nil{
+//        if let token = AccessToken.current {
+//            // FBのアクセストークンをFirebase認証情報に交換
+//            let credential = FacebookAuthProvider.credential(withAccessToken: token.tokenString)
+//            // Firebaseの認証
+//            Auth.auth().signIn(with: credential) { (authResult, error) in
+//                if error != nil {
+//                    // エラー
+//                    return
+//                }
+//
+//                // ログイン成功時の処理
+//
+//            }
+//            return
+//        } else {
+//            print("ログインしてない")
+//        }
+        Auth.auth().addStateDidChangeListener{auth, user in
+            if user != nil{
 //                // ログインしている
-//                RootTabBarController.userId = user!.uid
-//                self.authCheck = true
+                RootTabBarController.UserId = user!.uid
+                RootTabBarController.AuthCheck = true
+                
 //                self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
 //                    let val = snapshot.value as! [String:Any]// エラー箇所
 //                    RootTabBarController.userInfo = val
 //                })
-//            } else {
+            } else {
 //                //サインインしていない
 //                self.login()
-//            }
-//        }
+            }
+        }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {

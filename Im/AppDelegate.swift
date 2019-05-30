@@ -10,6 +10,8 @@ import UIKit
 import Firebase
 import FirebaseUI
 import FBSDKCoreKit
+import GoogleSignIn
+import TwitterKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,19 +26,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
+        TWTRTwitter.sharedInstance().start(withConsumerKey: "3EXKUF38fsBeZRh9LXCx3T9Fz", consumerSecret: "SeDtkaudc4chpRTjIMvZZU6T0xQ4vb7DLTYJwnBAOpjhEPyVPB")
         return ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    // facebook&Google&電話番号認証時に呼ばれる関数
-//    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-//        let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as! String?
-//        // GoogleもしくはFacebook認証の場合、trueを返す
-//        if FUIAuth.defaultAuthUI()?.handleOpen(url, sourceApplication: sourceApplication) ?? false {
-//            return true
-//        }
-//        // other URL handling goes here.
-//        return false
-//    }
+    
+    @available(iOS 9.0, *)
+    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:])
+        -> Bool {
+            
+            if TWTRTwitter.sharedInstance().application(application, open: url, options: options) {
+                return true
+            }
+            
+            return GIDSignIn.sharedInstance().handle(url,sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: [:])
+    }
     
     func application(_ application: UIApplication,open url: URL,sourceApplication: String?,annotation: Any) -> Bool {
         return ApplicationDelegate.shared.application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
