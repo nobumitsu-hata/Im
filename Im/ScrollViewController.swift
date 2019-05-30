@@ -22,6 +22,7 @@ class ScrollViewController: UIViewController {
     
     var ref: DatabaseReference!
     var storage: Storage!
+    private let db = Firestore.firestore()
     
     var communityKey:[String] = []
     var communityVal:[[String:Any]] = []
@@ -57,68 +58,81 @@ class ScrollViewController: UIViewController {
         var counter = 0
         
         ref = Database.database().reference()
-        ref.child("locations").observe(DataEventType.childAdded, with: { (snapshot) in
-            let communityView = communityXib.instantiate(withOwner: self, options: nil).first as! UIView
-            communityView.isUserInteractionEnabled = true
-//            communityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("btnClick:")))
-            
-            let snapshotVal = snapshot.value as! [String:Any]
-            let latitude = snapshotVal["latitude"] as! String
-            let longitude = snapshotVal["longitude"] as! String
-
-            let baseLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
-            let targetLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
-            let distanceLocation = baseLocation.distance(from: targetLocation)
-            print("距離は \(distanceLocation)")
-
-            let radius = snapshotVal["radius"] as! Double
-            // 現在地が目的地の許容範囲内かどうか
-            if radius >= distanceLocation {
-                self.ref.child("communities").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
-                    guard counter < 3 else {return}
-                    let val = snapshot.value as! [String:Any]
-                    self.communityVal.append(val)
-                    self.communityKey.append(snapshot.key)
-                    // コミュニティー名設定
-                    let titleLabel = communityView.viewWithTag(1) as! UILabel
-                    let title = val["name"] as! String
-                    titleLabel.textColor = UIColor.white
-                    titleLabel.text = String(describing: title)
-                    // コミュニティー画像設定
-                    let img  = communityView.viewWithTag(2) as! UIImageView
-                    let storageRef = self.storage.reference()
-                    let imgData = storageRef.child("communities").child(val["img"] as! String)
-                    img.sd_setImage(with: imgData)
-                    img.isUserInteractionEnabled = true
-                    
-                    let gesture = MyTapGestureRecognizer(target: self, action: #selector(ScrollViewController.btnClick(_:)))
-                    gesture.targetString = snapshot.key
-                    communityView.addGestureRecognizer(gesture)
-                    self.scrollView.addSubview(communityView)
-                    
-                    // 描画開始設定
-                    var viewFrame:CGRect = communityView.frame
-                    viewFrame.size.width = self.scrollScreenWidth
-                    viewFrame.size.height = self.scrollScreenHeight
-                    viewFrame.origin = CGPoint(x: px, y: py)
-                    communityView.frame = viewFrame
-//                    communityView.setGradientLayer()
-                    // 次の描画位置設定
-                    py += (self.screenSize.height)
-//                    communityView.addTarget(self, action: #selector(self.btnClick(btn: )), for: .touchUpInside)
-                    counter += 1
-                    // スクロール範囲の設定
-                    let nHeight:CGFloat = self.scrollScreenHeight * CGFloat(counter)
-                    print("コンテントサイズ")
-                    print(nHeight)
-                    self.scrollView.contentSize = CGSize(width: self.scrollScreenWidth, height: nHeight)
-                    
-                }) { (error) in
-                    print(error.localizedDescription)
-                }
+        db.collection("locations").getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+                return
+            }
+            guard querySnapshot!.documents.count > 0 else {
+                return
             }
             
-        })
+            for document in querySnapshot!.documents {
+                print("\(document.documentID) => \(document.data())")
+                let communityView = communityXib.instantiate(withOwner: self, options: nil).first as! UIView
+                communityView.isUserInteractionEnabled = true
+                
+                let data = document.data()
+                let documentId = document.documentID
+                let latitude = data["latitude"] as! String
+                let longitude = data["longitude"] as! String
+                
+                let baseLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
+                let targetLocation: CLLocation = CLLocation(latitude: Double(latitude)!, longitude: Double(longitude)!)
+                let distanceLocation = baseLocation.distance(from: targetLocation)
+                print("距離は \(distanceLocation)")
+                
+                let radius = data["radius"] as! Double
+                
+                guard radius >= distanceLocation else {
+                    return
+                }
+                
+                self.db.collection("communities").document(documentId).getDocument { (document, error) in
+                    if let community = document.flatMap({
+                        $0.data().flatMap({ (data) in
+                            return data
+                        })
+                    }) {
+                        print("community: \(community)")
+                        
+                        // コミュニティー名設定
+                        let titleLabel = communityView.viewWithTag(1) as! UILabel
+                        let title = community["name"] as! String
+                        titleLabel.textColor = UIColor.white
+                        titleLabel.text = String(describing: title)
+                        // コミュニティー画像設定
+                        let img  = communityView.viewWithTag(2) as! UIImageView
+                        let storageRef = self.storage.reference()
+                        let imgData = storageRef.child("communities").child(community["img"] as! String)
+                        img.sd_setImage(with: imgData)
+                        img.isUserInteractionEnabled = true
+                        
+                        let gesture = MyTapGestureRecognizer(target: self, action: #selector(ScrollViewController.btnClick(_:)))
+                        gesture.targetString = documentId
+                        communityView.addGestureRecognizer(gesture)
+                        self.scrollView.addSubview(communityView)
+                        
+                        // 描画開始設定
+                        var viewFrame:CGRect = communityView.frame
+                        viewFrame.size.width = self.scrollScreenWidth
+                        viewFrame.size.height = self.scrollScreenHeight
+                        viewFrame.origin = CGPoint(x: px, y: py)
+                        communityView.frame = viewFrame
+                        // 次の描画位置設定
+                        py += (self.screenSize.height)
+                        counter += 1
+                        // スクロール範囲の設定
+                        let nHeight:CGFloat = self.scrollScreenHeight * CGFloat(counter)
+                        self.scrollView.contentSize = CGSize(width: self.scrollScreenWidth, height: nHeight)
+                    } else {
+                        print("Document does not exist")
+                    }
+                }
+                
+            }
+            
+        }
         
     }
     

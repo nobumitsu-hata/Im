@@ -21,6 +21,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     static var userInfo:[String:Any] = [:]
     static var UserInfo:[String:Any] = [:]
     static var AuthCheck = false
+    private let db = Firestore.firestore()
     var authCheck = false
     var ref: DatabaseReference!
     var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
@@ -115,6 +116,17 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
                 RootTabBarController.UserId = user!.uid
                 RootTabBarController.AuthCheck = true
                 
+                self.db.collection("users").document(user!.uid).getDocument { (document, error) in
+                    if let userDoc = document.flatMap({
+                        $0.data().flatMap({ (data) in
+                            return RootTabBarController.UserInfo = data
+                        })
+                    }) {
+                        print("User: \(userDoc)")
+                    } else {
+                        print("Document does not exist")
+                    }
+                }
 //                self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
 //                    let val = snapshot.value as! [String:Any]// エラー箇所
 //                    RootTabBarController.userInfo = val
