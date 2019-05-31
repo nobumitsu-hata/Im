@@ -11,17 +11,19 @@ import Firebase
 import FirebaseDatabase
 import FirebaseUI
 
-class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
+class ChatViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var coverView: UIView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
     
     var testd: String!
     var ref: DatabaseReference!
     var storage: StorageReference!
+    private let db = Firestore.firestore()
     var communityId: String!
     var messageArr:[[String:Any]] = []
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
@@ -32,6 +34,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var offsetY:CGFloat = 0
     var flg = false
     var flg2 = true
+    var autoScrollFlg = true
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -50,16 +53,25 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.delegate = self
-        tableView.dataSource = self
+//        tableView.delegate = self
+//        tableView.dataSource = self
+        collectionView.delegate = self
+        collectionView.dataSource = self
         self.textField.delegate = self
         
         // 背景色設定
         self.view.backgroundColor = UIColor.clear
-        tableView.backgroundColor = UIColor.clear
+//        tableView.backgroundColor = UIColor.clear
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
         coverView.backgroundColor = UIColor.clear
+        
+        // セルの大きさを設定
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: collectionView.frame.width, height: 52)
+        layout.minimumLineSpacing = 0
+//        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        collectionView.collectionViewLayout = layout
 
         //グラデーションの開始色
         let startColor = UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 0.3)
@@ -67,7 +79,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let endColor = UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 0.3)
         scrollView.setGradient(startColor: startColor, endColor: endColor, radius: 0)
         
-        self.tableView.rowHeight = UITableView.automaticDimension
+//        self.tableView.rowHeight = UITableView.automaticDimension
         
         // 下向きスワイプ時のジェスチャー作成
         let downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(self.closeModalView))
@@ -90,111 +102,147 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         storage = Storage.storage().reference()
         
         // 自作セルをテーブルビューに登録する
-        let chatXib = UINib(nibName: "ChatTableViewCell", bundle: nil)
-        tableView.register(chatXib, forCellReuseIdentifier: "chatCell")
+        let chatXib = UINib(nibName: "CommunityChatCollectionViewCell", bundle: nil)
+        collectionView.register(chatXib, forCellWithReuseIdentifier: "communityChatCell")
         
-        // メッセージ取得
-        ref.child("messages").child(communityId).observe(.childAdded, with: { (snapshot) -> Void in
+        db.collection("communities").document(communityId!).collection("messages").addSnapshotListener{ querySnapshot, error in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
             
-            let val = snapshot.value as! [String:Any]
-            self.messageArr.append(val)
-            // データの追加
-            self.tableView.reloadData()
+            guard documents.count > 0 else { return }
+            
+            guard let snapshot = querySnapshot else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+            
+            var subScrollFlg = false
+            snapshot.documentChanges.forEach { diff in
+                switch diff.type {
+                case .added:
+                    let messageData = diff.document.data()
+                    self.messageArr.append(messageData)
+                    if RootTabBarController.UserId == messageData["senderId"] as! String {
+                        self.autoScrollFlg = true
+                        subScrollFlg = true
+                    }
+                default:
+                    break
+                }
+            }
+            self.collectionView.reloadData()
             // グラデーション設定
             let gradientLayer = CAGradientLayer()
-            gradientLayer.frame = self.tableView.superview!.bounds
+            gradientLayer.frame = self.collectionView.superview!.bounds
             let clearColor = UIColor.clear.cgColor
             let whiteColor = UIColor.white.cgColor
             gradientLayer.colors = [clearColor, whiteColor, whiteColor]
             gradientLayer.locations = [0.45, 0.55, 1.0]
-            self.tableView.superview!.layer.mask = gradientLayer
-            self.tableView.backgroundColor = UIColor.clear
-            print("reload完了しました🙂")
-            
-            // スクロール中
+            self.collectionView.superview!.layer.mask = gradientLayer
+            self.collectionView.backgroundColor = UIColor.clear
             DispatchQueue.main.async {
-                self.tableView.performBatchUpdates({
+                self.collectionView.performBatchUpdates({
                     
                 }) { (finished) in
-                    let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
+                    let dif = self.collectionView.contentSize.height - self.collectionView.frame.size.height
                     if dif < 0 {
-                    // 下詰め
-                        self.tableView.contentInset = UIEdgeInsets(top: dif, left: 0, bottom: 0, right: 0)
+                        // 下詰め
+                        self.collectionView.contentInset = UIEdgeInsets(top: dif * -1, left: 0, bottom: 0, right: 0)
+                        return
                     } else {
-                    // 1番下までスクロール
-                        guard self.flg else {
-                            // マージン0
-                            self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                            self.tableView.contentOffset.y = dif
-                            self.flg = true
+                        // マージン0
+                        self.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        print(self.autoScrollFlg)
+                        guard self.autoScrollFlg || subScrollFlg else {
                             return
                         }
-                        // 1番下でじゃない場合
-                        guard self.flg2 else { return }
-                        self.tableView.contentOffset.y = dif// 1番下にスクロール
+                        self.collectionView.setContentOffset(CGPoint(x: self.collectionView.contentOffset.x, y: dif), animated: true)
                     }
                 }
+                
             }
-        })
+        }
         
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView.cellForRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-2, section: 0)) != nil {
-            flg2 = false
-        }
-        guard tableView.cellForRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0)) != nil else {
-            return
-        }
-        print("1番下")
-        flg2 = true
-        // ここでリフレッシュのメソッドを呼ぶ
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return messageArr.count
     }
     
-    func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         // セル生成
-        let cell = table.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! ChatTableViewCell
-        let imgView = cell.userImg
-        let name = cell.userName
-        let textView = cell.userMessage
-
-
-        ref.child("users").child(messageArr[indexPath.row]["user"] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
-            let val = snapshot.value as! [String:Any]
-            print(val)
-            name!.text = (val["name"] as! String)
-            let getImg = self.storage.child("users").child(val["img"] as! String)
-            imgView!.sd_setImage(with: getImg)
-        })
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "communityChatCell", for: indexPath) as! CommunityChatCollectionViewCell
+        let imgView = cell.img
+        let name = cell.name
+        let message = cell.message
+        
+        cell.frame.size.width = collectionView.frame.width
+        
+        db.collection("users").document(messageArr[indexPath.row]["senderId"] as! String).getDocument { (document, error) in
+            if let user = document.flatMap({
+                $0.data().flatMap({ (data) in
+                    return data
+                })
+            }) {
+                name!.text = user["name"] as? String
+                let imgRef = self.storage.child("users").child(user["img"] as! String)
+                imgView!.sd_setImage(with: imgRef)
+            }
+        }
         
         let tapGesture = UserTapGestureRecognizer(
             target: self,
             action: #selector(ChatViewController.tapImg(_:)))
-
-        tapGesture.user = (self.messageArr[indexPath.row]["user"] as! String)
-        //            tapGesture.delegate = self
-
+        
+        tapGesture.user = (self.messageArr[indexPath.row]["senderId"] as! String)
+        tapGesture.userDoc = messageArr[indexPath.row]
+        
         imgView?.isUserInteractionEnabled = true
         imgView!.addGestureRecognizer(tapGesture)
-
-//        text.isEditable = false
-//        text.delegate = self
-        // 配色
-        cell.backgroundColor = UIColor.clear
-        name!.backgroundColor = UIColor.clear
-        textView!.backgroundColor = UIColor.clear
-        // paddingを消す
-//        text.textContainerInset = UIEdgeInsets.zero
-//        text.textContainer.lineFragmentPadding = 0
-        textView!.text = (messageArr[indexPath.row]["message"] as! String)
-        textView!.sizeToFit()
         
-//        cell.transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: 0)
+        // 配色
+//        cell.backgroundColor = UIColor.clear
+        name!.backgroundColor = UIColor.clear
+        message!.backgroundColor = UIColor.clear
+        message!.text = (messageArr[indexPath.row]["message"] as! String)
+        message!.sizeToFit()
+        
         return cell
     }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messageArr.count
+    
+    /// 横のスペース
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+        
+        return 0.0
+        
+    }
+    
+    /// 縦のスペース
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
+        
+        return 0.0
+        
+    }
+    
+    // スクロールして途中で止まった場合のみ
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate == false {
+            autoScrollFlg = false
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        guard collectionView.cellForItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0)-1, section: 0)) != nil else {
+            autoScrollFlg = false
+            return
+        }
+        if collectionView.contentOffset.y > 0 {
+            autoScrollFlg = true
+        }
+        
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -202,7 +250,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
     @IBAction func tapScreen(_ sender: Any) {
-        print("タップ")
         // キーボードを閉じる
         self.view.endEditing(true)
     }
@@ -218,12 +265,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let txtLimit = myBoundSize.height// テキストフィールドの下辺
         let kbdLimit = myBoundSize.height - keyboardScreenEndFrame.size.height// キーボードの上辺
 
-        print("テキストフィールドの下辺：(\(txtLimit))")
-        print("キーボードの上辺：(\(kbdLimit))")
-
         // キーボードの位置の方が上の場合
         if txtLimit >= kbdLimit {
-            print(txtLimit - kbdLimit)
             scrollView.contentOffset.y = txtLimit - kbdLimit
         }
     }
@@ -237,22 +280,17 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @objc func tapImg(_ sender: UserTapGestureRecognizer) {
         // IDチェック
         getId = sender.user!
-        if getId == RootTabBarController.userId {
+        if getId == RootTabBarController.UserId {
             return
         }
-        
-        ref.child("users").child(getId).observeSingleEvent(of: .value, with: { (snapshot) in
-            let val = snapshot.value as! [String:String]
-            self.performSegue(withIdentifier: "toDMViewController", sender: val)// ページ遷移
-        })
+        self.performSegue(withIdentifier: "toProfileViewController", sender: sender.userDoc)// ページ遷移
 
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "toDMViewController" {
-            let dmViewController = segue.destination as! DMViewController
-            dmViewController.partnerId = getId
-            dmViewController.partnerData = sender as! [String : String]
+        if segue.identifier == "toProfileViewController" {
+            let profileViewController = segue.destination as! AccountViewController
+            profileViewController.userId = getId
         }
     }
     
@@ -264,9 +302,16 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return false
         }
         
-        let key = ref.child("messages").childByAutoId().key
-        self.ref.child("messages").child(communityId).child(key!).setValue(
-            ["user":RootTabBarController.userId,"message":message])
+        db.collection("communities").document(communityId).collection("messages").addDocument(
+            data: ["senderId": RootTabBarController.UserId, "message": message!, "timestamp": Timestamp(date: Date())]
+        ) { err in
+            if let err = err {
+                print("Error adding document: \(err)")
+            } else {
+                self.autoScrollFlg = true
+                print("Document added with ID:")
+            }
+        }
         
         testCounter = 1
         textField.text = ""
@@ -301,4 +346,5 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
 class UserTapGestureRecognizer: UITapGestureRecognizer {
     var user: String?
+    var userDoc: [String:Any]!
 }

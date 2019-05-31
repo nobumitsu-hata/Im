@@ -22,7 +22,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     private var galleryDelegate: GalleryDelegate?
     var storage: StorageReference!
     var partnerId = ""
-    var partnerData:[String:String] = [:]
+    var partnerData:[String:Any] = [:]
     var createFlg = false
     var chatId = ""
     let startTimestamp = NSDate().timeIntervalSince1970
@@ -43,11 +43,11 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         storage = Storage.storage().reference()
         // ユーザー情報セット
         self.senderId = RootTabBarController.userId
-        self.senderDisplayName = RootTabBarController.userInfo["name"] as? String
+        self.senderDisplayName = RootTabBarController.UserInfo["name"] as? String
 
         // ナビバー表示
         self.navigationController!.navigationBar.isHidden = false
-        self.title = partnerData["name"]
+        self.title = partnerData["name"] as! String
         // ナビゲーションバーのテキストを変更する
         self.navigationController?.navigationBar.titleTextAttributes = [
             // 文字の色
@@ -146,9 +146,9 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                         // 名前
                         var name = ""
                         if messageData["senderId"] as! String == RootTabBarController.userId {
-                            name = RootTabBarController.userInfo["name"] as! String
+                            name = RootTabBarController.UserInfo["name"] as! String
                         } else {
-                            name = self.partnerData["name"] ?? ""
+                            name = self.partnerData["name"] as! String
                         }
                         
                         // 日付
@@ -244,9 +244,9 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 // 名前
                 var name = ""
                 if messageData["senderId"] as! String == RootTabBarController.userId {
-                    name = RootTabBarController.userInfo["name"] as! String
+                    name = RootTabBarController.UserInfo["name"] as! String
                 } else {
-                    name = self.partnerData["name"] ?? ""
+                    name = self.partnerData["name"] as! String
                 }
                 
                 // 日付
@@ -646,7 +646,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         cell.avatarImageView.clipsToBounds = true
         // ユーザー
         if message.senderId == self.senderId {
-            let userIcon = self.storage.child("users").child(RootTabBarController.userInfo["img"] as! String)
+            let userIcon = self.storage.child("users").child(RootTabBarController.UserInfo["img"] as! String)
             cell.avatarImageView.sd_setImage(with: userIcon)
             if !message.isMediaMessage {
                 cell.textView!.textColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
@@ -654,7 +654,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         }
         else {
         // 相手
-            let partnerIcon = self.storage.child("users").child(partnerData["img"]!)
+            let partnerIcon = self.storage.child("users").child(partnerData["img"] as! String)
             cell.avatarImageView.sd_setImage(with: partnerIcon)
             if !message.isMediaMessage {
                 cell.textView!.textColor = UIColor.white

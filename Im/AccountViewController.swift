@@ -14,6 +14,8 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     var ref: DatabaseReference!
     var storage: Storage!
+    private let db = Firestore.firestore()
+    
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
     @IBOutlet weak var editBtn: UIButton!
@@ -21,8 +23,18 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var introduction: UITextView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var btn: UIButton!
+    
+    var userId = RootTabBarController.UserId
+    var userData:[String:Any]!
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
     var belongsVal = ["未設定", "未設定", "未設定"]
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if userId != RootTabBarController.UserId {
+            btn.setTitle("トークする", for: .normal)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,69 +70,71 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setupFirebase() {
-        ref = Database.database().reference()
-        // ユーザー情報取得
-        ref.child("users").child(RootTabBarController.userId).observeSingleEvent(of: .value, with: { (snapshot) in
-            if snapshot.exists() {
-                let val = snapshot.value as! [String:Any]
+        db.collection("users").document(userId)
+            .addSnapshotListener { documentSnapshot, error in
+                guard let document = documentSnapshot else {
+                    print("Error fetching document: \(error!)")
+                    return
+                }
+                self.userData = document.data()
                 let storageRef = self.storage.reference()
-                let imgRef = storageRef.child("users").child(val["img"] as! String)
-                // セット
-                self.imgView.sd_setImage(with: imgRef)
-                self.nameLbl.text = (val["name"] as! String)
-                if (val["introduction"] as? String != "") {
+                if self.userData?["img"] as! String != "" {
+                    let imgRef = storageRef.child("users").child(self.userData?["img"] as! String)
+                    self.imgView.sd_setImage(with: imgRef)
+                }
+                
+                self.nameLbl.text = (self.userData!["name"] as! String)
+                
+                if (self.userData?["introduction"] as? String != "") {
                     print("紹介文あり")
-                    self.introduction.text = val["introduction"] as? String
+                    self.introduction.text = self.userData?["introduction"] as? String
                 } else {
                     print("紹介文なし")
                     self.introduction.isHidden = true
                 }
-            } else {
-                // 画像設定
-                let img = UIImage(named: "UserImg")
-                self.imgView.image = img
-                self.nameLbl.text =  "未設定"
-            }
-            
-            self.ref.child("belongs").child(RootTabBarController.userId).observeSingleEvent(of: .value, with: { (snapshot) in
-                if snapshot.exists() {
-                    let belongsVal = snapshot.value as! [String:Any]
-                    let keyArr = Array(belongsVal.keys)// コミュニティーID
-                    self.ref.child("communities").child(keyArr[0]).observeSingleEvent(of: .value, with: { (snapshot) in
-                        // 好きなチーム
-                        let communityVal = snapshot.value as! [String:Any]
-                        self.belongsVal[0] = communityVal["name"] as! String
-                        
-                        let info = belongsVal[keyArr[0]] as! [String: Any]
-                        
-                        // 観戦仲間
-                        if (info["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
-                        else if info["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
-                        
-                        // ファンレベル
-                        if info["level"] as! String != "" {
-                            self.ref.child("levels").child(info["level"] as! String).observeSingleEvent(of: .value, with: { (snapshot) in
-                                if snapshot.exists() {
-                                    let levelVal = snapshot.value as? [String:Any]
-                                    self.belongsVal[2] = levelVal?["name"] as! String
-                                    self.tableView.reloadData()
-                                }
-                            })
-                        }
-                        
-                        self.tableView.reloadData()
-                    })
-                } else {
+                
+                self.db.collection("users").document(self.userId).collection("belongs").getDocuments() { (querySnapshot, err) in
+                    guard let documents = querySnapshot?.documents else {
+                        print("Error fetching documents: \(error!)")
+                        return
+                    }
+                    guard documents.count > 0 else {
+                        return
+                    }
                     
+                    for document in documents {
+                        
+                        let communityId = document.documentID
+                        let data = document.data()
+                        self.db.collection("communities").document(communityId).getDocument { (communityDoc, error) in
+                            
+                            let communityData = communityDoc?.data()
+                            
+                            self.belongsVal[0] = communityData?["name"] as! String
+                            if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
+                            else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
+                            // ファンレベル
+                            guard data["level"] as? String != "" else {
+                                return
+                            }
+                            self.db.collection("levels").document(data["level"] as! String).getDocument { (levelDoc, error) in
+                                if let levelDoc = levelDoc, levelDoc.exists {
+                                    let levelData = levelDoc.data()
+                                    self.belongsVal[2] = levelData?["name"] as! String
+                                    self.tableView.reloadData()
+                                } else {
+                                    print("Document does not exist")
+                                }
+                            }
+                            
+                            self.tableView.reloadData()
+                        }
+                    }
                 }
-                
-                
-            })
-        }) { (error) in
-            print(error.localizedDescription)
         }
+
     }
-        
+    
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileTableViewCell
@@ -141,7 +155,11 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @IBAction func toEdit(_ sender: Any) {
-        self.performSegue(withIdentifier: "toEditProfileViewController", sender: nil)
+        if userId == RootTabBarController.UserId {
+            self.performSegue(withIdentifier: "toEditProfileViewController", sender: nil)
+        } else {
+            self.performSegue(withIdentifier: "toPrivateChatViewController", sender: nil)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -153,6 +171,12 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
             }
             editProfileViewController.belongsVal = belongsVal
+        }
+        
+        if segue.identifier == "toPrivateChatViewController" {
+            let privateChatViewController = segue.destination as! DMViewController
+            privateChatViewController.partnerId = userId
+            privateChatViewController.partnerData = userData
         }
     }
 }

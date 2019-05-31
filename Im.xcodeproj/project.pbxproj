@@ -41,6 +41,8 @@
 		52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */; };
 		52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D56225F796E00CD3C50 /* TestViewController.swift */; };
 		52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D5822625C1800CD3C50 /* DMViewController.swift */; };
+		5293305522A0BA9400D991FA /* CommunityChatCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5293305322A0BA9400D991FA /* CommunityChatCollectionViewCell.swift */; };
+		5293305622A0BA9400D991FA /* CommunityChatCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5293305422A0BA9400D991FA /* CommunityChatCollectionViewCell.xib */; };
 		52EEBAE6229D73B800F16B29 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE5229D73B800F16B29 /* LoginViewController.swift */; };
 		52EEBAE8229D829400F16B29 /* LoginPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE7229D829400F16B29 /* LoginPresentationController.swift */; };
 		52EEBAEA229DAB7700F16B29 /* LoginTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE9229DAB7700F16B29 /* LoginTestViewController.swift */; };
@@ -110,6 +112,8 @@
 		52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		52838D56225F796E00CD3C50 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		52838D5822625C1800CD3C50 /* DMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMViewController.swift; sourceTree = "<group>"; };
+		5293305322A0BA9400D991FA /* CommunityChatCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityChatCollectionViewCell.swift; sourceTree = "<group>"; };
+		5293305422A0BA9400D991FA /* CommunityChatCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommunityChatCollectionViewCell.xib; sourceTree = "<group>"; };
 		52EEBAE5229D73B800F16B29 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		52EEBAE7229D829400F16B29 /* LoginPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPresentationController.swift; sourceTree = "<group>"; };
 		52EEBAE9229DAB7700F16B29 /* LoginTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginTestViewController.swift; sourceTree = "<group>"; };
@@ -202,6 +206,8 @@
 				52838D4622462EA400CD3C50 /* CreateViewController.swift */,
 				52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */,
 				52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */,
+				5293305322A0BA9400D991FA /* CommunityChatCollectionViewCell.swift */,
+				5293305422A0BA9400D991FA /* CommunityChatCollectionViewCell.xib */,
 				52838D44223F319500CD3C50 /* ChatViewController.swift */,
 				52838D4C2254543C00CD3C50 /* ChatTextField.swift */,
 				52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */,
@@ -371,6 +377,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5293305622A0BA9400D991FA /* CommunityChatCollectionViewCell.xib in Resources */,
 				52838D0B22368D3800CD3C50 /* LaunchScreen.storyboard in Resources */,
 				52838D43223F2C1900CD3C50 /* ChatTableViewCell.xib in Resources */,
 				52838D332236951000CD3C50 /* GoogleService-Info.plist in Resources */,
@@ -593,6 +600,7 @@
 				52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */,
 				52FD3BFA2276205700746600 /* MessageTableViewCell.swift in Sources */,
 				52EEBAEA229DAB7700F16B29 /* LoginTestViewController.swift in Sources */,
+				5293305522A0BA9400D991FA /* CommunityChatCollectionViewCell.swift in Sources */,
 				526C6CE6228BFAB600BE61E4 /* EditProfileTableViewCell.swift in Sources */,
 				52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */,
 				52FD3BFF227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift in Sources */,

@@ -20,23 +20,19 @@ class ScrollViewController: UIViewController {
     
     @IBOutlet weak var scrollView: UIScrollView!
     
-    var ref: DatabaseReference!
     var storage: Storage!
     private let db = Firestore.firestore()
     
     var communityKey:[String] = []
     var communityVal:[[String:Any]] = []
-    // ScrollScreenの高さ
-    var scrollScreenHeight:CGFloat!
-    // ScrollScreenの幅
-    var scrollScreenWidth:CGFloat!
     
+    var scrollScreenHeight:CGFloat!// ScrollScreenの高さ
+    var scrollScreenWidth:CGFloat!// ScrollScreenの幅
     var screenSize:CGRect!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         screenSize = UIScreen.main.bounds
-        print("こんちは")
         // ページスクロールとするためにページ幅を合わせる
         scrollScreenWidth = screenSize.width
         scrollScreenHeight = screenSize.height
@@ -57,7 +53,6 @@ class ScrollViewController: UIViewController {
         
         var counter = 0
         
-        ref = Database.database().reference()
         db.collection("locations").getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
@@ -146,7 +141,6 @@ class ScrollViewController: UIViewController {
             let nav = segue.destination as! UINavigationController
             let chatViewController = nav.topViewController as! ChatViewController
             chatViewController.communityId = (sender as! String)
-            print("テスト")
         }
     }
     
