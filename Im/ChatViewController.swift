@@ -280,6 +280,8 @@ class ChatViewController: UIViewController, UICollectionViewDelegate, UICollecti
     @objc func tapImg(_ sender: UserTapGestureRecognizer) {
         // IDチェック
         getId = sender.user!
+        print(getId)
+        print(RootTabBarController.UserId)
         if getId == RootTabBarController.UserId {
             return
         }

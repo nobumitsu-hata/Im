@@ -42,7 +42,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // 初期化
         storage = Storage.storage().reference()
         // ユーザー情報セット
-        self.senderId = RootTabBarController.userId
+        self.senderId = RootTabBarController.UserId
         self.senderDisplayName = RootTabBarController.UserInfo["name"] as? String
 
         // ナビバー表示
@@ -93,11 +93,11 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     }
     
     func getPrivateChatId() {
-        let val = RootTabBarController.userId.compare(partnerId).rawValue
+        let val = RootTabBarController.UserId.compare(partnerId).rawValue
         if val < 0 {
-            chatId = RootTabBarController.userId + partnerId
+            chatId = RootTabBarController.UserId + partnerId
         } else {
-            chatId = partnerId + RootTabBarController.userId
+            chatId = partnerId + RootTabBarController.UserId
         }
     }
     
@@ -145,7 +145,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                         
                         // 名前
                         var name = ""
-                        if messageData["senderId"] as! String == RootTabBarController.userId {
+                        if messageData["senderId"] as! String == RootTabBarController.UserId {
                             name = RootTabBarController.UserInfo["name"] as! String
                         } else {
                             name = self.partnerData["name"] as! String
@@ -193,7 +193,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                         
                         print("スクロールフラグ")
                         print(self.scrollFlg)
-                        if messageData["senderId"] as! String == RootTabBarController.userId || self.scrollFlg {
+                        if messageData["senderId"] as! String == RootTabBarController.UserId || self.scrollFlg {
                             //メッセージの送信処理を完了する(画面上にメッセージが表示される)
                             self.finishReceivingMessage(animated: true)
                         } else {
@@ -243,7 +243,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 
                 // 名前
                 var name = ""
-                if messageData["senderId"] as! String == RootTabBarController.userId {
+                if messageData["senderId"] as! String == RootTabBarController.UserId {
                     name = RootTabBarController.UserInfo["name"] as! String
                 } else {
                     name = self.partnerData["name"] as! String
@@ -321,7 +321,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     }
     
     func returnOutgoingStatusForUser(senderId: String) -> Bool {
-        return senderId == RootTabBarController.userId
+        return senderId == RootTabBarController.UserId
     }
     
     func downLoadImage(at imageUrl: URL, completion: @escaping(_ image: UIImage?) -> Void) {
@@ -411,7 +411,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         var ref: DocumentReference? = nil
         let timestamp = NSDate().timeIntervalSince1970
         ref = db.collection("privateChat").document(chatId).collection("messages").addDocument(data: [
-            "senderId": RootTabBarController.userId,
+            "senderId": RootTabBarController.UserId,
             "type": "text",
             "message": text,
             "createTime": timestamp
@@ -435,19 +435,21 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     }
     
     func afterAddMessage(message: String, type: String, timestamp: TimeInterval) {
+        print("トランザクションフラグ\(self.createFlg)")
         if self.createFlg {
             
             self.db.collection("privateChat").document(self.chatId).setData([
-                "lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.userId
+                "lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId
                 ])
             
         } else {
+            print("トランザクション")
             // トランザクション
             self.db.runTransaction({ (transaction, errorPointer) -> Any? in
                 
                 // 個人チャットルーム作成
                 transaction.setData(
-                    ["lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.userId],
+                    ["lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
                     forDocument: self.db.collection("privateChat").document(self.chatId)
                 )
                 
@@ -456,14 +458,14 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
                 transaction.setData(
                     ["partnerRef" : partnerRef, "privateChatRef": privateChatRef],
-                    forDocument: self.db.document("users/\(RootTabBarController.userId)/privateChatPartners/\(String(describing: self.partnerId))")
+                    forDocument: self.db.document("users/\(RootTabBarController.UserId)/privateChatPartners/\(String(describing: self.partnerId))")
                 )
                 
                 // パートナーのプライベートチャットリストに追加
-                let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.userId)
+                let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.UserId)
                 transaction.setData(
                     ["partnerRef" : userRef, "privateChatRef": privateChatRef],
-                    forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.userId)")
+                    forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.UserId)")
                 )
                 
                 return nil
@@ -480,26 +482,10 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     
     // スクロールして途中で止まった場合のみ
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        print("スクロールストップ")
         if decelerate == false {
-            print(print("ストップ"))
             scrollFlg = false
-        } else {
-            print(collectionView.contentOffset.y + collectionView.frame.size.height)
-            print(collectionView.contentSize.height)
-            
         }
     }
-    
-    // MARK: UIScrollView delegate
-    
-//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//
-//        if collectionView.contentOffset.y + collectionView.frame.size.height > collectionView.contentSize.height && collectionView.isDragging {
-//            print("一番下に来た時の処理")
-//            scrollFlg = true
-//        }
-//    }
     
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
 
@@ -536,7 +522,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         if let imgData = picture?.jpegData(compressionQuality: 0.7) {
             
             let date = Date().toStringDateImg()
-            let fileName = RootTabBarController.userId + date + ".jpg"
+            let fileName = RootTabBarController.UserId + date + ".jpg"
             let meta = StorageMetadata()
             meta.contentType = "image/jpeg" // <- これ！！
             storageRef.child("privateChat").child(chatId).child(fileName).putData(imgData, metadata: meta, completion: { metaData, error in
@@ -549,7 +535,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 let timestamp = NSDate().timeIntervalSince1970
                 print(metaData!)
                 self.db.collection("privateChat").document(self.chatId).collection("messages").addDocument(data: [
-                    "senderId": RootTabBarController.userId,
+                    "senderId": RootTabBarController.UserId,
                     "type": type,
                     "message": fileName,
                     "createTime": timestamp

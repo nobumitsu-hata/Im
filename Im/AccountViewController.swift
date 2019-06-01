@@ -25,12 +25,16 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btn: UIButton!
     
-    var userId = RootTabBarController.UserId
+    var userId = ""
     var userData:[String:Any]!
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
     var belongsVal = ["未設定", "未設定", "未設定"]
+    var communityId = ""
     
     override func viewWillAppear(_ animated: Bool) {
+        if userId == "" {
+            userId = RootTabBarController.UserId
+        }
         if userId != RootTabBarController.UserId {
             btn.setTitle("トークする", for: .normal)
         }
@@ -70,8 +74,8 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setupFirebase() {
-        db.collection("users").document(userId)
-            .addSnapshotListener { documentSnapshot, error in
+        print("なあああ\(userId)")
+        db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
                 guard let document = documentSnapshot else {
                     print("Error fetching document: \(error!)")
                     return
@@ -82,9 +86,9 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     let imgRef = storageRef.child("users").child(self.userData?["img"] as! String)
                     self.imgView.sd_setImage(with: imgRef)
                 }
-                
+
                 self.nameLbl.text = (self.userData!["name"] as! String)
-                
+
                 if (self.userData?["introduction"] as? String != "") {
                     print("紹介文あり")
                     self.introduction.text = self.userData?["introduction"] as? String
@@ -92,7 +96,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     print("紹介文なし")
                     self.introduction.isHidden = true
                 }
-                
+
                 self.db.collection("users").document(self.userId).collection("belongs").getDocuments() { (querySnapshot, err) in
                     guard let documents = querySnapshot?.documents else {
                         print("Error fetching documents: \(error!)")
@@ -101,15 +105,15 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     guard documents.count > 0 else {
                         return
                     }
-                    
+
                     for document in documents {
-                        
-                        let communityId = document.documentID
+
+                        self.communityId = document.documentID
                         let data = document.data()
-                        self.db.collection("communities").document(communityId).getDocument { (communityDoc, error) in
-                            
+                        self.db.collection("communities").document(self.communityId).getDocument { (communityDoc, error) in
+
                             let communityData = communityDoc?.data()
-                            
+
                             self.belongsVal[0] = communityData?["name"] as! String
                             if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
                             else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
@@ -126,7 +130,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                                     print("Document does not exist")
                                 }
                             }
-                            
+
                             self.tableView.reloadData()
                         }
                     }
@@ -170,6 +174,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     belongsVal[i] = "選択してください"
                 }
             }
+            editProfileViewController.belongsCommunityId = communityId
             editProfileViewController.belongsVal = belongsVal
         }
         

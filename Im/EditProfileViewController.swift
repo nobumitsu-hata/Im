@@ -14,6 +14,7 @@ import RSKImageCropper
 class EditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, UITextFieldDelegate {
     
     var ref: DatabaseReference!
+    private let db = Firestore.firestore()
     var picker: UIImagePickerController! = UIImagePickerController()
     var changeFlg = false
     var selectedImageType: String!
@@ -28,6 +29,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     var pickerViewArr:[UIPickerView] = [UIPickerView(), UIPickerView(), UIPickerView()]
     var textFieldArr:[UITextField] = []
     var list:[[String]] = [["選択してください"], ["選択してください", "いる", "いない"], ["選択してください"]]
+    var belongsCommunityId = ""
     
     @IBOutlet weak var wrapperView: UIView!
     @IBOutlet weak var mainView: UIView!
@@ -96,8 +98,11 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         wrapperView.layer.cornerRadius = 20
         mainView.layer.cornerRadius = 20
         
-        nameField.text = RootTabBarController.userInfo["name"] as? String
-        introduction.text = RootTabBarController.userInfo["introduction"] as? String
+        nameField.text = RootTabBarController.UserInfo["name"] as? String
+        introduction.text = RootTabBarController.UserInfo["introduction"] as? String
+        if RootTabBarController.UserInfo["birthday"] as! Int > 0 {
+            birthdayField.text = birthdayToString(birthdayInt: RootTabBarController.UserInfo["birthday"] as! Int)
+        }
 
     }
     
@@ -136,45 +141,59 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     
     func setupFirebase() {
         ref = Database.database().reference()
-        if RootTabBarController.userInfo["img"] as? String != "" {
+        if RootTabBarController.UserInfo["img"] as? String != "" {
             let storageRef = self.storage.reference()
-            let imgRef = storageRef.child("users").child(RootTabBarController.userInfo["img"] as! String)
+            let imgRef = storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String)
             self.imgView.sd_setImage(with: imgRef)
         } else {
             
         }
-        
-        // コミュニティー選択項目設定
-        ref.child("communities").observeSingleEvent(of: .value, with: { (snapshot) in
-            if snapshot.exists() {
-                self.communityDic = snapshot.value as! [String:Any]
-                self.communityKey = Array(self.communityDic.keys)
-                let arr = Array(self.communityDic.values) as! [[String:String]]
-                self.list[0] += arr.map({($0["name"])!})
-                
-                let i = self.list[0].index(of: self.belongsVal[0])
-                if  i !=  nil {
-                    self.pickerViewArr[0].selectRow(i!, inComponent: 0, animated: false)
-                }
-                self.communityField.inputView = self.pickerViewArr[0]
-                // ファンレベル選択項目設定
-                self.ref.child("levels").observeSingleEvent(of: .value, with: { (snapshot) in
-                    if snapshot.exists() {
-                        self.levelDic = snapshot.value as! [String:Any]
-                        var valArr = Array(self.levelDic.values) as! [[String:Any]]
-                        valArr.sort{($0["index"] as! Int) < ($1["index"] as! Int)}// ソート
-                        self.list[2] += valArr.map({(($0["name"]) as? String)!})
-                        
-                        let i = self.list[2].index(of: self.belongsVal[2])
-                        if  i !=  nil {
-                            self.pickerViewArr[2].selectRow(i!, inComponent: 0, animated: false)
-                        }
-                        self.levelField.inputView = self.pickerViewArr[2]
-                    }
-                })
-                
+        db.collection("communities").getDocuments { (querySnapshot, error) in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!.localizedDescription)")
+                return
             }
-        })
+            guard documents.count > 0 else {
+                return
+            }
+            for document in documents {
+                self.communityDic[document.documentID] = document.data()
+            }
+
+            self.communityKey = Array(self.communityDic.keys)
+            let arr = Array(self.communityDic.values) as! [[String:String]]
+            self.list[0] += arr.map({($0["name"])!})
+            
+            let i = self.list[0].index(of: self.belongsVal[0])
+            if  i !=  nil {
+                self.pickerViewArr[0].selectRow(i!, inComponent: 0, animated: false)
+            }
+            self.communityField.inputView = self.pickerViewArr[0]
+            
+            self.db.collection("levels").getDocuments { (querySnapshot, error) in
+                guard let documents = querySnapshot?.documents else {
+                    print("Error fetching documents: \(error!.localizedDescription)")
+                    return
+                }
+                guard documents.count > 0 else {
+                    return
+                }
+                for document in documents {
+                    self.levelDic[document.documentID] = document.data()
+                }
+
+                var valArr = Array(self.levelDic.values) as! [[String:Any]]
+                valArr.sort{($0["index"] as! Int) < ($1["index"] as! Int)}// ソート
+                self.list[2] += valArr.map({(($0["name"]) as? String)!})
+                
+                let i = self.list[2].index(of: self.belongsVal[2])
+                if  i !=  nil {
+                    self.pickerViewArr[2].selectRow(i!, inComponent: 0, animated: false)
+                }
+                self.levelField.inputView = self.pickerViewArr[2]
+            }
+        }
+
     }
     
     @IBAction func selectImg(_ sender: Any) {
@@ -254,37 +273,66 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             saveFlg = true
         }
     }
-    
-//    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange,
-//                  replacementText text: String) -> Bool {
-//        if text == "\n" {
-//            textView.resignFirstResponder() //キーボードを閉じる
-//            return false
-//        }
-//        return true
-//    }
-    
+        
     @IBAction func saveProfile(_ sender: Any) {
         guard saveFlg else { return }
         print("保存")
         // 取得
         let name = nameField.text
-        let birthday = birthdayField.text
+        var birthday = 0
+        if birthdayField.text != "" {
+            birthday = birthdayToInt(birthdayStr: birthdayField.text!)
+        }
         let intro = introduction.text
-        let community = findKeyForValue(value: communityField.text!, dictionary: communityDic as! [String : [String : Any]])
+        let communityId = findKeyForValue(value: communityField.text!, dictionary: communityDic as! [String : [String : Any]])
         let friend = friendDic[friendField.text!]
         let level = findKeyForValue(value: levelField.text!, dictionary: levelDic as! [String: [String:Any]])
 
         // 更新
-        let childUpdates = ["/users/\(RootTabBarController.userId)/": ["name": name, "birthday": birthday, "introduction": intro, "img": RootTabBarController.userInfo["img"]]]
-        ref.updateChildValues(childUpdates as [AnyHashable : Any])
-        if community != "" {
-            let belongsUpdates = ["/belongs/\(RootTabBarController.userId)/": [community: ["friend": friend, "level": level]]]
-            ref.updateChildValues(belongsUpdates as [AnyHashable : Any])
-        } else {
-            let belongsUpdates = ["/users/\(RootTabBarController.userId)/": nil] as [String : Any?]
-            ref.updateChildValues(belongsUpdates as [AnyHashable : Any])
+        // トランザクション
+        self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+            
+            transaction.updateData(
+                ["name": name!, "birthday": birthday, "introduction":intro!],
+                forDocument: self.db.collection("users").document(RootTabBarController.UserId)
+            )
+            
+            if communityId != "" {
+                // 削除
+                if self.belongsCommunityId != "" {
+                    transaction.deleteDocument(
+                        self.db.collection("communities").document(self.belongsCommunityId).collection("members").document(RootTabBarController.UserId)
+                    )
+                    transaction.deleteDocument(
+                        self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(self.belongsCommunityId)
+                    )
+                }
+                
+                // 更新
+                transaction.updateData(
+                    ["friend": friend!, "level": level],
+                    forDocument: self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(communityId)
+                )
+                
+                let userRef = self.db.collection("users").document(RootTabBarController.UserId)
+                transaction.updateData(
+                    ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],
+                    forDocument: self.db.collection("communities").document(communityId).collection("members").document(RootTabBarController.UserId)
+                )
+            }
+            
+            return nil
+        }) { (object, error) in
+            if let error = error {
+                print("Transaction failed: \(error)")
+            } else {
+                RootTabBarController.UserInfo["name"] = name!
+                RootTabBarController.UserInfo["birthday"] = birthday
+                RootTabBarController.UserInfo["introduction"] = intro!
+                print("Transaction successfully committed!")
+            }
         }
+        
         // 一つ前のViewControllerに戻る
         navigationController?.popViewController(animated: true)
     }
@@ -364,5 +412,29 @@ extension EditProfileViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     @objc func done() {
         // キーボードを閉じる
         self.view.endEditing(true)
+    }
+    
+    func birthdayToInt(birthdayStr:String) -> Int {
+        let componentsYear = birthdayStr.components(separatedBy: "年")
+        let componentsMonth = componentsYear[1].components(separatedBy: "月")
+        
+        let year = componentsYear[0]
+        let month = String(format: "%02d", Int(componentsMonth[0])!)
+        let day = String(format: "%02d", Int(componentsMonth[1].replacingOccurrences(of: "日", with: ""))!)
+        
+        return Int(year+month+day) ?? 0
+    }
+    
+    func birthdayToString(birthdayInt: Int) -> String {
+        let year = String(String(birthdayInt).prefix(4))
+        var day = String(String(birthdayInt).suffix(2))
+        var month = String(String(birthdayInt)[String(birthdayInt).index(String(birthdayInt).startIndex, offsetBy: 4)..<String(birthdayInt).index(String(birthdayInt).startIndex, offsetBy: 6)])
+        if month.prefix(1) == "0" {
+            month = String(month.suffix(1))
+        }
+        if day.prefix(1) == "0" {
+            day = String(day.suffix(1))
+        }
+        return year + "年" + month + "月" + day + "日"
     }
 }
