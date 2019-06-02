@@ -10,9 +10,8 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 
-class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UINavigationControllerDelegate {
     
-    var ref: DatabaseReference!
     var storage: Storage!
     private let db = Firestore.firestore()
     
@@ -23,25 +22,15 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var introduction: UITextView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btn: UIButton!
     
-    var userId = ""
     var userData:[String:Any]!
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
     var belongsVal = ["未設定", "未設定", "未設定"]
     var communityId = ""
     
-    override func viewWillAppear(_ animated: Bool) {
-        if userId == "" {
-            userId = RootTabBarController.UserId
-        }
-        if userId != RootTabBarController.UserId {
-            btn.setTitle("トークする", for: .normal)
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+
         // 編集ボタンカスタマイズ
         editBtn.setGradientBackground(
             colorOne: UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
@@ -69,12 +58,10 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.navigationController!.navigationBar.shadowImage = UIImage()
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
-
         setupFirebase()
     }
     
     func setupFirebase() {
-        print("なあああ\(userId)")
         db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
                 guard let document = documentSnapshot else {
                     print("Error fetching document: \(error!)")
@@ -84,7 +71,10 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                 let storageRef = self.storage.reference()
                 if self.userData?["img"] as! String != "" {
                     let imgRef = storageRef.child("users").child(self.userData?["img"] as! String)
-                    self.imgView.sd_setImage(with: imgRef)
+                    DispatchQueue.main.async {
+                        self.imgView.sd_setImage(with: imgRef)
+                        self.imgView.setNeedsLayout()
+                    }
                 }
 
                 self.nameLbl.text = (self.userData!["name"] as! String)
@@ -97,7 +87,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     self.introduction.isHidden = true
                 }
 
-                self.db.collection("users").document(self.userId).collection("belongs").getDocuments() { (querySnapshot, err) in
+                self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").getDocuments() { (querySnapshot, err) in
                     guard let documents = querySnapshot?.documents else {
                         print("Error fetching documents: \(error!)")
                         return
@@ -139,6 +129,8 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     }
     
+    // MARK: UITableView delegate
+    
     func tableView(_ table: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileTableViewCell
@@ -159,14 +151,11 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @IBAction func toEdit(_ sender: Any) {
-        if userId == RootTabBarController.UserId {
-            self.performSegue(withIdentifier: "toEditProfileViewController", sender: nil)
-        } else {
-            self.performSegue(withIdentifier: "toPrivateChatViewController", sender: nil)
-        }
+        self.performSegue(withIdentifier: "toEditProfileViewController", sender: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
         if segue.identifier == "toEditProfileViewController" {
             let editProfileViewController = segue.destination as! EditProfileViewController
             for i in 0..<3 {
@@ -176,12 +165,6 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
             editProfileViewController.belongsCommunityId = communityId
             editProfileViewController.belongsVal = belongsVal
-        }
-        
-        if segue.identifier == "toPrivateChatViewController" {
-            let privateChatViewController = segue.destination as! DMViewController
-            privateChatViewController.partnerId = userId
-            privateChatViewController.partnerData = userData
         }
     }
 }

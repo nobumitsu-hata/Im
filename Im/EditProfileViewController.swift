@@ -14,6 +14,7 @@ import RSKImageCropper
 class EditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, UITextFieldDelegate {
     
     var ref: DatabaseReference!
+    private let storageRef = Storage.storage().reference()
     private let db = Firestore.firestore()
     var picker: UIImagePickerController! = UIImagePickerController()
     var changeFlg = false
@@ -30,6 +31,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     var textFieldArr:[UITextField] = []
     var list:[[String]] = [["選択してください"], ["選択してください", "いる", "いない"], ["選択してください"]]
     var belongsCommunityId = ""
+    var changeImgFlg = false
     
     @IBOutlet weak var wrapperView: UIView!
     @IBOutlet weak var mainView: UIView!
@@ -48,6 +50,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         super.viewWillAppear(true)
         setupFirebase()
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = UIColor.white
@@ -273,7 +276,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             saveFlg = true
         }
     }
-        
+    
     @IBAction func saveProfile(_ sender: Any) {
         guard saveFlg else { return }
         print("保存")
@@ -326,6 +329,52 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             if let error = error {
                 print("Transaction failed: \(error)")
             } else {
+                if self.changeImgFlg {
+                    var img = self.imgView.image
+                    if self.imgView.image?.size.width ?? 0 > CGFloat(1024) {
+                        let aspect = self.imgView.image!.size.height / self.imgView.image!.size.width
+                        img = self.imgView.image?.resize(size: CGSize(width: CGFloat(1024), height: CGFloat(1024) * aspect))
+                    }
+                    
+                    if let imgData = img?.jpegData(compressionQuality: 0.7) {
+                        
+                        let date = Date().toStringDateImg()
+                        let fileName = RootTabBarController.UserId + date + ".jpg"
+                        let meta = StorageMetadata()
+                        meta.contentType = "image/jpeg" // <- これ！！
+                        let ref = self.storageRef.child("users").child(fileName)
+                        ref.putData(imgData, metadata: meta, completion: { metaData, error in
+                            if error != nil {
+                                print(error!.localizedDescription)
+                                return
+                            }
+                            
+                            self.db.collection("users").document(RootTabBarController.UserId).updateData(["img": fileName]) { err in
+                                if let err = err {
+                                    print("Error updating document: \(err)")
+                                } else {
+                                    print("Document successfully updated")
+                                    if RootTabBarController.UserInfo["img"] as! String != "" {
+                                        self.storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String).delete { delError in
+                                            if let delError = delError {
+                                                // Uh-oh, an error occurred!
+                                                print(delError.localizedDescription)
+                                            } else {
+                                                // File deleted successfully
+                                                print("File deleted successfully")
+                                                RootTabBarController.UserInfo["img"] = fileName
+                                                ref.downloadURL(completion: { (url, err) in
+                                                    RootTabBarController.UserInfo["imgUrl"] = url?.absoluteString
+                                                })
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        })
+                    }
+                }
                 RootTabBarController.UserInfo["name"] = name!
                 RootTabBarController.UserInfo["birthday"] = birthday
                 RootTabBarController.UserInfo["introduction"] = intro!
@@ -359,8 +408,13 @@ extension EditProfileViewController: RSKImageCropViewControllerDelegate {
     }
     //完了を押した後の処理
     func imageCropViewController(_ controller: RSKImageCropViewController, didCropImage croppedImage: UIImage, usingCropRect cropRect: CGRect, rotationAngle: CGFloat) {
+        changeImgFlg = true
+        print("画像変更")
+        DispatchQueue.main.async {
+            self.imgView.image = croppedImage
+            self.imgView.setNeedsLayout()
+        }
         dismiss(animated: true)
-        imgView.image = croppedImage
     }
 }
 

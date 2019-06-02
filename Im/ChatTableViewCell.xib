@@ -31,7 +31,7 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="17" id="iGe-G9-peK"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                        <fontDescription key="fontDescription" name="HiraginoSans-W6" family="Hiragino Sans" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -40,7 +40,7 @@
                         <constraints>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="18" id="U4P-gh-vZ9"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -59,9 +59,9 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="userImg" destination="91M-ji-nEn" id="Dkq-3n-4jr"/>
-                <outlet property="userMessage" destination="4S5-R3-oST" id="TqE-7p-KBm"/>
-                <outlet property="userName" destination="bdt-wt-BLb" id="NRC-aX-p9e"/>
+                <outlet property="img" destination="91M-ji-nEn" id="Wl0-hz-eej"/>
+                <outlet property="message" destination="4S5-R3-oST" id="uHD-yH-cfR"/>
+                <outlet property="name" destination="bdt-wt-BLb" id="vxm-58-muM"/>
             </connections>
             <point key="canvasLocation" x="137.59999999999999" y="24.287856071964018"/>
         </tableViewCell>

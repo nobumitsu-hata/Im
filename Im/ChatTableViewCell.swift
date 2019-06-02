@@ -10,17 +10,17 @@ import UIKit
 
 class ChatTableViewCell: UITableViewCell, UITextViewDelegate {
     
-    @IBOutlet weak var userImg: UIImageView!
-    @IBOutlet weak var userName: UILabel!
-    @IBOutlet weak var userMessage: UILabel!
+    @IBOutlet weak var img: UIImageView!
+    @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var message: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        
+        backgroundColor = UIColor.clear
         // 角丸にする
-        self.userImg.layer.cornerRadius = self.userImg.frame.size.width * 0.5
-        self.userImg.clipsToBounds = true
+        img.layer.cornerRadius = img.frame.size.width * 0.5
+        img.clipsToBounds = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

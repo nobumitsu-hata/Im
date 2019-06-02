@@ -41,7 +41,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
+        super.viewWillAppear(animated)
         ref = Database.database().reference()
         
         // ログアウト
@@ -56,7 +56,10 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("要素")
+        print(selectedIndex)
+//        print(viewControllers)
+//        selectedIndex = 1
         UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().backgroundImage = UIImage()
         
@@ -145,6 +148,11 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
             print("ページ遷移")
             if RootTabBarController.AuthCheck {
                 print("ページ遷移2")
+                // タブを切り替える
+                // なぜか0だけだと選択されないので1にしてから0に
+                self.selectedIndex = 1
+                self.selectedIndex = 0
+//                self.tabBarController?.selectedIndex = 0
 //                if viewController is ViewController { //もしShareTweetViewController.swiftをclass指定してあるページ行きのボタンをタップしたら
 ////                    if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreateViewController"){ //withIdentifier: にはStory Board IDを設定
 //                        print("モーダル")
