@@ -142,7 +142,9 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-//        if viewController is ScrollViewController {
+        if viewController is ScrollViewController {
+            return true
+        }
 //
 //        } else {
             print("ページ遷移")

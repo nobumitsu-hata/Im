@@ -14,6 +14,11 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     var storage: Storage!
     private let db = Firestore.firestore()
+    let contentViewController = UINavigationController(rootViewController: UIViewController())
+    let sidemenuViewController = SidemenuViewController()
+    private var isShownSidemenu: Bool {
+        return sidemenuViewController.parent == self
+    }
     
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
@@ -22,6 +27,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var introduction: UITextView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var menuBtn: UIBarButtonItem!
     
     var userData:[String:Any]!
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
@@ -30,12 +36,17 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        sidemenuViewController.delegate = self
+        sidemenuViewController.startPanGestureRecognizing()
 
         // 編集ボタンカスタマイズ
         editBtn.setGradientBackground(
             colorOne: UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
             colorTwo: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0)
         )
+        
+        menuBtn.tintColor = .white
         
         // 初期化
         storage = Storage.storage()
@@ -167,6 +178,41 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
             editProfileViewController.belongsVal = belongsVal
         }
     }
+    
+    
+    // MARK: サイドメニュー
+    
+    @IBAction func sidemenuButtonTapped(_ sender: Any) {
+        if isShownSidemenu {
+            hideSidemenu(animated: true)
+            return
+        }
+        showSidemenu(animated: true)
+    }
+    
+    private func showSidemenu(contentAvailability: Bool = true, animated: Bool) {
+        if isShownSidemenu { return }
+        
+        addChild(sidemenuViewController)
+        sidemenuViewController.view.autoresizingMask = .flexibleHeight
+        sidemenuViewController.view.frame = view.bounds
+        view.insertSubview(sidemenuViewController.view, aboveSubview: view)
+        sidemenuViewController.didMove(toParent: self)
+        if contentAvailability {
+            sidemenuViewController.showContentView(animated: animated)
+        }
+    }
+    
+    private func hideSidemenu(animated: Bool) {
+        if !isShownSidemenu { return }
+        
+        sidemenuViewController.hideContentView(animated: animated, completion: { (_) in
+            self.sidemenuViewController.willMove(toParent: nil)
+            self.sidemenuViewController.removeFromParent()
+            self.sidemenuViewController.view.removeFromSuperview()
+        })
+    }
+
 }
 
 extension UIView {
@@ -274,5 +320,37 @@ extension UIView {
         gradientLayer.endPoint = CGPoint(x: 0, y: 0)
         
         superview!.layer.mask = gradientLayer
+    }
+}
+
+extension AccountViewController: SidemenuViewControllerDelegate {
+    func parentViewControllerForSidemenuViewController(_ sidemenuViewController: SidemenuViewController) -> UIViewController {
+        return self
+    }
+    
+    func logout() {
+        tabBarController?.selectedIndex = 0
+        RootTabBarController.AuthCheck = false
+    }
+    
+    func shouldPresentForSidemenuViewController(_ sidemenuViewController: SidemenuViewController) -> Bool {
+        /* You can specify sidemenu availability */
+        return true
+    }
+    
+    func toDeleteViewController() {
+        self.performSegue(withIdentifier: "toDeleteViewController", sender: nil)
+    }
+    
+    func sidemenuViewControllerDidRequestShowing(_ sidemenuViewController: SidemenuViewController, contentAvailability: Bool, animated: Bool) {
+        showSidemenu(contentAvailability: contentAvailability, animated: animated)
+    }
+    
+    func sidemenuViewControllerDidRequestHiding(_ sidemenuViewController: SidemenuViewController, animated: Bool) {
+        hideSidemenu(animated: animated)
+    }
+    
+    func sidemenuViewController(_ sidemenuViewController: SidemenuViewController, didSelectItemAt indexPath: IndexPath) {
+        hideSidemenu(animated: true)
     }
 }

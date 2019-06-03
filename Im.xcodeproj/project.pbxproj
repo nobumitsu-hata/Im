@@ -11,6 +11,9 @@
 		1B9AB54033FCA510BD91A66D /* Pods_ImUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */; };
 		2A6DEF0A25C86B519B7BD652 /* Pods_Im.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C901B0705F05D07D86F7E1D /* Pods_Im.framework */; };
 		520E0E1722A47805008934C2 /* OtherProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520E0E1622A47805008934C2 /* OtherProfileViewController.swift */; };
+		520E0E1922A4B512008934C2 /* SidemenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520E0E1822A4B511008934C2 /* SidemenuViewController.swift */; };
+		520E0E1B22A55603008934C2 /* aaaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520E0E1A22A55603008934C2 /* aaaViewController.swift */; };
+		520E0E1D22A5745C008934C2 /* DeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520E0E1C22A5745C008934C2 /* DeleteViewController.swift */; };
 		52252FC6229C0EB70064D5A8 /* GalleryDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52252FC5229C0EB70064D5A8 /* GalleryDelegate.swift */; };
 		525A31D522999E1700C9A2F9 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525A31D422999E1700C9A2F9 /* Camera.swift */; };
 		526C6CE222891DFF00BE61E4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */; };
@@ -28,7 +31,6 @@
 		52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D342237846900CD3C50 /* RootTabBarController.swift */; };
 		52838D382237905D00CD3C50 /* CommunityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */; };
 		52838D392237905D00CD3C50 /* CommunityTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */; };
-		52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D3A2237921A00CD3C50 /* HomeViewController.swift */; };
 		52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D3E2238D26B00CD3C50 /* MessageViewController.swift */; };
 		52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */; };
 		52838D43223F2C1900CD3C50 /* ChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */; };
@@ -42,8 +44,6 @@
 		52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */; };
 		52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D56225F796E00CD3C50 /* TestViewController.swift */; };
 		52838D5922625C1800CD3C50 /* DMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D5822625C1800CD3C50 /* DMViewController.swift */; };
-		5293305522A0BA9400D991FA /* CommunityChatCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5293305322A0BA9400D991FA /* CommunityChatCollectionViewCell.swift */; };
-		5293305622A0BA9400D991FA /* CommunityChatCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5293305422A0BA9400D991FA /* CommunityChatCollectionViewCell.xib */; };
 		5293305B22A3C3D600D991FA /* CommunityChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5293305922A3C3D600D991FA /* CommunityChatTableViewCell.swift */; };
 		5293305C22A3C3D600D991FA /* CommunityChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5293305A22A3C3D600D991FA /* CommunityChatTableViewCell.xib */; };
 		52EEBAE6229D73B800F16B29 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EEBAE5229D73B800F16B29 /* LoginViewController.swift */; };
@@ -79,6 +79,9 @@
 		1C901B0705F05D07D86F7E1D /* Pods_Im.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Im.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		374AD263069AFB7B42B05A68 /* Pods_ImUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ImUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		520E0E1622A47805008934C2 /* OtherProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherProfileViewController.swift; sourceTree = "<group>"; };
+		520E0E1822A4B511008934C2 /* SidemenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidemenuViewController.swift; sourceTree = "<group>"; };
+		520E0E1A22A55603008934C2 /* aaaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = aaaViewController.swift; sourceTree = "<group>"; };
+		520E0E1C22A5745C008934C2 /* DeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteViewController.swift; sourceTree = "<group>"; };
 		52252FC5229C0EB70064D5A8 /* GalleryDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryDelegate.swift; sourceTree = "<group>"; };
 		525A31D422999E1700C9A2F9 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		526C6CE122891DFF00BE61E4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
@@ -102,7 +105,6 @@
 		52838D342237846900CD3C50 /* RootTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabBarController.swift; sourceTree = "<group>"; };
 		52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityTableViewCell.swift; sourceTree = "<group>"; };
 		52838D372237905D00CD3C50 /* CommunityTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommunityTableViewCell.xib; sourceTree = "<group>"; };
-		52838D3A2237921A00CD3C50 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		52838D3E2238D26B00CD3C50 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		52838D40223F2C1900CD3C50 /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatTableViewCell.xib; sourceTree = "<group>"; };
@@ -116,8 +118,6 @@
 		52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		52838D56225F796E00CD3C50 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		52838D5822625C1800CD3C50 /* DMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMViewController.swift; sourceTree = "<group>"; };
-		5293305322A0BA9400D991FA /* CommunityChatCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityChatCollectionViewCell.swift; sourceTree = "<group>"; };
-		5293305422A0BA9400D991FA /* CommunityChatCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommunityChatCollectionViewCell.xib; sourceTree = "<group>"; };
 		5293305922A3C3D600D991FA /* CommunityChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityChatTableViewCell.swift; sourceTree = "<group>"; };
 		5293305A22A3C3D600D991FA /* CommunityChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommunityChatTableViewCell.xib; sourceTree = "<group>"; };
 		5293305D22A417EA00D991FA /* Im.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Im.entitlements; sourceTree = "<group>"; };
@@ -196,6 +196,9 @@
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0222368D3700CD3C50 /* ViewController.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				520E0E1C22A5745C008934C2 /* DeleteViewController.swift */,
+				520E0E1A22A55603008934C2 /* aaaViewController.swift */,
+				520E0E1822A4B511008934C2 /* SidemenuViewController.swift */,
 				52EEBAE5229D73B800F16B29 /* LoginViewController.swift */,
 				526C6CE5228BFAB600BE61E4 /* EditProfileTableViewCell.swift */,
 				526C6CE3228AF21800BE61E4 /* PlaceHolderTextView.swift */,
@@ -217,8 +220,6 @@
 				52838D41223F2C1900CD3C50 /* ChatTableViewCell.xib */,
 				5293305922A3C3D600D991FA /* CommunityChatTableViewCell.swift */,
 				5293305A22A3C3D600D991FA /* CommunityChatTableViewCell.xib */,
-				5293305322A0BA9400D991FA /* CommunityChatCollectionViewCell.swift */,
-				5293305422A0BA9400D991FA /* CommunityChatCollectionViewCell.xib */,
 				52838D44223F319500CD3C50 /* ChatViewController.swift */,
 				52838D4C2254543C00CD3C50 /* ChatTextField.swift */,
 				52838D362237905D00CD3C50 /* CommunityTableViewCell.swift */,
@@ -227,7 +228,6 @@
 				52838D0C22368D3800CD3C50 /* Info.plist */,
 				52838D342237846900CD3C50 /* RootTabBarController.swift */,
 				52EEBAE7229D829400F16B29 /* LoginPresentationController.swift */,
-				52838D3A2237921A00CD3C50 /* HomeViewController.swift */,
 				52838D3E2238D26B00CD3C50 /* MessageViewController.swift */,
 				52838D54225B1EB900CD3C50 /* EditProfileViewController.swift */,
 				526C6CE7228C246400BE61E4 /* DatePickerKeyboard.swift */,
@@ -393,7 +393,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5293305622A0BA9400D991FA /* CommunityChatCollectionViewCell.xib in Resources */,
 				52838D0B22368D3800CD3C50 /* LaunchScreen.storyboard in Resources */,
 				52838D43223F2C1900CD3C50 /* ChatTableViewCell.xib in Resources */,
 				52838D332236951000CD3C50 /* GoogleService-Info.plist in Resources */,
@@ -596,8 +595,8 @@
 				52EEBAE6229D73B800F16B29 /* LoginViewController.swift in Sources */,
 				52FD3C0122797A1200746600 /* RoomNavigationController.swift in Sources */,
 				52838D57225F796E00CD3C50 /* TestViewController.swift in Sources */,
+				520E0E1922A4B512008934C2 /* SidemenuViewController.swift in Sources */,
 				52838D55225B1EB900CD3C50 /* EditProfileViewController.swift in Sources */,
-				52838D3B2237921A00CD3C50 /* HomeViewController.swift in Sources */,
 				52838D4D2254543C00CD3C50 /* ChatTextField.swift in Sources */,
 				5293305B22A3C3D600D991FA /* CommunityChatTableViewCell.swift in Sources */,
 				52838D53225A914300CD3C50 /* AccountViewController.swift in Sources */,
@@ -609,17 +608,18 @@
 				520E0E1722A47805008934C2 /* OtherProfileViewController.swift in Sources */,
 				52F2AE8B229AFACC0018707B /* PhotoMediaItem.swift in Sources */,
 				52838D4722462EA400CD3C50 /* CreateViewController.swift in Sources */,
+				520E0E1D22A5745C008934C2 /* DeleteViewController.swift in Sources */,
 				52252FC6229C0EB70064D5A8 /* GalleryDelegate.swift in Sources */,
 				52EEBAE8229D829400F16B29 /* LoginPresentationController.swift in Sources */,
 				52838D45223F319500CD3C50 /* ChatViewController.swift in Sources */,
 				52838D352237846900CD3C50 /* RootTabBarController.swift in Sources */,
+				520E0E1B22A55603008934C2 /* aaaViewController.swift in Sources */,
 				525A31D522999E1700C9A2F9 /* Camera.swift in Sources */,
 				52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */,
 				52838D42223F2C1900CD3C50 /* ChatTableViewCell.swift in Sources */,
 				52838D4B224F2D9200CD3C50 /* ScrollViewController.swift in Sources */,
 				52FD3BFA2276205700746600 /* MessageTableViewCell.swift in Sources */,
 				52EEBAEA229DAB7700F16B29 /* LoginTestViewController.swift in Sources */,
-				5293305522A0BA9400D991FA /* CommunityChatCollectionViewCell.swift in Sources */,
 				526C6CE6228BFAB600BE61E4 /* EditProfileTableViewCell.swift in Sources */,
 				52838D3F2238D26B00CD3C50 /* MessageViewController.swift in Sources */,
 				52FD3BFF227974C200746600 /* ZoomPercentDrivenInteractiveTransition.swift in Sources */,
