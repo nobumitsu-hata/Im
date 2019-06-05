@@ -19,10 +19,11 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     private let storageRef = Storage.storage().reference()
     var dstView:LoginTestViewController!
     
+    @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var LoginBtns: UIView!
     
     override func viewWillAppear(_ animated: Bool) {
-//        dstView = storyboard?.instantiateViewController(withIdentifier: "LoginTestViewController") as! LoginTestViewController
+        
         // ログインボタン
         let fbLoginBtn = FBLoginButton()
         
@@ -42,7 +43,21 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        textView.delegate = self
+        setSwipeBack()
+//        navigationController?.navigationBar.isHidden = true
         
+        let style = NSMutableParagraphStyle()
+        style.alignment = .center
+        let attributedString = NSMutableAttributedString(string: "登録した時点で、あなたは当社の利用規約とプライバシーポリシーを熟読し、同意したものとみなす", attributes: [NSAttributedString.Key.font:UIFont(name: "Hiragino Sans", size: 12)!])
+        attributedString.addAttributes([.foregroundColor: UIColor.lightGray, .paragraphStyle: style,], range: NSMakeRange(0, attributedString.length))
+        let termsRange = attributedString.mutableString.range(of: "利用規約")
+        let policyRange = attributedString.mutableString.range(of: "プライバシーポリシー")
+        attributedString.setAttributes([.link: URL(string: "https://terms.com/")!, .foregroundColor: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0), .paragraphStyle: style,], range: termsRange)
+        attributedString.setAttributes([.link: URL(string: "https://policy.com/")!, .foregroundColor: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0), .paragraphStyle: style,], range: policyRange)
+        textView.attributedText = attributedString
+
     }
     
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
@@ -89,9 +104,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                     RootTabBarController.AuthCheck = true
                     
                     let LoginController = self.tabBarController?.viewControllers?[2]
-                    print(LoginController)
                     self.tabBarController?.selectedViewController = LoginController
-//                    self.dismiss(animated: false, completion: nil)
+
                 } else {
                     print("Document does not exist")
                     self.tempRegister(userId: userId, tokenStr: token!.tokenString)
@@ -145,7 +159,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                 "introduction": "",
                                 "sex": "",
                                 "birthday": 0,
-                                "status": "auth",
+                                "status": 0,
+                                "deleteFlg": false,
                                 "contact": email,
                                 "img": fileName,
                                 "imgUrl": url!.absoluteString,
@@ -241,7 +256,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                     "introduction": "",
                                     "sex": "",
                                     "birthday": 0,
-                                    "status": "auth",
+                                    "status": 0,
+                                    "deleteFlg": false,
                                     "contact": userEmail,
                                     "img": "",
                                     "imgUrl": "",
@@ -292,7 +308,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                                     "introduction": "",
                                                     "sex": "",
                                                     "birthday": 0,
-                                                    "status": "auth",
+                                                    "status": 0,
+                                                    "deleteFlg": false,
                                                     "contact": userEmail,
                                                     "img": fileName,
                                                     "imgUrl": url!.absoluteString,
@@ -445,6 +462,7 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                         return data
                     })
                 }) {
+                    print("アカウントあり")
                     RootTabBarController.UserId = userId
                     RootTabBarController.UserInfo = userDoc
                     RootTabBarController.AuthCheck = true
@@ -485,7 +503,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                         "introduction": "",
                                         "sex": "",
                                         "birthday": 0,
-                                        "status": "auth",
+                                        "status": 0,
+                                        "deleteFlg": false,
                                         "contact": email!,
                                         "img": fileName,
                                         "imgUrl": url!.absoluteString,
@@ -521,4 +540,28 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     }
 
     
+}
+
+extension LoginViewController: UITextViewDelegate {
+    
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        let urlString = URL.absoluteString
+        if urlString.contains("terms") {
+            let modalViewController = storyboard?.instantiateViewController(withIdentifier: "TermsViewController") as! TermsViewController
+            present(modalViewController, animated: true, completion: nil)
+        } else if urlString.contains("policy") {
+            let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyViewController") as! PrivacyPolicyViewController
+            present(modalViewController, animated: true, completion: nil)
+        }
+        return false
+    }
+}
+
+extension UIViewController {
+    
+    func setSwipeBack() {
+        let target = self.navigationController?.value(forKey: "_cachedInteractionController")
+        let recognizer = UIPanGestureRecognizer(target: target, action: Selector(("handleNavigationTransition:")))
+        self.view.addGestureRecognizer(recognizer)
+    }
 }

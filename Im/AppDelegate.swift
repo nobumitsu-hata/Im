@@ -17,18 +17,19 @@ import TwitterKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-//    let db = Firestore.firestore()
     
     override init() {
         super.init()
         FirebaseApp.configure()
-        
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) {
+            return true
+        }
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         TWTRTwitter.sharedInstance().start(withConsumerKey: "3EXKUF38fsBeZRh9LXCx3T9Fz", consumerSecret: "SeDtkaudc4chpRTjIMvZZU6T0xQ4vb7DLTYJwnBAOpjhEPyVPB")
-        return ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+        return true
     }
     
     
@@ -40,11 +41,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return true
             }
             
-            return GIDSignIn.sharedInstance().handle(url,sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: [:])
-    }
-    
-    func application(_ application: UIApplication,open url: URL,sourceApplication: String?,annotation: Any) -> Bool {
-        return ApplicationDelegate.shared.application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
+            if ApplicationDelegate.shared.application(application,
+                                                      open: url,
+                                                      sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                                                      annotation: [:]) {
+                return true
+            }
+            
+            if GIDSignIn.sharedInstance().handle(url,sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: [:]) {
+                return true
+            }
+            
+            return true
+   
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {

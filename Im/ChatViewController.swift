@@ -19,34 +19,29 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
     
-    var testd: String!
     var ref: DatabaseReference!
     var storage: StorageReference!
     private let db = Firestore.firestore()
+    var timestamp:Timestamp!
     var communityId: String!
     var messageArr:[[String:Any]] = []
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
-    var test:CGRect = CGRect(x: 0, y: 0, width: 0, height: 0)
     var testCounter = 0
     var getId = ""
     var keyboardOn = false
-    var offsetY:CGFloat = 0
-    var flg = false
-    var flg2 = true
     var autoScrollFlg = true
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // ナビゲーションを透明にする
-        self.navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController!.navigationBar.shadowImage = UIImage()
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        timestamp = Timestamp(date: Date())
         
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-
+        
+        loadMessages()
+        addNewMessage()
     }
     
     override func viewDidLoad() {
@@ -62,6 +57,11 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
         coverView.backgroundColor = UIColor.clear
+        
+        // ナビゲーションを透明にする
+        self.navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController!.navigationBar.shadowImage = UIImage()
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         //グラデーションの開始色
         let startColor = UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 0.3)
@@ -94,33 +94,31 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         tableView.register(chatXib, forCellReuseIdentifier: "communityChatCell")
         tableView.rowHeight = UITableView.automaticDimension
         
-        db.collection("communities").document(communityId!).collection("messages").addSnapshotListener{ querySnapshot, error in
-            guard let documents = querySnapshot?.documents else {
-                print("Error fetching documents: \(error!)")
+    }
+    
+    func loadMessages() {
+        
+        db.collection("communities").document(communityId!).collection("messages").whereField("timestamp", isLessThan: timestamp).order(by: "timestamp", descending: true).limit(to: 15).getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
                 return
             }
             
-            guard documents.count > 0 else { return }
-            
-            guard let snapshot = querySnapshot else {
-                print("Error fetching documents: \(error!)")
+            guard querySnapshot!.documents.count > 0 else {
+                print("読み込むメッセージはない")
                 return
             }
             
             var subScrollFlg = false
-            snapshot.documentChanges.forEach { diff in
-                switch diff.type {
-                case .added:
-                    let messageData = diff.document.data()
-                    self.messageArr.append(messageData)
-                    if RootTabBarController.UserId == messageData["senderId"] as! String {
-                        self.autoScrollFlg = true
-                        subScrollFlg = true
-                    }
-                default:
-                    break
+            for document in querySnapshot!.documents {
+                let messageData = document.data()
+                self.messageArr.insert(messageData, at: 0)
+                if RootTabBarController.UserId == messageData["senderId"] as! String {
+                    self.autoScrollFlg = true
+                    subScrollFlg = true
                 }
             }
+            
             self.tableView.reloadData()
             // グラデーション設定
             let gradientLayer = CAGradientLayer()
@@ -152,10 +150,73 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
                 }
                 
             }
+            
+        }
+
+    }
+    
+    func addNewMessage() {
+        db.collection("communities").document(communityId!).collection("messages").whereField("timestamp", isGreaterThan: timestamp).addSnapshotListener{ querySnapshot, error in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+
+            guard documents.count > 0 else { return }
+
+            guard let snapshot = querySnapshot else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+
+            var subScrollFlg = false
+            snapshot.documentChanges.forEach { diff in
+                switch diff.type {
+                case .added:
+                    let messageData = diff.document.data()
+                    self.messageArr.append(messageData)
+                    if RootTabBarController.UserId == messageData["senderId"] as! String {
+                        self.autoScrollFlg = true
+                        subScrollFlg = true
+                    }
+                default:
+                    break
+                }
+            }
+            self.tableView.reloadData()
+            // グラデーション設定
+            let gradientLayer = CAGradientLayer()
+            gradientLayer.frame = self.tableView.superview!.bounds
+            let clearColor = UIColor.clear.cgColor
+            let whiteColor = UIColor.white.cgColor
+            gradientLayer.colors = [clearColor, whiteColor, whiteColor]
+            gradientLayer.locations = [0.45, 0.55, 1.0]
+            self.tableView.superview!.layer.mask = gradientLayer
+            self.tableView.backgroundColor = UIColor.clear
+            DispatchQueue.main.async {
+                self.tableView.performBatchUpdates({
+
+                }) { (finished) in
+                    let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
+                    if dif < 0 {
+                        // 下詰め
+                        self.tableView.contentInset = UIEdgeInsets(top: dif * -1, left: 0, bottom: 0, right: 0)
+                        return
+                    } else {
+                        // マージン0
+                        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                        print(self.autoScrollFlg)
+                        guard self.autoScrollFlg || subScrollFlg else {
+                            return
+                        }
+                        self.tableView.setContentOffset(CGPoint(x: self.tableView.contentOffset.x, y: dif), animated: true)
+                    }
+                }
+
+            }
         }
         
     }
-    
     
     // MARK: UITableView delegate
     
@@ -174,11 +235,15 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
                 })
             }) {
                 name!.text = user["name"] as? String
-                DispatchQueue.main.async {
+//                DispatchQueue.main.async {
+                if user["img"] as! String != "" {
                     let imgRef = self.storage.child("users").child(user["img"] as! String)
                     imgView!.sd_setImage(with: imgRef)
-                    imgView!.setNeedsLayout()
+//                    imgView!.setNeedsLayout()
+                } else {
+                    imgView?.image = UIImage(named: "UserImg")
                 }
+//                }
 
             }
         }

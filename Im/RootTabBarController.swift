@@ -151,9 +151,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
             if RootTabBarController.AuthCheck {
                 print("ページ遷移2")
                 // タブを切り替える
-                // なぜか0だけだと選択されないので1にしてから0に
-                self.selectedIndex = 1
-                self.selectedIndex = 0
+                
 //                self.tabBarController?.selectedIndex = 0
 //                if viewController is ViewController { //もしShareTweetViewController.swiftをclass指定してあるページ行きのボタンをタップしたら
 ////                    if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreateViewController"){ //withIdentifier: にはStory Board IDを設定
@@ -178,7 +176,6 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
 //                }
                 return true
             } else {
-                print("ページ遷移3")
                 let modalViewController = storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
                 modalViewController.modalPresentationStyle = .custom
                 modalViewController.transitioningDelegate = self
