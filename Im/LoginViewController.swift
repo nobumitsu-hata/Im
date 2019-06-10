@@ -13,7 +13,7 @@ import FBSDKLoginKit
 import GoogleSignIn
 import TwitterKit
 
-class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDelegate, GIDSignInUIDelegate  {
+class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDelegate  {
     
     private let db = Firestore.firestore()
     private let storageRef = Storage.storage().reference()
@@ -21,6 +21,7 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var LoginBtns: UIView!
+    @IBOutlet weak var googleBtn: UIButton!
     
     override func viewWillAppear(_ animated: Bool) {
         
@@ -33,8 +34,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         fbLoginBtn.titleLabel?.removeFromSuperview()
         fbLoginBtn.frame = CGRect(x: 0, y: 0, width: 45, height: 45)
         
-        fbLoginBtn.delegate = self
-        LoginBtns.addSubview(fbLoginBtn)
+//        fbLoginBtn.delegate = self
+//        LoginBtns.addSubview(fbLoginBtn)
         
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
@@ -48,6 +49,11 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         setSwipeBack()
 //        navigationController?.navigationBar.isHidden = true
         
+        googleBtn.layer.cornerRadius = 22.5
+        googleBtn.layer.borderWidth = 1
+        googleBtn.layer.borderColor = UIColor.lightGray.cgColor
+        googleBtn.imageEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3);
+        
         let style = NSMutableParagraphStyle()
         style.alignment = .center
         let attributedString = NSMutableAttributedString(string: "登録した時点で、あなたは当社の利用規約とプライバシーポリシーを熟読し、同意したものとみなす", attributes: [NSAttributedString.Key.font:UIFont(name: "Hiragino Sans", size: 12)!])
@@ -60,63 +66,66 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
 
     }
     
-    func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
-        
-        if let error = error {
-            print(error.localizedDescription)
-            return
-        }
-        
-        if result!.isCancelled {
-            print("キャンセル押した")
-            return
-        }
-
-        guard (result!.grantedPermissions.contains("email")) else {
-            return
-        }
-        
-        let token = result!.token
-        // FBのアクセストークンをFirebase認証情報に交換
-        let credential = FacebookAuthProvider.credential(withAccessToken: token!.tokenString)
-        
-        // Firebaseの認証
-        Auth.auth().signIn(with: credential) { (authResult, error) in
-            if error != nil {
-                print("エラー文")
-                print(error as Any)
+    @IBAction func facebookLogin(_ sender: Any) {
+        let fbLoginManager = LoginManager()
+        fbLoginManager.logIn(permissions: ["public_profile", "email"], from: self, handler: { (result, error) -> Void in
+            
+            if let error = error {
+                print(error.localizedDescription)
                 return
             }
-            print("ログイン成功")
             
-            // ログイン成功時の処理
-            let userId = (authResult?.user.uid)!
+            let fbloginresult : LoginManagerLoginResult = result!
+            if(fbloginresult.isCancelled) {
+                //Show Cancel alert
+                print("キャンセル")
+                return
+            }
+                
+             guard fbloginresult.grantedPermissions.contains("email") else {
+                //                    self.returnUserData()
+                //fbLoginManager.logOut()
+                return
+            }
             
-            self.db.collection("users").document(userId).getDocument { (document, error) in
-                if let userDoc = document.flatMap({
-                    $0.data().flatMap({ (data) in
-                        return data
-                    })
-                }) {
-                    print("City: \(userDoc)")
-                    RootTabBarController.UserId = userId
-                    RootTabBarController.UserInfo = userDoc
-                    RootTabBarController.AuthCheck = true
-                    
-                    let LoginController = self.tabBarController?.viewControllers?[2]
-                    self.tabBarController?.selectedViewController = LoginController
-
-                } else {
-                    print("Document does not exist")
-                    self.tempRegister(userId: userId, tokenStr: token!.tokenString)
+            // FBのアクセストークンをFirebase認証情報に交換
+            let token = result!.token
+            let credential = FacebookAuthProvider.credential(withAccessToken: token!.tokenString)
+            
+            // Firebaseの認証
+            Auth.auth().signIn(with: credential) { (authResult, error) in
+                if error != nil {
+                    print("エラー")
+                    print(error!.localizedDescription)
+                    return
                 }
+                print("ログイン成功")
+                
+                // ログイン成功時の処理
+                let userId = (authResult?.user.uid)!
+                
+                self.db.collection("users").document(userId).getDocument { (document, error) in
+                    if let userDoc = document.flatMap({
+                        $0.data().flatMap({ (data) in
+                            return data
+                        })
+                    }) {
+                        RootTabBarController.UserId = userId
+                        RootTabBarController.UserInfo = userDoc
+                        RootTabBarController.AuthCheck = true
+                        self.dismiss(animated: true, completion: nil)
+                    } else {
+                        print("Document does not exist")
+                        self.tempRegister(userId: userId, tokenStr: token!.tokenString)
+                    }
+                }
+                
             }
 
-        }
-        
+        })
     }
     
-    // 仮登録
+    // facebook 認証 仮登録
     func tempRegister(userId: String, tokenStr: String) {
         GraphRequest(graphPath: "/me", parameters: ["fields" : "id, name, email, picture.type(large)"]).start { (connection, userInfo, err) in
             if(err != nil){
@@ -136,7 +145,7 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                 guard image != nil  else {
                     return
                 }
-                
+                print(img)
                 if let imgData = image?.jpegData(compressionQuality: 0.8) {
                     
                     let fileName = userId + ".jpg"
@@ -174,9 +183,13 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                     print("Error adding document: \(err)")
                                 } else {
                                     print("登録")
-                                    RootTabBarController.userId = userId
+                                    RootTabBarController.UserId = userId
                                     RootTabBarController.UserInfo = fields
                                     RootTabBarController.AuthCheck = true
+                                    let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                                    self.present(presentController, animated: true, completion: {
+                                        presentController.fromWhere = "snsAuth"
+                                    })
                                 }
                             }
                         })
@@ -192,6 +205,9 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         let fbLoginManager = LoginManager()
         fbLoginManager.logOut()
     }
+    
+    
+    // MARK: Twitter認証
     
     @IBAction func tapTwitterLogin(_ sender: Any) {
         TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
@@ -228,7 +244,7 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                         RootTabBarController.UserId = userId
                         RootTabBarController.UserInfo = userDoc
                         RootTabBarController.AuthCheck = true
-                        
+                        self.dismiss(animated: true, completion: nil)
                     } else {
                         print("Document does not exist")
                         // facebookからプロフィール画像取得
@@ -271,9 +287,13 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                         print("Error adding document: \(err)")
                                     } else {
                                         print("登録")
-                                        RootTabBarController.userId = userId
+                                        RootTabBarController.UserId = userId
                                         RootTabBarController.UserInfo = fields
                                         RootTabBarController.AuthCheck = true
+                                        let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                                        self.present(presentController, animated: true, completion: {
+                                            presentController.fromWhere = "snsAuth"
+                                        })
                                     }
                                 }
                             } else {
@@ -323,9 +343,13 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                                         print("Error adding document: \(err)")
                                                     } else {
                                                         print("登録")
-                                                        RootTabBarController.userId = userId
+                                                        RootTabBarController.UserId = userId
                                                         RootTabBarController.UserInfo = fields
                                                         RootTabBarController.AuthCheck = true
+                                                        let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                                                        self.present(presentController, animated: true, completion: {
+                                                            presentController.fromWhere = "snsAuth"
+                                                        })
                                                     }
                                                 }
                                             })
@@ -351,24 +375,6 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         GIDSignIn.sharedInstance().signIn()
     }
     
-    @IBAction func facebookLogin(_ sender: Any) {
-        let test = LoginManager()
-        test.logIn(permissions: ["public_profile", "email"], from: self, handler: { (result, error) -> Void in
-            
-            if (error == nil){
-                let fbloginresult : LoginManagerLoginResult = result!
-                
-                if(fbloginresult.isCancelled) {
-                    //Show Cancel alert
-                    print("キャンセル")
-                } else if(fbloginresult.grantedPermissions.contains("email")) {
-                    //                    self.returnUserData()
-                    //fbLoginManager.logOut()
-                }
-            }
-        })
-    }
-    
     func getDataFromUrl(url: URL, completion: @escaping (_ data: Data?, _  response: URLResponse?, _ error: Error?) -> Void) {
         URLSession.shared.dataTask(with: url) {
             (data, response, error) in
@@ -377,7 +383,7 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     }
     
     func downLoadImage(imageUrl: String, completion: @escaping(_ image: UIImage?) -> Void) {
-        let imageURL = NSURL(string: "https://pbs.twimg.com/profile_images/1116970647408615424/PS7ON4d3_reasonably_small.jpg")
+        let imageURL = NSURL(string: imageUrl)
         let imageFileName = (imageUrl.components(separatedBy: "%").last!).components(separatedBy: "?").first!
         
         if fileExistsAtPath(path: imageFileName) {
@@ -435,6 +441,8 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         return doesExist
     }
     
+    // MARK: Google認証
+    
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
         
         if let error = error {
@@ -466,7 +474,7 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                     RootTabBarController.UserId = userId
                     RootTabBarController.UserInfo = userDoc
                     RootTabBarController.AuthCheck = true
-                    
+                    self.dismiss(animated: true, completion: nil)
                 } else {
                     print("Document does not exist")
                     // facebookからプロフィール画像取得
@@ -518,9 +526,13 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                                             print("Error adding document: \(err)")
                                         } else {
                                             print("登録")
-                                            RootTabBarController.userId = userId
+                                            RootTabBarController.UserId = userId
                                             RootTabBarController.UserInfo = fields
                                             RootTabBarController.AuthCheck = true
+                                            let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                                            self.present(presentController, animated: true, completion: {
+                                                presentController.fromWhere = "snsAuth"
+                                            })
                                         }
                                     }
                                 })
@@ -538,6 +550,12 @@ class LoginViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         // Perform any operations when the user disconnects from app here.
         // ...
     }
+    
+    @IBAction func toPhoneNumberAuth(_ sender: Any) {
+        let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PhoneNumberNavigationController") as! UINavigationController
+        present(modalViewController, animated: true, completion: nil)
+    }
+    
 
     
 }

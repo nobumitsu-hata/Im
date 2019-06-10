@@ -21,6 +21,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     static var userInfo:[String:Any] = [:]
     static var UserInfo:[String:Any] = [:]
     static var AuthCheck = false
+    static var currentUser:User!
     private let db = Firestore.firestore()
     var authCheck = false
     var ref: DatabaseReference!
@@ -95,29 +96,14 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
 //    }
     
     func checkLoggedIn() {
-        // FBログイン済みかチェック
-//        if let token = AccessToken.current {
-//            // FBのアクセストークンをFirebase認証情報に交換
-//            let credential = FacebookAuthProvider.credential(withAccessToken: token.tokenString)
-//            // Firebaseの認証
-//            Auth.auth().signIn(with: credential) { (authResult, error) in
-//                if error != nil {
-//                    // エラー
-//                    return
-//                }
-//
-//                // ログイン成功時の処理
-//
-//            }
-//            return
-//        } else {
-//            print("ログインしてない")
-//        }
+        
         Auth.auth().addStateDidChangeListener{auth, user in
             if user != nil{
-//                // ログインしている
+                
+                // ログインしている
                 RootTabBarController.UserId = user!.uid
                 RootTabBarController.AuthCheck = true
+                RootTabBarController.currentUser = auth.currentUser
                 
                 self.db.collection("users").document(user!.uid).getDocument { (document, error) in
                     if let userDoc = document.flatMap({
@@ -137,6 +123,8 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
             } else {
 //                //サインインしていない
 //                self.login()
+                print("ログアウト")
+                RootTabBarController.AuthCheck = false
             }
         }
     }
@@ -145,12 +133,20 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         if viewController is ScrollViewController {
             return true
         }
-//
-//        } else {
-            print("ページ遷移")
+        
+            //  ログイン済み
             if RootTabBarController.AuthCheck {
                 print("ページ遷移2")
                 // タブを切り替える
+                
+                // 仮登録状態の場合
+                if RootTabBarController.UserInfo["status"] as? Int  == 0 {
+                    let modalViewController = storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                    present(modalViewController, animated: true, completion: {
+                        modalViewController.fromWhere = "RootTabBarController"
+                    })
+                    return false
+                }
                 
 //                self.tabBarController?.selectedIndex = 0
 //                if viewController is ViewController { //もしShareTweetViewController.swiftをclass指定してあるページ行きのボタンをタップしたら
@@ -176,12 +172,14 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
 //                }
                 return true
             } else {
+                
                 let modalViewController = storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
                 modalViewController.modalPresentationStyle = .custom
                 modalViewController.transitioningDelegate = self
                 present(modalViewController, animated: true, completion: nil)
+                return false
             }
-            return self.authCheck
+        
 //        }
 //        return true
     }

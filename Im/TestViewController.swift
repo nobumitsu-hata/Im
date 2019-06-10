@@ -11,10 +11,12 @@ import Firebase
 import FirebaseDatabase
 import FirebaseUI
 
-class TestViewController: UIViewController {
+class TestViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     var ref: DatabaseReference!
     var storage: Storage!
+    private let storageRef = Storage.storage().reference()
+    var picker: UIImagePickerController! = UIImagePickerController()
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
     @IBOutlet weak var editBtn: UIButton!
@@ -35,6 +37,17 @@ class TestViewController: UIViewController {
         // 初期化
         storage = Storage.storage()
         
+        //PhotoLibraryから画像を選択
+        picker.sourceType = UIImagePickerController.SourceType.photoLibrary
+        //デリゲートを設定する
+        picker.delegate = self
+        //現れるピッカーNavigationBarの文字色を設定する
+        picker.navigationBar.tintColor = UIColor.white
+        //現れるピッカーNavigationBarの背景色を設定する
+        picker.navigationBar.barTintColor = UIColor.gray
+        //ピッカーを表示する
+        present(picker, animated: true, completion: nil)
+        
         self.view.setGradientLayer()
 //        wrapperView.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.2)
 //        wrapperView.layer.cornerRadius = 20
@@ -47,7 +60,7 @@ class TestViewController: UIViewController {
 //            self.introduction.isHidden = true //またはfalse
 //        }
         self.introduction.isHidden = true //またはfalse
-        setupFirebase()
+//        setupFirebase()
 
     }
     
@@ -71,6 +84,31 @@ class TestViewController: UIViewController {
         }) { (error) in
             print(error.localizedDescription)
         }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        var picture = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        
+        if picture?.size.width ?? 0 > CGFloat(1024) {
+            let aspect = picture!.size.height / picture!.size.width
+            picture = picture?.resize(size: CGSize(width: CGFloat(1024), height: CGFloat(1024) * aspect))
+        }
+        
+        if let imgData = picture?.jpegData(compressionQuality: 0.8) {
+            
+            let fileName = "pLYHJXQl7HmKhWP97s8E.jpg"
+            let meta = StorageMetadata()
+            meta.contentType = "image/jpeg" // <- これ！！
+            storageRef.child("communities").child(fileName).putData(imgData, metadata: meta, completion: { metaData, error in
+                
+                if error != nil {
+                    print(error!.localizedDescription)
+                }
+                
+            })
+        }
+        picker.dismiss(animated: true, completion: nil)
     }
 
 }

@@ -73,6 +73,9 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setupFirebase() {
+//        print(UserInfo)
+        print(RootTabBarController.UserInfo)
+        print(RootTabBarController.UserId)
         db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
                 guard let document = documentSnapshot else {
                     print("Error fetching document: \(error!)")

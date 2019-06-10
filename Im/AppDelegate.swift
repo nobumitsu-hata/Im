@@ -56,6 +56,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
    
     }
     
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Auth.auth().setAPNSToken(deviceToken, type:AuthAPNSTokenType.sandbox)
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        print("rem not with fetch")
+        
+        let firebaseAuth = Auth.auth()
+        if (firebaseAuth.canHandleNotification(userInfo)){
+            return
+        } else {
+            
+        }
+        
+    }
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         AppEvents.activateApp()
     }

@@ -25,38 +25,51 @@ class DeleteViewController: UIViewController {
         // OKボタン
         let defaultAction: UIAlertAction = UIAlertAction(title: "削除する",style: .default, handler: {
             (action:UIAlertAction!) -> Void in
-
+            
             // 退会
             let user = Auth.auth().currentUser
-            user?.delete { error in
-                if let error = error {
-                    // An error happened.
-                    print("エラー")
-                    print(error.localizedDescription)
+            user?.delete(completion: { (err) in
+                if err != nil {
+                    let firebaseAuth = Auth.auth()
+                    do {
+                        try firebaseAuth.signOut()
+                        self.showMessagePrompt(message: "アカウントを削除するには再認証が必要です")
+                    } catch let signOutError as NSError {
+                        print ("Error signing out: %@", signOutError)
+                    }
                     self.tabBarController?.selectedIndex = 0
-                } else {
-                    // Account deleted.
-                    let ref = self.db.collection("users").document(RootTabBarController.UserId)
-                    ref.updateData(["name":"退会済みユーザー", "img": "", "deleteFlg": true]) { err in
-                        if let err = err {
-                            print("Error updating document: \(err)")
-                        } else {
-                            print("Document successfully updated")
-                            self.storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String).delete { error in
-                                if let error = error {
-                                    // Uh-oh, an error occurred!
-                                    print(error.localizedDescription)
-                                } else {
-                                    // File deleted successfully
-                                    print("File deleted")
-                                }
+                    return
+                }
+                print("削除")
+                
+                let ref = self.db.collection("users").document(RootTabBarController.UserId)
+                ref.updateData(["name":"退会済みユーザー", "img": "", "deleteFlg": true]) { err in
+                    if let err = err {
+                        print("Error updating document: \(err)")
+                    } else {
+                        print("Document successfully updated")
+                        if RootTabBarController.UserInfo["img"] as? String == "" {
+                            return
+                        }
+                        
+                        // プロフィール画像削除
+                        self.storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String).delete { error in
+                            if let error = error {
+                                // Uh-oh, an error occurred!
+                                print(error.localizedDescription)
+                            } else {
+                                // File deleted successfully
+                                print("File deleted")
                             }
                         }
                     }
-                    
                 }
-                RootTabBarController.AuthCheck = false
+
                 self.tabBarController?.selectedIndex = 0
+            })
+            
+            guard RootTabBarController.AuthCheck else {
+                return
             }
 
         })
