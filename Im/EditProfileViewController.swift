@@ -149,7 +149,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             let imgRef = storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String)
             self.imgView.sd_setImage(with: imgRef)
         } else {
-            
+            self.imgView.image = UIImage(named: "UserImg")
         }
         db.collection("communities").getDocuments { (querySnapshot, error) in
             guard let documents = querySnapshot?.documents else {

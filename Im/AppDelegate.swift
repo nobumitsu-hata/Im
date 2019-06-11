@@ -8,15 +8,18 @@
 
 import UIKit
 import Firebase
-import FirebaseUI
+//import FirebaseUI
 import FBSDKCoreKit
 import GoogleSignIn
 import TwitterKit
+import OneSignal
+import PushKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+//    var push: SINManagedPush!
     
     override init() {
         super.init()
@@ -24,14 +27,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+//        func userDidLogin(userId: String) {
+            //            self.push.registerUserNotificationSettings()
+            //            self.initSinchWithUserId(userId: userId)
+//            self.startOneSignal()
+//        }
+        
+        
+        let onesignalInitSettings = [kOSSettingsKeyAutoPrompt: false]
+        // Replace 'YOUR_APP_ID' with your OneSignal App ID.
+        OneSignal.initWithLaunchOptions(launchOptions,
+                                        appId: "ef71e678-903d-4b61-9728-40c9c90710a3",
+                                        handleNotificationAction: nil,
+                                        settings: onesignalInitSettings)
+        OneSignal.inFocusDisplayType = OSNotificationDisplayType.notification;
+        // Recommend moving the below line to prompt for push after informing the user about
+        //   how your app will use them.
+        OneSignal.promptForPushNotifications(userResponse: { accepted in
+            print("User accepted notifications: \(accepted)")
+        })
+        // will open iOS Settings for your app
+//        OneSignal.presentAppSettings()
+        OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : ["d5f886fc-c769-4b97-a50f-7d43d771db9d"]])
+        
         if ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) {
             return true
         }
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         TWTRTwitter.sharedInstance().start(withConsumerKey: "3EXKUF38fsBeZRh9LXCx3T9Fz", consumerSecret: "SeDtkaudc4chpRTjIMvZZU6T0xQ4vb7DLTYJwnBAOpjhEPyVPB")
+        
+//        self.push = Sinch.managedPush(with: .development)
+//        self.push.delegate = self
+//        self.push.setDesiredPushTypeAutomatically()
+        
+        
+        
+        
+        
         return true
     }
-    
     
     @available(iOS 9.0, *)
     func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:])
@@ -70,6 +104,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
         }
         
+    }
+    
+    func goToApp() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "didNotification"), object: nil, userInfo: ["userID": RootTabBarController.UserId])
+    }
+    
+    //  MARK: OneSignal
+    func startOneSignal() {
+        let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
+        let userID = status.subscriptionStatus.userId
+        let pushToken = status.subscriptionStatus.pushToken
+        
+        if pushToken != nil {
+            if let playerID = userID {
+                UserDefaults.standard.set(playerID, forKey: "pushID")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "pushID")
+            }
+            UserDefaults.standard.synchronize()
+        }
+        
+        // updateOneSignalId
+        updateOneSignalId()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {

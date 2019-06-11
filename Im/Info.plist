@@ -62,6 +62,8 @@
 	<string>コミュニティー作成または参加のため位置情報を取得します</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>カメラロールから取得</string>
+	<key>OneSignal_app_groups_key</key>
+	<string>group.com.im.ImChatApp.onesignal</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

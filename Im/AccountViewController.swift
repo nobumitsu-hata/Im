@@ -77,68 +77,70 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         print(RootTabBarController.UserInfo)
         print(RootTabBarController.UserId)
         db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
-                guard let document = documentSnapshot else {
-                    print("Error fetching document: \(error!)")
+            guard let document = documentSnapshot else {
+                print("Error fetching document: \(error!)")
+                return
+            }
+            self.userData = document.data()
+            let storageRef = self.storage.reference()
+            if self.userData?["img"] as! String != "" {
+                let imgRef = storageRef.child("users").child(self.userData?["img"] as! String)
+                DispatchQueue.main.async {
+                    self.imgView.sd_setImage(with: imgRef)
+                    self.imgView.setNeedsLayout()
+                }
+            } else {
+                self.imgView.image = UIImage(named: "UserImg")
+            }
+
+            self.nameLbl.text = (self.userData!["name"] as! String)
+
+            if (self.userData?["introduction"] as? String != "") {
+                print("紹介文あり")
+                self.introduction.text = self.userData?["introduction"] as? String
+            } else {
+                print("紹介文なし")
+                self.introduction.isHidden = true
+            }
+
+            self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").getDocuments() { (querySnapshot, err) in
+                guard let documents = querySnapshot?.documents else {
+                    print("Error fetching documents: \(error!)")
                     return
                 }
-                self.userData = document.data()
-                let storageRef = self.storage.reference()
-                if self.userData?["img"] as! String != "" {
-                    let imgRef = storageRef.child("users").child(self.userData?["img"] as! String)
-                    DispatchQueue.main.async {
-                        self.imgView.sd_setImage(with: imgRef)
-                        self.imgView.setNeedsLayout()
-                    }
+                guard documents.count > 0 else {
+                    return
                 }
 
-                self.nameLbl.text = (self.userData!["name"] as! String)
+                for document in documents {
 
-                if (self.userData?["introduction"] as? String != "") {
-                    print("紹介文あり")
-                    self.introduction.text = self.userData?["introduction"] as? String
-                } else {
-                    print("紹介文なし")
-                    self.introduction.isHidden = true
-                }
+                    self.communityId = document.documentID
+                    let data = document.data()
+                    self.db.collection("communities").document(self.communityId).getDocument { (communityDoc, error) in
 
-                self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").getDocuments() { (querySnapshot, err) in
-                    guard let documents = querySnapshot?.documents else {
-                        print("Error fetching documents: \(error!)")
-                        return
-                    }
-                    guard documents.count > 0 else {
-                        return
-                    }
+                        let communityData = communityDoc?.data()
 
-                    for document in documents {
-
-                        self.communityId = document.documentID
-                        let data = document.data()
-                        self.db.collection("communities").document(self.communityId).getDocument { (communityDoc, error) in
-
-                            let communityData = communityDoc?.data()
-
-                            self.belongsVal[0] = communityData?["name"] as! String
-                            if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
-                            else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
-                            // ファンレベル
-                            guard data["level"] as? String != "" else {
-                                return
-                            }
-                            self.db.collection("levels").document(data["level"] as! String).getDocument { (levelDoc, error) in
-                                if let levelDoc = levelDoc, levelDoc.exists {
-                                    let levelData = levelDoc.data()
-                                    self.belongsVal[2] = levelData?["name"] as! String
-                                    self.tableView.reloadData()
-                                } else {
-                                    print("Document does not exist")
-                                }
-                            }
-
-                            self.tableView.reloadData()
+                        self.belongsVal[0] = communityData?["name"] as! String
+                        if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
+                        else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
+                        // ファンレベル
+                        guard data["level"] as? String != "" else {
+                            return
                         }
+                        self.db.collection("levels").document(data["level"] as! String).getDocument { (levelDoc, error) in
+                            if let levelDoc = levelDoc, levelDoc.exists {
+                                let levelData = levelDoc.data()
+                                self.belongsVal[2] = levelData?["name"] as! String
+                                self.tableView.reloadData()
+                            } else {
+                                print("Document does not exist")
+                            }
+                        }
+
+                        self.tableView.reloadData()
                     }
                 }
+            }
         }
 
     }

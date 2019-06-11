@@ -211,6 +211,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
     
     @IBAction func tapTwitterLogin(_ sender: Any) {
         TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+            print("ツイッター")
             print(session)
             guard session != nil else {
                 print("twitterエラー")

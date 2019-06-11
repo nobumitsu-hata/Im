@@ -13,8 +13,9 @@ import FirebaseUI
 import CoreLocation
 import FBSDKCoreKit
 import FBSDKLoginKit
+import OneSignal
 
-class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     static var userId = ""
     static var UserId = ""
@@ -25,7 +26,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     private let db = Firestore.firestore()
     var authCheck = false
     var ref: DatabaseReference!
-    var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
+//    var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
     var picker: UIImagePickerController! = UIImagePickerController()
     
     // 位置情報
@@ -33,12 +34,12 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     static var latitude: Double!
     static var longitude: Double!
     
-    let providers: [FUIAuthProvider] = [
-        FUIEmailAuth(),
-        FUIGoogleAuth(),
-        FUIPhoneAuth(authUI:FUIAuth.defaultAuthUI()!),
-        ]
-    
+//    let providers: [FUIAuthProvider] = [
+//        FUIEmailAuth(),
+//        FUIGoogleAuth(),
+//        FUIPhoneAuth(authUI:FUIAuth.defaultAuthUI()!),
+//        ]
+//
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,8 +70,8 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
         UITabBar.appearance().unselectedItemTintColor = UIColor.white
         
         // authUIのデリゲート
-        self.authUI.delegate = self
-        self.authUI.providers = providers
+//        self.authUI.delegate = self
+//        self.authUI.providers = providers
         
         
 //        setupLocationManager()
@@ -105,6 +106,8 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
                 RootTabBarController.AuthCheck = true
                 RootTabBarController.currentUser = auth.currentUser
                 
+                self.startOneSignal()
+                
                 self.db.collection("users").document(user!.uid).getDocument { (document, error) in
                     if let userDoc = document.flatMap({
                         $0.data().flatMap({ (data) in
@@ -138,7 +141,7 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
             if RootTabBarController.AuthCheck {
                 print("ページ遷移2")
                 // タブを切り替える
-                
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "didNotification"), object: nil, userInfo: ["userID" : RootTabBarController.UserId])
                 // 仮登録状態の場合
                 if RootTabBarController.UserInfo["status"] as? Int  == 0 {
                     let modalViewController = storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
@@ -206,22 +209,55 @@ class RootTabBarController: UITabBarController, FUIAuthDelegate, UITabBarControl
     }
         
     //　認証画面から離れたときに呼ばれる（キャンセルボタン押下含む）
-    public func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?){
-        // 認証に成功した場合
-        if error == nil {
-            self.ref.child("users").child(user!.uid).setValue(["img":"user.png","name":"未設定"])
-//            self.performSegue(withIdentifier: "toTopView", sender: self)
+//    public func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?){
+//        // 認証に成功した場合
+//        if error == nil {
+//            self.ref.child("users").child(user!.uid).setValue(["img":"user.png","name":"未設定"])
+////            self.performSegue(withIdentifier: "toTopView", sender: self)
+//        }
+//        // エラー時の処理をここに書く
+//    }
+    
+//    func login() {
+//        // FirebaseUIのViewの取得
+//        let authViewController = self.authUI.authViewController()
+//        // FirebaseUIのViewの表示
+//        self.present(authViewController, animated: true, completion: nil)
+//    }
+    func startOneSignal() {
+        let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
+        let userID = status.subscriptionStatus.userId
+        let pushToken = status.subscriptionStatus.pushToken
+        
+        if pushToken != nil {
+            if let playerID = userID {
+                UserDefaults.standard.set(playerID, forKey: "pushID")
+                OneSignal.postNotification(["contents": ["ja": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [playerID]])
+            } else {
+                UserDefaults.standard.removeObject(forKey: "pushID")
+            }
+            UserDefaults.standard.synchronize()
         }
-        // エラー時の処理をここに書く
+        
+        // updateOneSignalId
+        if let pushId = UserDefaults.standard.string(forKey: "pushID") {
+            print("俺のプッシュID\(pushId)")
+//            setOneSignalId(pushId: pushId)
+            updateOneSignalId(pushId: pushId)
+        } else {
+            updateOneSignalId(pushId: "")
+        }
+        
     }
     
-    func login() {
-        // FirebaseUIのViewの取得
-        let authViewController = self.authUI.authViewController()
-        // FirebaseUIのViewの表示
-        self.present(authViewController, animated: true, completion: nil)
+    func updateOneSignalId(pushId: String) {
+        db.collection("users").document(RootTabBarController.UserId).updateData(["pushId": pushId]) { err in
+            if let err = err {
+                print("Error updating document: \(err)")
+                return
+            }
+        }
     }
-
 }
 
 extension RootTabBarController: CLLocationManagerDelegate {

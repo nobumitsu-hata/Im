@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
-import FirebaseUI
+//import FirebaseUI
 
 class MessageViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
