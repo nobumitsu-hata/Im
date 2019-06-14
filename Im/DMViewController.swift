@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
-import FirebaseUI
+//import FirebaseUI
 import JSQMessagesViewController
 import Photos
 import IDMPhotoBrowser
@@ -19,7 +19,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     
     private let db = Firestore.firestore()
     private let storageRef = Storage.storage().reference()
-    private var galleryDelegate: GalleryDelegate?
+//    private var galleryDelegate: GalleryDelegate?
     var storage: StorageReference!
     var partnerId = ""
     var partnerData:[String:Any] = [:]

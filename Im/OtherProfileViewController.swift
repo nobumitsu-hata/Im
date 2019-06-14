@@ -80,6 +80,8 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
                     self.imgView.sd_setImage(with: imgRef)
                     self.imgView.setNeedsLayout()
                 }
+            } else {
+                self.imgView.image = UIImage(named: "UserImg")
             }
             
             self.nameLbl.text = (self.userData!["name"] as! String)

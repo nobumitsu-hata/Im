@@ -46,23 +46,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         OneSignal.promptForPushNotifications(userResponse: { accepted in
             print("User accepted notifications: \(accepted)")
         })
-        // will open iOS Settings for your app
-//        OneSignal.presentAppSettings()
-        OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : ["d5f886fc-c769-4b97-a50f-7d43d771db9d"]])
+//        OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : ["d5f886fc-c769-4b97-a50f-7d43d771db9d"]])
         
         if ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) {
             return true
         }
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         TWTRTwitter.sharedInstance().start(withConsumerKey: "3EXKUF38fsBeZRh9LXCx3T9Fz", consumerSecret: "SeDtkaudc4chpRTjIMvZZU6T0xQ4vb7DLTYJwnBAOpjhEPyVPB")
-        
-//        self.push = Sinch.managedPush(with: .development)
-//        self.push.delegate = self
-//        self.push.setDesiredPushTypeAutomatically()
-        
-        
-        
-        
         
         return true
     }
