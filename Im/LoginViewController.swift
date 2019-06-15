@@ -210,25 +210,22 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
     // MARK: Twitter認証
     
     @IBAction func tapTwitterLogin(_ sender: Any) {
-        TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+//        let sessio
+        if let session = TWTRTwitter.sharedInstance().sessionStore.session() {
+            // 連携済み
             print("ツイッター")
             print(session)
-            guard session != nil else {
-                print("twitterエラー")
-                print("error: \(error!.localizedDescription)")
-                return
-            }
-            let authToken = session!.authToken
-            let authTokenSecret = session!.authTokenSecret
+            
+            let authToken = session.authToken
+            let authTokenSecret = session.authTokenSecret
             
             let credential = TwitterAuthProvider.credential(withToken: authToken, secret: authTokenSecret)
-            print("signed in as \(session!.userName)")
             
             Auth.auth().signIn(with: credential) { (authResult, error) in
                 if let error = error {
                     print("error: \(error.localizedDescription)")
                     return
-
+                    
                 }
                 //Sign In Completed
                 print("ログイン成功")
@@ -248,127 +245,167 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                         self.dismiss(animated: true, completion: nil)
                     } else {
                         print("Document does not exist")
-                        // facebookからプロフィール画像取得
-                        
-                        var img = ""
-                        let name = session!.userName
-                        var userEmail = ""
-                        let token = authToken + "," + authTokenSecret
-                        let client = TWTRAPIClient.withCurrentUser()
-                        client.requestEmail { email, error in
-                            if (email != nil) {
-                                userEmail = email!
-                                print("signed in as \(session!.userName)");
-                            } else {
-                                print("error: \(error!.localizedDescription)");
-                            }
-                        }
-                        client.loadUser(withID: session!.userID, completion: { (user, error) in
-                            img = user?.profileImageLargeURL ?? ""
-                            print("画像")
-                            print(img)
-                            if img == "" {
-                                let fields = [
-                                    "name": name,
-                                    "introduction": "",
-                                    "sex": "",
-                                    "birthday": 0,
-                                    "status": 0,
-                                    "deleteFlg": false,
-                                    "contact": userEmail,
-                                    "img": "",
-                                    "imgUrl": "",
-                                    "authType": "twitter",
-                                    "token": token
-                                    ] as [String : Any]
-                                
-                                // 仮登録
-                                self.db.collection("users").document(userId).setData(fields) { err in
-                                    if let err = err {
-                                        print("Error adding document: \(err)")
-                                    } else {
-                                        print("登録")
-                                        RootTabBarController.UserId = userId
-                                        RootTabBarController.UserInfo = fields
-                                        RootTabBarController.AuthCheck = true
-                                        let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
-                                        self.present(presentController, animated: true, completion: {
-                                            presentController.fromWhere = "snsAuth"
-                                        })
-                                    }
-                                }
-                            } else {
-                                
-                                // プロフィール画像 ダウンロード
-                                self.getDataFromUrl(url: URL(string: img)!, completion: { (data, response, error) in
-                                    
-                                    guard let data = data, error == nil  else {
-                                        return
-                                    }
-                                    
-                                    let image = UIImage(data: data)
-                                    if let imgData = image?.jpegData(compressionQuality: 0.8) {
-                                        
-                                        let fileName = userId + ".jpg"
-                                        let meta = StorageMetadata()
-                                        meta.contentType = "image/jpeg"
-                                        let ref = self.storageRef.child("users").child(fileName)
-                                        
-                                        // プロフィール画像 アップロード
-                                        ref.putData(imgData, metadata: meta, completion: { metaData, error in
-                                            
-                                            if error != nil {
-                                                print(error!.localizedDescription)
-                                            }
-                                            
-                                            // プロフ画URL取得
-                                            ref.downloadURL(completion: { (url, err) in
-                                                
-                                                let fields = [
-                                                    "name": name,
-                                                    "introduction": "",
-                                                    "sex": "",
-                                                    "birthday": 0,
-                                                    "status": 0,
-                                                    "deleteFlg": false,
-                                                    "contact": userEmail,
-                                                    "img": fileName,
-                                                    "imgUrl": url!.absoluteString,
-                                                    "authType": "twitter",
-                                                    "token": token
-                                                    ] as [String : Any]
-                                                
-                                                // 仮登録
-                                                self.db.collection("users").document(userId).setData(fields) { err in
-                                                    if let err = err {
-                                                        print("Error adding document: \(err)")
-                                                    } else {
-                                                        print("登録")
-                                                        RootTabBarController.UserId = userId
-                                                        RootTabBarController.UserInfo = fields
-                                                        RootTabBarController.AuthCheck = true
-                                                        let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
-                                                        self.present(presentController, animated: true, completion: {
-                                                            presentController.fromWhere = "snsAuth"
-                                                        })
-                                                    }
-                                                }
-                                            })
-                                            
-                                        })
-                                    }
-                                })
-                            }
-                        })
-                        
-                        
-                        
                     }
                 }
             }
-            
-            
-        })
+        } else {
+            TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
+                print("ツイッター")
+                print(session)
+                guard session != nil else {
+                    print("twitterエラー")
+                    print("error: \(error!.localizedDescription)")
+                    return
+                }
+                let authToken = session!.authToken
+                let authTokenSecret = session!.authTokenSecret
+                
+                let credential = TwitterAuthProvider.credential(withToken: authToken, secret: authTokenSecret)
+                print("signed in as \(session!.userName)")
+                
+                Auth.auth().signIn(with: credential) { (authResult, error) in
+                    if let error = error {
+                        print("error: \(error.localizedDescription)")
+                        return
+                        
+                    }
+                    //Sign In Completed
+                    print("ログイン成功")
+                    
+                    // ログイン成功時の処理
+                    let userId = (authResult?.user.uid)!
+                    
+                    self.db.collection("users").document(userId).getDocument { (document, error) in
+                        if let userDoc = document.flatMap({
+                            $0.data().flatMap({ (data) in
+                                return data
+                            })
+                        }) {
+                            RootTabBarController.UserId = userId
+                            RootTabBarController.UserInfo = userDoc
+                            RootTabBarController.AuthCheck = true
+                            self.dismiss(animated: true, completion: nil)
+                        } else {
+                            print("Document does not exist")
+                            
+                            var img = ""
+                            let name = session!.userName
+                            var userEmail = ""
+                            let token = authToken + "," + authTokenSecret
+                            let client = TWTRAPIClient.withCurrentUser()
+                            client.requestEmail { email, error in
+                                if (email != nil) {
+                                    userEmail = email!
+                                    print("signed in as \(session!.userName)");
+                                } else {
+                                    print("error: \(error!.localizedDescription)");
+                                }
+                            }
+                            client.loadUser(withID: session!.userID, completion: { (user, error) in
+                                img = user?.profileImageLargeURL ?? ""
+                                print("画像")
+                                print(img)
+                                if img == "" {
+                                    let fields = [
+                                        "name": name,
+                                        "introduction": "",
+                                        "sex": "",
+                                        "birthday": 0,
+                                        "status": 0,
+                                        "deleteFlg": false,
+                                        "contact": userEmail,
+                                        "img": "",
+                                        "imgUrl": "",
+                                        "authType": "twitter",
+                                        "token": token
+                                        ] as [String : Any]
+                                    
+                                    // 仮登録
+                                    self.db.collection("users").document(userId).setData(fields) { err in
+                                        if let err = err {
+                                            print("Error adding document: \(err)")
+                                        } else {
+                                            print("登録")
+                                            RootTabBarController.UserId = userId
+                                            RootTabBarController.UserInfo = fields
+                                            RootTabBarController.AuthCheck = true
+                                            let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                                            self.present(presentController, animated: true, completion: {
+                                                presentController.fromWhere = "snsAuth"
+                                            })
+                                        }
+                                    }
+                                } else {
+                                    
+                                    // プロフィール画像 ダウンロード
+                                    self.getDataFromUrl(url: URL(string: img)!, completion: { (data, response, error) in
+                                        
+                                        guard let data = data, error == nil  else {
+                                            return
+                                        }
+                                        
+                                        let image = UIImage(data: data)
+                                        if let imgData = image?.jpegData(compressionQuality: 0.8) {
+                                            
+                                            let fileName = userId + ".jpg"
+                                            let meta = StorageMetadata()
+                                            meta.contentType = "image/jpeg"
+                                            let ref = self.storageRef.child("users").child(fileName)
+                                            
+                                            // プロフィール画像 アップロード
+                                            ref.putData(imgData, metadata: meta, completion: { metaData, error in
+                                                
+                                                if error != nil {
+                                                    print(error!.localizedDescription)
+                                                }
+                                                
+                                                // プロフ画URL取得
+                                                ref.downloadURL(completion: { (url, err) in
+                                                    
+                                                    let fields = [
+                                                        "name": name,
+                                                        "introduction": "",
+                                                        "sex": "",
+                                                        "birthday": 0,
+                                                        "status": 0,
+                                                        "deleteFlg": false,
+                                                        "contact": userEmail,
+                                                        "img": fileName,
+                                                        "imgUrl": url!.absoluteString,
+                                                        "authType": "twitter",
+                                                        "token": token
+                                                        ] as [String : Any]
+                                                    
+                                                    // 仮登録
+                                                    self.db.collection("users").document(userId).setData(fields) { err in
+                                                        if let err = err {
+                                                            print("Error adding document: \(err)")
+                                                        } else {
+                                                            print("登録")
+                                                            RootTabBarController.UserId = userId
+                                                            RootTabBarController.UserInfo = fields
+                                                            RootTabBarController.AuthCheck = true
+                                                            let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                                                            self.present(presentController, animated: true, completion: {
+                                                                presentController.fromWhere = "snsAuth"
+                                                            })
+                                                        }
+                                                    }
+                                                })
+                                                
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                            
+                            
+                            
+                        }
+                    }
+                }
+            })
+        }
         
     }
     

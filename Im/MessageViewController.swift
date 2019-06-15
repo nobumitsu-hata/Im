@@ -78,7 +78,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
     func setupFirebase() {
         storage = Storage.storage().reference()
         ref = Database.database().reference()
-        print("通過11113")
+
         db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
@@ -86,19 +86,19 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             
             guard documents.count > 0 else { return }
-        print(documents.count)
+
             guard let snapshot = querySnapshot else {
                 print("Error fetching documents: \(error!)")
                 return
             }
-            print("通過3")
+
             snapshot.documentChanges.forEach { diff in
                 switch diff.type {
                 case .added:
-                    print("通過34")
+                    
                     var dic:[String:Any] = [:]
                     let data = diff.document.data()
-                    print(data)
+
                     let privateChatRef = data["privateChatRef"] as! DocumentReference
                     let partnerRef = data["partnerRef"] as! DocumentReference
                     
@@ -107,17 +107,17 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                             print("Error fetching document: \(error!)")
                             return
                         }
-                        print("通過377")
+                        
                         let partnerDoc = document.data()
-                        print(partnerDoc)
+                        
                         privateChatRef.addSnapshotListener{ documentSnapshot, error in
                             guard let document = documentSnapshot else {
                                 print("Error fetching document: \(error!)")
                                 return
                             }
-                            print("通過312")
+                        
                             let privateChatDoc = document.data()
-                            print(privateChatDoc)
+                        
                             if let firstIndex = self.chatListArr.index(where: {$0["partnerId"] as! String == diff.document.documentID}) {
                                 print("インデックス番号: \(firstIndex)")
                                 self.chatListArr[firstIndex]["updateTime"] = privateChatDoc?["updateTime"] as! TimeInterval
@@ -187,7 +187,6 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
     // Cell が選択された場合
     func tableView(_ table: UITableView,didSelectRowAt indexPath: IndexPath) {
         // DMViewController へ遷移するために Segue を呼び出す
-        tabBarController?.tabBar.isHidden = true
         performSegue(withIdentifier: "fromListToDMViewController",sender: indexPath.row)
         
     }

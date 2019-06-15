@@ -19,18 +19,18 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     
     private let db = Firestore.firestore()
     private let storageRef = Storage.storage().reference()
-//    private var galleryDelegate: GalleryDelegate?
     var storage: StorageReference!
     var partnerId = ""
     var partnerData:[String:Any] = [:]
     var createFlg = false
     var chatId = ""
-    let startTimestamp = NSDate().timeIntervalSince1970
+    var startTimestamp:TimeInterval!
     var loadTimestamp:TimeInterval!
     var firstFlg = true
     var loadingFlg = true
     var urlArr:[String] = []
     var scrollFlg = true
+    var listener: ListenerRegistration!
     
     var messages: [JSQMessage]?
     var incomingBubble: JSQMessagesBubbleImage!
@@ -45,28 +45,21 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         self.senderId = RootTabBarController.UserId
         self.senderDisplayName = RootTabBarController.UserInfo["name"] as? String
 
-        // ナビバー表示
-        self.navigationController!.navigationBar.isHidden = false
-        self.title = partnerData["name"] as! String
-        // ナビゲーションバーのテキストを変更する
-        self.navigationController?.navigationBar.titleTextAttributes = [
-            // 文字の色
-            .foregroundColor: UIColor.white
-        ]
+        getPrivateChatId()
+        startTimestamp = NSDate().timeIntervalSince1970
+        loadTimestamp = startTimestamp
         
+        loadMoreMessages()
+        setupFirebase()
+        
+        tabBarController?.tabBar.isHidden = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        getPrivateChatId()
-        loadTimestamp = startTimestamp
         //メッセージデータの配列を初期化
         self.messages = []
-        
-        loadMoreMessages()
-        setupFirebase()
-
         automaticallyScrollsToMostRecentMessage = true
         
         self.view.setGradientLayer()
@@ -75,18 +68,15 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         self.inputToolbar.contentView.backgroundColor = UIColor.clear
         self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
         
-//        JSQMessagesLabel.date
-        // 入力テキストの文字色
-        self.inputToolbar.contentView.textView.tintColor = UIColor.clear
-        // 送信ボタンのテキスト変更
-        self.inputToolbar.contentView.rightBarButtonItem.setTitle("送信", for: .normal)
-        // 送信ボタンの文字色
-        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.7), for: .disabled)
-        // 送信ボタンの文字色 アクティブ
-        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor.white, for: .normal)
-        // 入力欄の背景色
-        inputToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-        inputToolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
+        navigationController?.delegate = self
+        // ナビバー表示
+        self.navigationController!.navigationBar.isHidden = false
+        self.title = partnerData["name"] as! String
+        // ナビゲーションバーのテキストを変更する
+        self.navigationController?.navigationBar.titleTextAttributes = [
+            // 文字の色
+            .foregroundColor: UIColor.white
+        ]
         
         setupStyle()
         
@@ -120,11 +110,24 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         outgoingBubble = bubbleFactory!.outgoingMessagesBubbleImage(with: UIColor.white)
         // ユーザーのアバターを消す
         collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSize.zero
+        
+        // 入力テキストの文字色
+        self.inputToolbar.contentView.textView.tintColor = UIColor.clear
+        // 送信ボタンのテキスト変更
+        self.inputToolbar.contentView.rightBarButtonItem.setTitle("送信", for: .normal)
+        // 送信ボタンの文字色
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.7), for: .disabled)
+        // 送信ボタンの文字色 アクティブ
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor.white, for: .normal)
+        // 入力欄の背景色
+        inputToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+        inputToolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
     }
     
     func setupFirebase() {
-        
-        db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
+        print("開始タイム")
+        print(startTimestamp)
+        listener = db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -199,6 +202,8 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                         } else {
                             self.collectionView.reloadData()
                         }
+                        
+                        self.db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").document(self.partnerId).updateData(["unreadCount": 0, "readTime": messageData["createTime"] as! TimeInterval])
 
                         if self.createFlg { return }
                         
@@ -236,6 +241,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 print("次は読み込まない")
             }
             
+            var unreadCountFlg = true
             for document in querySnapshot!.documents {
                 
                 print("\(document.documentID) => \(document.data())")
@@ -287,14 +293,26 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                     
                     let message = JSQMessage(senderId: messageData["senderId"] as? String, senderDisplayName: name, date: date, media: mediaItem)
                     self.messages?.insert(message!, at: 0)
+                   
+                }
+                
+                if unreadCountFlg {
+                    print("カウントアップ")
+                    self.db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").document(self.partnerId).updateData(
+                        ["unreadCount": 0, "readTime": messageData["createTime"] as! TimeInterval]
+                    )
+                    unreadCountFlg = false
                 }
 
             }
+            
+            
             
             if self.firstFlg {
                 //メッセージの送信処理を完了する(画面上にメッセージが表示される)
                 self.finishReceivingMessage(animated: false)
                 self.firstFlg = false
+                
             } else {
                 let oldOffset = self.collectionView.contentOffset.y
                 let oldHeight = self.collectionView.contentSize.height
@@ -408,48 +426,77 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         
         guard text != "" else { return }
         
-        var ref: DocumentReference? = nil
+//        var ref: DocumentReference? = nil
         let timestamp = NSDate().timeIntervalSince1970
-        ref = db.collection("privateChat").document(chatId).collection("messages").addDocument(data: [
-            "senderId": RootTabBarController.UserId,
-            "type": "text",
-            "message": text,
-            "createTime": timestamp
-        ]) { err in
-            if let err = err {
-                print("Error adding document: \(err)")
-            } else {
-                print("Document added with ID: \(ref!.documentID)")
-                self.afterAddMessage(message: text, type: "text", timestamp: timestamp)
-            }
-        }
         
-        //メッセージの送信処理を完了する(画面上にメッセージが表示される)
-        self.finishReceivingMessage(animated: true)
-        
-        //textFieldをクリアする
-        self.inputToolbar.contentView.textView.text = ""
-        
-        //キーボードを閉じる
-        self.view.endEditing(true)
-    }
-    
-    func afterAddMessage(message: String, type: String, timestamp: TimeInterval) {
-        print("トランザクションフラグ\(self.createFlg)")
         if self.createFlg {
-            
-            self.db.collection("privateChat").document(self.chatId).setData([
-                "lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId
-                ])
+            let partnerChatRef = db.collection("users").document(partnerId).collection("privateChatPartners").document(RootTabBarController.UserId)
+            self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                
+                let partnerChatDocument: DocumentSnapshot
+                do {
+                    try partnerChatDocument = transaction.getDocument(partnerChatRef)
+                } catch let fetchError as NSError {
+                    errorPointer?.pointee = fetchError
+                    return nil
+                }
+                
+                guard let oldUnreadCount = partnerChatDocument.data()?["unreadCount"] as? Int else {
+                    let error = NSError(
+                        domain: "AppErrorDomain",
+                        code: -1,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(partnerChatDocument)"
+                        ]
+                    )
+                    errorPointer?.pointee = error
+                    return nil
+                }
+
+                
+                // メッセージ追加
+                let newRef = self.db.collection("privateChat").document(self.chatId).collection("messages").document()
+                transaction.setData(
+                    ["senderId": RootTabBarController.UserId,"type": "text","message": text,"createTime": timestamp],
+                    forDocument: newRef
+                )
+                
+                // プライベートチャット 最新更新
+                transaction.setData(
+                    ["lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
+                    forDocument: self.db.collection("privateChat").document(self.chatId)
+                )
+                
+                // バッジカウント追加
+                transaction.updateData(["unreadCount":  oldUnreadCount + 1], forDocument: partnerChatRef)
+                
+                return nil
+            }) { (object, error) in
+                if let error = error {
+                    print("Transaction failed: \(error)")
+                } else {
+                    self.createFlg = true
+                    print("Transaction successfully committed!")
+                }
+            }
+            //            self.db.collection("privateChat").document(self.chatId).setData([
+            //                "lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId
+            //                ])
             
         } else {
-            print("トランザクション")
             // トランザクション
             self.db.runTransaction({ (transaction, errorPointer) -> Any? in
                 
+                // メッセージ追加
+                let newRef = self.db.collection("privateChat").document(self.chatId).collection("messages").document()
+                transaction.setData(
+                    ["senderId": RootTabBarController.UserId,"type": "text","message": text,"createTime": timestamp],
+                    forDocument: newRef
+                )
+                
                 // 個人チャットルーム作成
                 transaction.setData(
-                    ["lastMessage": message, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
+                    ["lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
                     forDocument: self.db.collection("privateChat").document(self.chatId)
                 )
                 
@@ -457,14 +504,14 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 let partnerRef: DocumentReference = self.db.collection("users").document(self.partnerId)
                 let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
                 transaction.setData(
-                    ["partnerRef" : partnerRef, "privateChatRef": privateChatRef],
+                    ["partnerRef" : partnerRef, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
                     forDocument: self.db.document("users/\(RootTabBarController.UserId)/privateChatPartners/\(String(describing: self.partnerId))")
                 )
                 
                 // パートナーのプライベートチャットリストに追加
                 let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.UserId)
                 transaction.setData(
-                    ["partnerRef" : userRef, "privateChatRef": privateChatRef],
+                    ["partnerRef" : userRef, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
                     forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.UserId)")
                 )
                 
@@ -478,6 +525,33 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 }
             }
         }
+//        ref = db.collection("privateChat").document(chatId).collection("messages").addDocument(data: [
+//            "senderId": RootTabBarController.UserId,
+//            "type": "text",
+//            "message": text,
+//            "createTime": timestamp
+//        ]) { err in
+//            if let err = err {
+//                print("Error adding document: \(err)")
+//            } else {
+//                print("Document added with ID: \(ref!.documentID)")
+//                self.afterAddMessage(message: text, type: "text", timestamp: timestamp)
+//            }
+//        }
+        
+        //メッセージの送信処理を完了する(画面上にメッセージが表示される)
+        self.finishReceivingMessage(animated: true)
+        
+        //textFieldをクリアする
+        self.inputToolbar.contentView.textView.text = ""
+        
+        //キーボードを閉じる
+        self.view.endEditing(true)
+    }
+    
+    func afterAddMessage(message: String, type: String, timestamp: TimeInterval) {
+//        print("トランザクションフラグ\(self.createFlg)")
+        
     }
     
     // スクロールして途中で止まった場合のみ
@@ -651,6 +725,20 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         return cell
     }
     
+    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        print("帰る")
+        if viewController is ChatViewController {
+            //挿入したい処理
+            listener.remove()
+        }
+        
+        if viewController is MessageViewController {
+            //挿入したい処理
+            print("消す")
+            listener.remove()
+        }
+    }
     
 }
 

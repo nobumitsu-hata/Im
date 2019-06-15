@@ -102,7 +102,7 @@ class PhoneNumberCheckViewController: UIViewController {
                             print("Error adding document: \(err)")
                         } else {
                             print("登録")
-                            RootTabBarController.userId = userId
+                            RootTabBarController.UserId = userId
                             RootTabBarController.UserInfo = fields
                             RootTabBarController.AuthCheck = true
                             

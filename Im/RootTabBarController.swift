@@ -17,16 +17,13 @@ import OneSignal
 
 class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    static var userId = ""
     static var UserId = ""
-    static var userInfo:[String:Any] = [:]
     static var UserInfo:[String:Any] = [:]
     static var AuthCheck = false
     static var currentUser:User!
+    static var unreadCountDic:[String:Int] = [:]
     private let db = Firestore.firestore()
     var authCheck = false
-    var ref: DatabaseReference!
-//    var authUI: FUIAuth { get { return FUIAuth.defaultAuthUI()!}}
     var picker: UIImagePickerController! = UIImagePickerController()
     
     // 位置情報
@@ -34,45 +31,21 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     static var latitude: Double!
     static var longitude: Double!
     
-//    let providers: [FUIAuthProvider] = [
-//        FUIEmailAuth(),
-//        FUIGoogleAuth(),
-//        FUIPhoneAuth(authUI:FUIAuth.defaultAuthUI()!),
-//        ]
-//
-    
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        ref = Database.database().reference()
         
-        // ログアウト
-//        let firebaseAuth = Auth.auth()
-//        do {
-//            try firebaseAuth.signOut()
-//        } catch let signOutError as NSError {
-//            print ("Error signing out: %@", signOutError)
-//        }
         checkLoggedIn()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("要素")
-        print(selectedIndex)
-//        print(viewControllers)
-//        selectedIndex = 1
+        
         UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().backgroundImage = UIImage()
         
         self.delegate = self
         
         UITabBar.appearance().unselectedItemTintColor = UIColor.white
-        
-        // authUIのデリゲート
-//        self.authUI.delegate = self
-//        self.authUI.providers = providers
-        
         
 //        setupLocationManager()
     }
@@ -96,16 +69,69 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
 //        }
 //    }
     
+    func badgeCount() {
+        print("バッジ")
+        db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+            
+            guard documents.count > 0 else { return }
+            
+            guard let snapshot = querySnapshot else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+            print("バッジあり")
+            snapshot.documentChanges.forEach { diff in
+                let documentId = diff.document.documentID
+                let data = diff.document.data()
+                switch diff.type {
+                case .added:
+                    RootTabBarController.unreadCountDic[documentId] = data["unreadCount"] as? Int
+                    let val = RootTabBarController.unreadCountDic.values
+                    let sum = val.reduce(0, { $0 + $1 })
+                    if sum > 0 {
+                        if let tabItem = self.tabBar.items?[2] {
+                            tabItem.badgeValue = String(sum)
+                        }
+                    } else {
+                        if let tabItem = self.tabBar.items?[2] {
+                            tabItem.badgeValue = nil
+                        }
+                    }
+                    
+                case .modified:
+                    RootTabBarController.unreadCountDic[documentId] = data["unreadCount"] as? Int
+                    let val = RootTabBarController.unreadCountDic.values
+                    let sum = val.reduce(0, { $0 + $1 })
+                    if sum > 0 {
+                        if let tabItem = self.tabBar.items?[2] {
+                            tabItem.badgeValue = String(sum)
+                        }
+                    } else {
+                        if let tabItem = self.tabBar.items?[2] {
+                            tabItem.badgeValue = nil
+                        }
+                    }
+                default:
+                    break
+                }
+            }
+            
+        }
+    }
+    
     func checkLoggedIn() {
         
         Auth.auth().addStateDidChangeListener{auth, user in
-            if user != nil{
-                
-                // ログインしている
+            if user != nil {
+            // ログインしている
                 RootTabBarController.UserId = user!.uid
                 RootTabBarController.AuthCheck = true
                 RootTabBarController.currentUser = auth.currentUser
-                
+                self.badgeCount()
                 self.startOneSignal()
                 
                 self.db.collection("users").document(user!.uid).getDocument { (document, error) in
@@ -119,14 +145,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                         print("Document does not exist")
                     }
                 }
-//                self.ref.child("users").child(user!.uid).observeSingleEvent(of: .value, with: { (snapshot) in
-//                    let val = snapshot.value as! [String:Any]// エラー箇所
-//                    RootTabBarController.userInfo = val
-//                })
             } else {
-//                //サインインしていない
-//                self.login()
-                print("ログアウト")
                 RootTabBarController.AuthCheck = false
             }
         }
@@ -207,23 +226,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
             print("Error")
         }
     }
-        
-    //　認証画面から離れたときに呼ばれる（キャンセルボタン押下含む）
-//    public func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?){
-//        // 認証に成功した場合
-//        if error == nil {
-//            self.ref.child("users").child(user!.uid).setValue(["img":"user.png","name":"未設定"])
-////            self.performSegue(withIdentifier: "toTopView", sender: self)
-//        }
-//        // エラー時の処理をここに書く
-//    }
     
-//    func login() {
-//        // FirebaseUIのViewの取得
-//        let authViewController = self.authUI.authViewController()
-//        // FirebaseUIのViewの表示
-//        self.present(authViewController, animated: true, completion: nil)
-//    }
     func startOneSignal() {
         let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
         let userID = status.subscriptionStatus.userId
@@ -232,7 +235,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
         if pushToken != nil {
             if let playerID = userID {
                 UserDefaults.standard.set(playerID, forKey: "pushID")
-                OneSignal.postNotification(["contents": ["ja": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [playerID]])
+                OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : "d5f886fc-c769-4b97-a50f-7d43d771db9d"])
             } else {
                 UserDefaults.standard.removeObject(forKey: "pushID")
             }
