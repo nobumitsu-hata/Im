@@ -70,7 +70,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
 //    }
     
     func badgeCount() {
-        print("バッジ")
+        
         db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
@@ -83,7 +83,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                 print("Error fetching documents: \(error!)")
                 return
             }
-            print("バッジあり")
+
             snapshot.documentChanges.forEach { diff in
                 let documentId = diff.document.documentID
                 let data = diff.document.data()
@@ -95,10 +95,12 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                     if sum > 0 {
                         if let tabItem = self.tabBar.items?[2] {
                             tabItem.badgeValue = String(sum)
+                            UIApplication.shared.applicationIconBadgeNumber = sum
                         }
                     } else {
                         if let tabItem = self.tabBar.items?[2] {
                             tabItem.badgeValue = nil
+                            UIApplication.shared.applicationIconBadgeNumber = 0
                         }
                     }
                     
@@ -109,10 +111,12 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                     if sum > 0 {
                         if let tabItem = self.tabBar.items?[2] {
                             tabItem.badgeValue = String(sum)
+                            UIApplication.shared.applicationIconBadgeNumber = sum
                         }
                     } else {
                         if let tabItem = self.tabBar.items?[2] {
                             tabItem.badgeValue = nil
+                            UIApplication.shared.applicationIconBadgeNumber = 0
                         }
                     }
                 default:
@@ -147,63 +151,43 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                 }
             } else {
                 RootTabBarController.AuthCheck = false
+                if let tabItem = self.tabBar.items?[2] {
+                    tabItem.badgeValue = nil
+                    UIApplication.shared.applicationIconBadgeNumber = 0
+                }
             }
         }
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        
         if viewController is ScrollViewController {
             return true
         }
         
-            //  ログイン済み
-            if RootTabBarController.AuthCheck {
-                print("ページ遷移2")
-                // タブを切り替える
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "didNotification"), object: nil, userInfo: ["userID" : RootTabBarController.UserId])
-                // 仮登録状態の場合
-                if RootTabBarController.UserInfo["status"] as? Int  == 0 {
-                    let modalViewController = storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
-                    present(modalViewController, animated: true, completion: {
-                        modalViewController.fromWhere = "RootTabBarController"
-                    })
-                    return false
-                }
-                
-//                self.tabBarController?.selectedIndex = 0
-//                if viewController is ViewController { //もしShareTweetViewController.swiftをclass指定してあるページ行きのボタンをタップしたら
-////                    if let newVC = tabBarController.storyboard?.instantiateViewController(withIdentifier: "CreateViewController"){ //withIdentifier: にはStory Board IDを設定
-//                        print("モーダル")
-////                        tabBarController.present(newVC, animated: true, completion: nil)//newVCで設定したページに遷移
-//                        //PhotoLibraryから画像を選択
-//                        picker.sourceType = UIImagePickerController.SourceType.photoLibrary
-//
-//                        //デリゲートを設定する
-//                        picker.delegate = self
-//
-//                        //現れるピッカーNavigationBarの文字色を設定する
-//                        picker.navigationBar.tintColor = UIColor.white
-//
-//                        //現れるピッカーNavigationBarの背景色を設定する
-//                        picker.navigationBar.barTintColor = UIColor.gray
-//
-//                        //ピッカーを表示する
-//                        present(picker, animated: true, completion: nil)
-//                        return false
-////                    }
-//                }
-                return true
-            } else {
-                
-                let modalViewController = storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-                modalViewController.modalPresentationStyle = .custom
-                modalViewController.transitioningDelegate = self
-                present(modalViewController, animated: true, completion: nil)
+        //  ログイン済み
+        if RootTabBarController.AuthCheck {
+            // タブを切り替える
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "didNotification"), object: nil, userInfo: ["userID" : RootTabBarController.UserId])
+            // 仮登録状態の場合
+            if RootTabBarController.UserInfo["status"] as? Int  == 0 {
+                let modalViewController = storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                present(modalViewController, animated: true, completion: {
+                    modalViewController.fromWhere = "RootTabBarController"
+                })
                 return false
             }
+            
+            return true
+        } else {
+            
+            let modalViewController = storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            modalViewController.modalPresentationStyle = .custom
+            modalViewController.transitioningDelegate = self
+            present(modalViewController, animated: true, completion: nil)
+            return false
+        }
         
-//        }
-//        return true
     }
     
     // iPhoneで表示させる場合に必要
@@ -230,27 +214,10 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     func startOneSignal() {
         let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
         let userID = status.subscriptionStatus.userId
-        let pushToken = status.subscriptionStatus.pushToken
         
-        if pushToken != nil {
-            if let playerID = userID {
-                UserDefaults.standard.set(playerID, forKey: "pushID")
-                OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : "d5f886fc-c769-4b97-a50f-7d43d771db9d"])
-            } else {
-                UserDefaults.standard.removeObject(forKey: "pushID")
-            }
-            UserDefaults.standard.synchronize()
+        if let pushID = userID {
+            db.collection("users").document(RootTabBarController.UserId).updateData(["pushId": pushID])
         }
-        
-        // updateOneSignalId
-        if let pushId = UserDefaults.standard.string(forKey: "pushID") {
-            print("俺のプッシュID\(pushId)")
-//            setOneSignalId(pushId: pushId)
-            updateOneSignalId(pushId: pushId)
-        } else {
-            updateOneSignalId(pushId: "")
-        }
-        
     }
     
     func updateOneSignalId(pushId: String) {

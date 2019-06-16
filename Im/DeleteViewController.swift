@@ -43,7 +43,7 @@ class DeleteViewController: UIViewController {
                 print("削除")
                 
                 let ref = self.db.collection("users").document(RootTabBarController.UserId)
-                ref.updateData(["name":"退会済みユーザー", "img": "", "deleteFlg": true]) { err in
+                ref.updateData(["name":"退会済みユーザー", "img": "", "deleteFlg": true, "pushId": ""]) { err in
                     if let err = err {
                         print("Error updating document: \(err)")
                     } else {

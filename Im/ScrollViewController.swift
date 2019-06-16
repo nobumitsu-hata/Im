@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
-import FirebaseUI
+//import FirebaseUI
 import CoreLocation
 
 class MyTapGestureRecognizer: UITapGestureRecognizer {

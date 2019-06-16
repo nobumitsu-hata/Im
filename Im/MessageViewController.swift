@@ -131,6 +131,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                                 dic["name"] = partnerDoc?["name"] as! String
                                 dic["img"] = partnerDoc?["img"] as! String
                                 dic["partnerId"] = diff.document.documentID
+                                dic["pushId"] = partnerDoc?["pushId"] as! String
                                 self.chatListArr.append(dic)
                                 self.chatListArr = self.chatListArr.sorted{ ($0["updateTime"] as! TimeInterval) > ($1["updateTime"] as! TimeInterval) }
                                 print(self.chatListArr)

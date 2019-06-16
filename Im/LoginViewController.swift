@@ -174,7 +174,8 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                 "img": fileName,
                                 "imgUrl": url!.absoluteString,
                                 "authType": "facebook",
-                                "token": tokenStr
+                                "token": tokenStr,
+                                "pushId": ""
                                 ] as [String : Any]
                             
                             // 仮登録
@@ -303,8 +304,6 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                             }
                             client.loadUser(withID: session!.userID, completion: { (user, error) in
                                 img = user?.profileImageLargeURL ?? ""
-                                print("画像")
-                                print(img)
                                 if img == "" {
                                     let fields = [
                                         "name": name,
@@ -317,7 +316,8 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                         "img": "",
                                         "imgUrl": "",
                                         "authType": "twitter",
-                                        "token": token
+                                        "token": token,
+                                        "pushId": ""
                                         ] as [String : Any]
                                     
                                     // 仮登録
@@ -373,7 +373,8 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                                         "img": fileName,
                                                         "imgUrl": url!.absoluteString,
                                                         "authType": "twitter",
-                                                        "token": token
+                                                        "token": token,
+                                                        "pushId": ""
                                                         ] as [String : Any]
                                                     
                                                     // 仮登録
@@ -555,7 +556,8 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                         "img": fileName,
                                         "imgUrl": url!.absoluteString,
                                         "authType": "google",
-                                        "token": token
+                                        "token": token,
+                                        "pushId": ""
                                         ] as [String : Any]
                                     
                                     // 仮登録

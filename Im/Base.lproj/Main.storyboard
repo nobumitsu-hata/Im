@@ -1483,22 +1483,6 @@
             </objects>
             <point key="canvasLocation" x="1847" y="528"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="WbS-Zb-e3x">
-            <objects>
-                <viewController id="VR7-1j-BC4" customClass="ViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8Va-Cp-aIU">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="dPZ-5M-2ZQ"/>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="" image="Create" selectedImage="Create" id="ldZ-60-8M6"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Rqx-EO-gYt" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1892" y="-210"/>
-        </scene>
         <!--Sidemenu View Controller-->
         <scene sceneID="vVN-Aj-DHh">
             <objects>
@@ -1512,7 +1496,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P2b-HN-qx4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2674" y="-210"/>
+            <point key="canvasLocation" x="-748" y="1339"/>
         </scene>
         <!--Test View Controller-->
         <scene sceneID="uHb-1Y-lbK">
@@ -1601,7 +1585,6 @@
         <image name="BellOff" width="25" height="25"/>
         <image name="BellOn" width="25" height="25"/>
         <image name="Camera" width="256" height="256"/>
-        <image name="Create" width="25" height="25"/>
         <image name="Facebook" width="510" height="510"/>
         <image name="Google" width="256" height="256"/>
         <image name="HomeOff" width="25" height="25"/>

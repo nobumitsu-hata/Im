@@ -46,6 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         OneSignal.promptForPushNotifications(userResponse: { accepted in
             print("User accepted notifications: \(accepted)")
         })
+        
 //        OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : ["d5f886fc-c769-4b97-a50f-7d43d771db9d"]])
         
         if ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) {
@@ -100,25 +101,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "didNotification"), object: nil, userInfo: ["userID": RootTabBarController.UserId])
     }
     
-    //  MARK: OneSignal
-    func startOneSignal() {
-        let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
-        let userID = status.subscriptionStatus.userId
-        let pushToken = status.subscriptionStatus.pushToken
-        
-        if pushToken != nil {
-            if let playerID = userID {
-                UserDefaults.standard.set(playerID, forKey: "pushID")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "pushID")
-            }
-            UserDefaults.standard.synchronize()
-        }
-        
-        // updateOneSignalId
-        updateOneSignalId()
-    }
-    
+//    //  MARK: OneSignal
+//    func startOneSignal() {
+//        let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
+//        let userID = status.subscriptionStatus.userId
+//        let pushToken = status.subscriptionStatus.pushToken
+//        print("デリゲート\(userID)")
+//        print(status)
+//        if pushToken != nil {
+//
+//            if let playerID = userID {
+//                UserDefaults.standard.set(playerID, forKey: "pushID")
+//            } else {
+//                UserDefaults.standard.removeObject(forKey: "pushID")
+//            }
+//            UserDefaults.standard.synchronize()
+//        }
+//
+//        // updateOneSignalId
+//        updateOneSignalId()
+//    }
+//
     func applicationDidBecomeActive(_ application: UIApplication) {
         AppEvents.activateApp()
     }
