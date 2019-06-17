@@ -17,7 +17,7 @@ class PhotoMediaItem: JSQPhotoMediaItem {
             let aspect: CGFloat = self.image.size.height / self.image.size.width
             thumbSize = CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width / 2 * aspect)
         } else {
-            thumbSize = CGSize(width: UIScreen.main.bounds.width / 2, height: 256)
+            thumbSize = CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.height / 2)
         }
         return thumbSize
     }

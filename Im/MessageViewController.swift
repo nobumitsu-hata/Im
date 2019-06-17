@@ -117,21 +117,26 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                             }
                         
                             let privateChatDoc = document.data()
-                        
+                            // 既存チャットの最新メッセージを更新
                             if let firstIndex = self.chatListArr.index(where: {$0["partnerId"] as! String == diff.document.documentID}) {
                                 print("インデックス番号: \(firstIndex)")
                                 self.chatListArr[firstIndex]["updateTime"] = privateChatDoc?["updateTime"] as! TimeInterval
                                 self.chatListArr[firstIndex]["lastMessage"] = privateChatDoc?["lastMessage"] as! String
+                                self.chatListArr[firstIndex]["type"] = privateChatDoc?["type"] as! String
+                                self.chatListArr[firstIndex]["senderId"] = privateChatDoc?["senderId"] as! String
                                 self.chatListArr[firstIndex]["name"] = partnerDoc?["name"] as! String
                                 self.chatListArr[firstIndex]["img"] = partnerDoc?["img"] as! String
                                 self.chatListArr = self.chatListArr.sorted{ ($0["updateTime"] as! TimeInterval) > ($1["updateTime"] as! TimeInterval) }
                             } else {
+                            // 個人チャットの最新メッセージを追加
                                 dic["updateTime"] = privateChatDoc?["updateTime"] as! TimeInterval
                                 dic["lastMessage"] = privateChatDoc?["lastMessage"] as! String
-                                dic["name"] = partnerDoc?["name"] as! String
+                                dic["type"] = privateChatDoc?["type"] as! String
+                                dic["senderId"] = privateChatDoc?["senderId"] as! String
                                 dic["img"] = partnerDoc?["img"] as! String
-                                dic["partnerId"] = diff.document.documentID
+                                dic["name"] = partnerDoc?["name"] as! String
                                 dic["pushId"] = partnerDoc?["pushId"] as! String
+                                dic["partnerId"] = diff.document.documentID
                                 self.chatListArr.append(dic)
                                 self.chatListArr = self.chatListArr.sorted{ ($0["updateTime"] as! TimeInterval) > ($1["updateTime"] as! TimeInterval) }
                                 print(self.chatListArr)
@@ -153,7 +158,6 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath) as! MessageTableViewCell
         cell.backgroundColor = UIColor.clear
-        print(chatListArr[indexPath.row]["name"] as? String)
         cell.name.text = chatListArr[indexPath.row]["name"] as? String
         
         if chatListArr[indexPath.row]["img"] as! String != "" {
@@ -169,8 +173,15 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         
         cell.imgView.layer.cornerRadius = cell.imgView.frame.size.width * 0.5
         cell.imgView.clipsToBounds = true
-        
-        cell.lastMsg.text = chatListArr[indexPath.row]["lastMessage"] as? String
+        if chatListArr[indexPath.row]["type"] as? String == "img" {
+            if chatListArr[indexPath.row]["senderId"] as? String == RootTabBarController.UserId {
+                cell.lastMsg.text = "画像を送信しました"
+            } else {
+                cell.lastMsg.text = "画像が届いてます"
+            }
+        } else {
+            cell.lastMsg.text = chatListArr[indexPath.row]["lastMessage"] as? String
+        }
         
         // 選択された背景色を白に設定
         let cellSelectedBgView = UIView()

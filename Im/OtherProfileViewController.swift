@@ -28,6 +28,7 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
     let belongsArr = ["好きなチーム", "観戦仲間", "ファンレベル"]
     var belongsVal = ["未設定", "未設定", "未設定"]
     var communityId = ""
+    var fromWhere = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -159,7 +160,18 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
     
     
     @IBAction func toPrivateChat(_ sender: Any) {
-        self.performSegue(withIdentifier: "toPrivateChatViewController", sender: nil)
+        if fromWhere == "privateChat" {
+        // 個人チャットに戻る
+            let count = (self.navigationController?.viewControllers.count)! - 2
+            let vc = self.navigationController?.viewControllers[count] as! DMViewController
+            vc.partnerId = userId
+            vc.partnerData = userData
+            // 画面を消す
+            self.navigationController?.popViewController(animated: true)
+        } else {
+        // 個人チャットに進む
+            self.performSegue(withIdentifier: "toPrivateChatViewController", sender: nil)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

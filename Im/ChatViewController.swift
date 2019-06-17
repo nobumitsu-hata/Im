@@ -22,7 +22,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     var ref: DatabaseReference!
     var storage: StorageReference!
     private let db = Firestore.firestore()
-    var timestamp:Timestamp!
+    var timestamp: TimeInterval!
     var communityId: String!
     var messageArr:[[String:Any]] = []
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
@@ -31,22 +31,9 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     var keyboardOn = false
     var autoScrollFlg = true
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        timestamp = Timestamp(date: Date())
-        
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        loadMessages()
-        addNewMessage()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         tableView.delegate = self
         tableView.dataSource = self
         self.textField.delegate = self
@@ -94,11 +81,20 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         tableView.register(chatXib, forCellReuseIdentifier: "communityChatCell")
         tableView.rowHeight = UITableView.automaticDimension
         
+        timestamp = Date().timeIntervalSince1970
+        
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(ChatViewController.handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        loadMessages()
+        addNewMessage()
+        
     }
     
     func loadMessages() {
         
-        db.collection("communities").document(communityId!).collection("messages").whereField("timestamp", isLessThan: timestamp).order(by: "timestamp", descending: true).limit(to: 15).getDocuments() { (querySnapshot, err) in
+        db.collection("communities").document(communityId!).collection("messages").whereField("createTime", isLessThan: timestamp).order(by: "createTime", descending: true).limit(to: 15).getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
                 return
@@ -156,7 +152,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     }
     
     func addNewMessage() {
-        db.collection("communities").document(communityId!).collection("messages").whereField("timestamp", isGreaterThan: timestamp).addSnapshotListener{ querySnapshot, error in
+        db.collection("communities").document(communityId!).collection("messages").whereField("createTime", isGreaterThan: timestamp).addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -340,6 +336,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         if segue.identifier == "toOtherProfileViewController" {
             let profileViewController = segue.destination as! OtherProfileViewController
             profileViewController.userId = getId
+            profileViewController.fromWhere = "communityChat"
         }
     }
     
@@ -352,7 +349,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         }
         
         db.collection("communities").document(communityId).collection("messages").addDocument(
-            data: ["senderId": RootTabBarController.UserId, "message": message!, "timestamp": Timestamp(date: Date())]
+            data: ["senderId": RootTabBarController.UserId, "message": message!, "createTime": Date().timeIntervalSince1970]
         ) { err in
             if let err = err {
                 print("Error adding document: \(err)")

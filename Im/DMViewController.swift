@@ -49,21 +49,16 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // ユーザー情報セット
         self.senderId = RootTabBarController.UserId
         self.senderDisplayName = RootTabBarController.UserInfo["name"] as? String
-        
+        print("ディドロード")
         // 初期化
         self.messages = []
-        startTimestamp = NSDate().timeIntervalSince1970
+        self.collectionView.reloadData()
+        startTimestamp = Date().timeIntervalSince1970
         loadTimestamp = startTimestamp
         getPrivateChatId()
         storage = Storage.storage().reference()
         
         automaticallyScrollsToMostRecentMessage = true
-        
-        self.view.setGradientLayer()
-        self.collectionView.backgroundColor = UIColor.clear// 画面の背景色
-        self.inputToolbar.backgroundColor = UIColor.clear
-        self.inputToolbar.contentView.backgroundColor = UIColor.clear
-        self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
         
         navigationController?.delegate = self
         // ナビバー表示
@@ -75,9 +70,9 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
             .foregroundColor: UIColor.white
         ]
         
+        setupStyle()
         setupFirebase()
         loadMoreMessages()
-        setupStyle()
         
     }
     
@@ -97,7 +92,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // プレースホルダー
         inputToolbar.contentView.textView.placeHolder = "メッセージを入力"
         // テキストビューの文字色
-        inputToolbar.contentView.textView.textColor = UIColor.white
+        inputToolbar.contentView.textView.textColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1.0)
         // 境界線削除
         inputToolbar.contentView.textView.layer.borderWidth = 0
         // 画像アイコンの変更
@@ -115,16 +110,25 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // 送信ボタンのテキスト変更
         self.inputToolbar.contentView.rightBarButtonItem.setTitle("送信", for: .normal)
         // 送信ボタンの文字色
-        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0.7), for: .disabled)
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0), for: .disabled)
         // 送信ボタンの文字色 アクティブ
-        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor.white, for: .normal)
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0), for: .normal)
         // 入力欄の背景色
         inputToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
         inputToolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
+        collectionView.removeConstraints(collectionView!.constraints)
+        
+        self.view.setGradientLayer()
+        self.collectionView.backgroundColor = UIColor.clear// 画面の背景色
+        self.inputToolbar.backgroundColor = UIColor.white
+        self.inputToolbar.contentView.backgroundColor = UIColor.clear
+        self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
+        
     }
     
     func setupFirebase() {
         listener = db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
+            print("リッスン")
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -136,7 +140,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 print("Error fetching documents: \(error!)")
                 return
             }
-
+            
             snapshot.documentChanges.forEach { diff in
                 switch diff.type {
                     case .added:
@@ -152,39 +156,24 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                         }
                         
                         // 日付
-                        var date = Date(timeIntervalSince1970: messageData["createTime"] as! TimeInterval)
-                        let dateStr = date.toStringWithCurrentLocale()
-                        date = DateFormatter.current("yyyy年MM月dd日 HH:mm").date(from: dateStr)!
-
+                        let date = Date(timeIntervalSince1970: messageData["createTime"] as! TimeInterval)
                         // メッセージ
                         // テキスト
                         if messageData["type"] as! String == "text" {
+                            
                             let message = JSQMessage(senderId: messageData["senderId"] as? String, senderDisplayName: name, date: date, text: messageData["message"] as? String)
                             self.urlArr.append("")
                             self.messages?.append(message!)
+                            
+                            
                         } else {
                         // 画像
                             let mediaItem = PhotoMediaItem(image: nil)
-//                            let imgRef = self.storageRef.child("privateChat").child(self.chatId).child(messageData["message"] as! String)
-//                            let imgView = UIImageView()
-//                            imgView.sd_setImage(with: imgRef)
-//                            mediaItem?.image = imgView.image
-//
-//                            mediaItem?.appliesMediaViewMaskAsOutgoing = self.returnOutgoingStatusForUser(senderId: messageData["senderId"] as? String ?? "")
-                            print("画像追加")
-                            let imgRef = self.storageRef.child("privateChat").child(self.chatId).child(messageData["message"] as! String)
-                            imgRef.downloadURL { url, error in
-                                if let error = error {
-                                    // Handle any errors
-                                    print(error.localizedDescription)
-                                } else {
-                                    self.downLoadImage2(imageUrl: url!.absoluteString) { (image) in
-                                        if image != nil {
-                                            self.urlArr.append(url!.absoluteString)
-                                            mediaItem?.image = image
-                                            self.collectionView.reloadData()
-                                        }
-                                    }
+                            self.downLoadImage2(imageUrl: messageData["imgUrl"] as! String) { (image) in
+                                if image != nil {
+                                    self.urlArr.append(messageData["imgUrl"] as! String)
+                                    mediaItem?.image = image
+                                    self.collectionView.reloadData()
                                 }
                             }
                             
@@ -198,7 +187,6 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                         } else {
                             self.collectionView.reloadData()
                         }
-                        
                         self.db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").document(self.partnerId).updateData(["unreadCount": 0, "readTime": messageData["createTime"] as! TimeInterval])
 
                         if self.createFlg { return }
@@ -253,10 +241,8 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 
                 // 日付
                 self.loadTimestamp = messageData["createTime"] as? TimeInterval
-                var date = Date(timeIntervalSince1970: messageData["createTime"] as! TimeInterval)
-                let dateStr = date.toStringWithCurrentLocale()
-                date = DateFormatter.current("yyyy年MM月dd日 HH:mm").date(from: dateStr)!
-                
+                let date = Date(timeIntervalSince1970: messageData["createTime"] as! TimeInterval)
+
                 // メッセージ
                 // テキスト
                 if messageData["type"] as! String == "text" {
@@ -267,25 +253,13 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 // 画像
                     let mediaItem = PhotoMediaItem(image: nil)
                     mediaItem?.appliesMediaViewMaskAsOutgoing = self.returnOutgoingStatusForUser(senderId: messageData["senderId"] as? String ?? "")
-                    let imgRef = self.storageRef.child("privateChat").child(self.chatId).child(messageData["message"] as! String)
-                    imgRef.downloadURL { url, error in
-                        if let error = error {
-                            // Handle any errors
-                            print(error.localizedDescription)
-                        } else {
-                            self.downLoadImage2(imageUrl: url!.absoluteString) { (image) in
-                                if image != nil {
-                                    self.urlArr.insert(url!.absoluteString, at: 0)
-                                    mediaItem?.image = image
-                                    self.collectionView.reloadData()
-                                }
-                            }
+                    self.downLoadImage2(imageUrl: messageData["imgUrl"] as! String) { (image) in
+                        if image != nil {
+                            self.urlArr.append(messageData["imgUrl"] as! String)
+                            mediaItem?.image = image
+                            self.collectionView.reloadData()
                         }
                     }
-//                    let imgRef = self.storageRef.child("privateChat").child(self.chatId).child(messageData["message"] as! String)
-//                    let imgView = UIImageView()
-//                    imgView.sd_setImage(with: imgRef)
-//                    mediaItem?.image = imgView.image
                     
                     let message = JSQMessage(senderId: messageData["senderId"] as? String, senderDisplayName: name, date: date, media: mediaItem)
                     self.messages?.insert(message!, at: 0)
@@ -293,7 +267,6 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 }
                 
                 if unreadCountFlg {
-                    print("カウントアップ")
                     self.db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").document(self.partnerId).updateData(
                         ["unreadCount": 0, "readTime": messageData["createTime"] as! TimeInterval]
                     )
@@ -316,7 +289,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 self.collectionView.reloadData()
                 self.collectionView.layoutIfNeeded()
                 self.collectionView.contentOffset = CGPoint(x: 0.0, y: self.collectionView.contentSize.height - reverseOffset)
-                self.collectionView.setContentOffset(CGPoint(x: 0.0, y: self.collectionView.contentSize.height - reverseOffset - 44), animated: true)
+                self.collectionView.setContentOffset(CGPoint(x: 0.0, y: self.collectionView.contentSize.height - reverseOffset), animated: true)
 
             }
             
@@ -422,8 +395,8 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         
         guard text != "" else { return }
         
-        let timestamp = NSDate().timeIntervalSince1970
-        
+        let timestamp = Date().timeIntervalSince1970
+
         if self.createFlg {
             let partnerChatRef = db.collection("users").document(partnerId).collection("privateChatPartners").document(RootTabBarController.UserId)
             self.db.runTransaction({ (transaction, errorPointer) -> Any? in
@@ -530,9 +503,12 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         self.view.endEditing(true)
     }
     
-    func afterAddMessage(message: String, type: String, timestamp: TimeInterval) {
-//        print("トランザクションフラグ\(self.createFlg)")
-        
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "fromPrivateChatToOtherProfile" {
+            let profileViewController = segue.destination as! OtherProfileViewController
+            profileViewController.userId = partnerId
+            profileViewController.fromWhere = "privateChat"
+        }
     }
     
     // スクロールして途中で止まった場合のみ
@@ -559,7 +535,6 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         }
         if collectionView.contentOffset.y > 0 {
             scrollFlg = true
-            print("1番下")
         }
     }
     
@@ -579,127 +554,123 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
             let date = Date().toStringDateImg()
             let fileName = RootTabBarController.UserId + date + ".jpg"
             let meta = StorageMetadata()
-            meta.contentType = "image/jpeg" // <- これ！！
-            print("画像アップ")
-            storageRef.child("privateChat").child(chatId).child(fileName).putData(imgData, metadata: meta, completion: { metaData, error in
+            meta.contentType = "image/jpeg"
+            let uploadRef = storageRef.child("privateChat").child(chatId).child(fileName)
+            uploadRef.putData(imgData, metadata: meta, completion: { metaData, error in
                 
                 if error != nil {
                     print(error!.localizedDescription)
                     return
                 }
-                print("画像追加")
-                let type = "img"
-                let timestamp = NSDate().timeIntervalSince1970
-                print(metaData!)
-//                self.db.collection("privateChat").document(self.chatId).collection("messages").addDocument(data: [
-//                    "senderId": RootTabBarController.UserId,
-//                    "type": type,
-//                    "message": fileName,
-//                    "createTime": timestamp
-//                ]) { err in
-//                    if let err = err {
-//                        print("Error adding document: \(err)")
-//                    } else {
-//                        print("画像書き込み")
-//                        self.afterAddMessage(message: fileName, type: "img", timestamp: timestamp)
-//                    }
-//                }
                 
-                if self.createFlg {
-                    let partnerChatRef = self.db.collection("users").document(self.partnerId).collection("privateChatPartners").document(RootTabBarController.UserId)
-                    self.db.runTransaction({ (transaction, errorPointer) -> Any? in
-                        
-                        let partnerChatDocument: DocumentSnapshot
-                        do {
-                            try partnerChatDocument = transaction.getDocument(partnerChatRef)
-                        } catch let fetchError as NSError {
-                            errorPointer?.pointee = fetchError
-                            return nil
-                        }
-                        
-                        guard let oldUnreadCount = partnerChatDocument.data()?["unreadCount"] as? Int else {
-                            let error = NSError(
-                                domain: "AppErrorDomain",
-                                code: -1,
-                                userInfo: [
-                                    NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(partnerChatDocument)"
-                                ]
-                            )
-                            errorPointer?.pointee = error
-                            return nil
-                        }
-                        
-                        
-                        // メッセージ追加
-                        let newRef = self.db.collection("privateChat").document(self.chatId).collection("messages").document()
-                        transaction.setData(
-                            ["senderId": RootTabBarController.UserId, "type": "img", "message": fileName, "createTime": timestamp],
-                            forDocument: newRef
-                        )
-                        
-                        // プライベートチャット 最新更新
-                        transaction.setData(
-                            ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
-                            forDocument: self.db.collection("privateChat").document(self.chatId)
-                        )
-                        
-                        // バッジカウント追加
-                        transaction.updateData(["unreadCount":  oldUnreadCount + 1], forDocument: partnerChatRef)
-                        
-                        return nil
-                    }) { (object, error) in
-                        if let error = error {
-                            print("Transaction failed: \(error)")
-                        } else {
-                            self.createFlg = true
-                            print("Transaction successfully committed!")
-                            OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
-                        }
+                var downloadUrl = ""
+                uploadRef.downloadURL { (url, error) in
+                    guard let downloadURL = url else {
+                        // Uh-oh, an error occurred!
+                        return
                     }
+                    downloadUrl = downloadURL.absoluteString
                     
-                } else {
+                    let timestamp = Date().timeIntervalSince1970
                     
-                    self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                    if self.createFlg {
+                        let partnerChatRef = self.db.collection("users").document(self.partnerId).collection("privateChatPartners").document(RootTabBarController.UserId)
+                        self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                            
+                            let partnerChatDocument: DocumentSnapshot
+                            do {
+                                try partnerChatDocument = transaction.getDocument(partnerChatRef)
+                            } catch let fetchError as NSError {
+                                errorPointer?.pointee = fetchError
+                                return nil
+                            }
+                            
+                            guard let oldUnreadCount = partnerChatDocument.data()?["unreadCount"] as? Int else {
+                                let error = NSError(
+                                    domain: "AppErrorDomain",
+                                    code: -1,
+                                    userInfo: [
+                                        NSLocalizedDescriptionKey: "Unable to retrieve population from snapshot \(partnerChatDocument)"
+                                    ]
+                                )
+                                errorPointer?.pointee = error
+                                return nil
+                            }
+                            
+                            
+                            // メッセージ追加
+                            let newRef = self.db.collection("privateChat").document(self.chatId).collection("messages").document()
+                            transaction.setData(
+                                ["senderId": RootTabBarController.UserId, "type": "img", "imgUrl": downloadUrl, "message": fileName, "createTime": timestamp],
+                                forDocument: newRef
+                            )
+                            
+                            // プライベートチャット 最新更新
+                            transaction.setData(
+                                ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
+                                forDocument: self.db.collection("privateChat").document(self.chatId)
+                            )
+                            
+                            // バッジカウント追加
+                            transaction.updateData(["unreadCount":  oldUnreadCount + 1], forDocument: partnerChatRef)
+                            
+                            return nil
+                        }) { (object, error) in
+                            if let error = error {
+                                print("Transaction failed: \(error)")
+                            } else {
+                                self.createFlg = true
+                                print("Transaction successfully committed!")
+                                OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
+                            }
+                        }
                         
-                        // メッセージ追加
-                        let newRef = self.db.collection("privateChat").document(self.chatId).collection("messages").document()
-                        transaction.setData(
-                            ["senderId": RootTabBarController.UserId, "type": "img", "message": fileName, "createTime": timestamp],
-                            forDocument: newRef
-                        )
+                    } else {
                         
-                        // 個人チャットルーム作成
-                        transaction.setData(
-                            ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
-                            forDocument: self.db.collection("privateChat").document(self.chatId)
-                        )
-                        
-                        // ユーザーのプライベートチャットリストに追加
-                        let partnerRef: DocumentReference = self.db.collection("users").document(self.partnerId)
-                        let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
-                        transaction.setData(
-                            ["partnerRef" : partnerRef, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
-                            forDocument: self.db.document("users/\(RootTabBarController.UserId)/privateChatPartners/\(String(describing: self.partnerId))")
-                        )
-                        
-                        // パートナーのプライベートチャットリストに追加
-                        let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.UserId)
-                        transaction.setData(
-                            ["partnerRef" : userRef, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
-                            forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.UserId)")
-                        )
-                        
-                        return nil
-                    }) { (object, error) in
-                        if let error = error {
-                            print("Transaction failed: \(error)")
-                        } else {
-                            self.createFlg = true
-                            OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
-                            print("Transaction successfully committed!")
+                        self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+                            
+                            // メッセージ追加
+                            let newRef = self.db.collection("privateChat").document(self.chatId).collection("messages").document()
+                            transaction.setData(
+                                ["senderId": RootTabBarController.UserId, "type": "img", "message": fileName, "imgUrl": downloadUrl, "createTime": timestamp],
+                                forDocument: newRef
+                            )
+                            
+                            // 個人チャットルーム作成
+                            transaction.setData(
+                                ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
+                                forDocument: self.db.collection("privateChat").document(self.chatId)
+                            )
+                            
+                            // ユーザーのプライベートチャットリストに追加
+                            let partnerRef: DocumentReference = self.db.collection("users").document(self.partnerId)
+                            let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
+                            transaction.setData(
+                                ["partnerRef" : partnerRef, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
+                                forDocument: self.db.document("users/\(RootTabBarController.UserId)/privateChatPartners/\(String(describing: self.partnerId))")
+                            )
+                            
+                            // パートナーのプライベートチャットリストに追加
+                            let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.UserId)
+                            transaction.setData(
+                                ["partnerRef" : userRef, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
+                                forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.UserId)")
+                            )
+                            
+                            return nil
+                        }) { (object, error) in
+                            if let error = error {
+                                print("Transaction failed: \(error)")
+                            } else {
+                                self.createFlg = true
+                                OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
+                                print("Transaction successfully committed!")
+                            }
                         }
                     }
                 }
+
+                
             })
         }
         picker.dismiss(animated: true, completion: nil)
@@ -727,6 +698,11 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
             self.present(browser!, animated: true, completion: nil)
         }
         
+    }
+    
+    // アバタータップ時
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, didTapAvatarImageView avatarImageView: UIImageView!, at indexPath: IndexPath!) {
+        self.performSegue(withIdentifier: "fromPrivateChatToOtherProfile", sender: nil)// ページ遷移
     }
     
     // アイテムごとに参照するメッセージデータを返す
@@ -805,17 +781,18 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         return cell
     }
     
-    
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        // ViewControllerが表示された時に実行したい処理
         if viewController is OtherProfileViewController {
             //挿入したい処理
+            print("リムーブmしてまうs")
             listener.remove()
         }
         
         if viewController is MessageViewController {
             //挿入したい処理
-            print("消す")
             listener.remove()
+            print("リムーブ")
         }
     }
     

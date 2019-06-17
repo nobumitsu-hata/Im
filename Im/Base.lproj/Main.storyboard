@@ -1575,10 +1575,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="kXA-Le-SIC"/>
                     </view>
+                    <connections>
+                        <segue destination="hlu-tn-8Rh" kind="show" identifier="fromPrivateChatToOtherProfile" id="zeq-Q6-ID4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wdR-vW-jd9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2521" y="-949"/>
+            <point key="canvasLocation" x="2879" y="-949"/>
         </scene>
     </scenes>
     <resources>
@@ -1598,6 +1601,7 @@
         <image name="UserOn" width="18" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="5sE-30-nXO"/>
+        <segue reference="7yU-eP-Aef"/>
+        <segue reference="zeq-Q6-ID4"/>
     </inferredMetricsTieBreakers>
 </document>
