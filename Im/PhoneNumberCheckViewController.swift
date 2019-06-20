@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import FirebaseFirestore
+import KRProgressHUD
 
 class PhoneNumberCheckViewController: UIViewController {
     
@@ -44,11 +46,21 @@ class PhoneNumberCheckViewController: UIViewController {
             self.showMessagePrompt(message: "認証コードを入力してください")
             return
         }
+        
+        // ローディング開始
+        let appearance = KRProgressHUD.appearance()
+        appearance.activityIndicatorColors = [UIColor]([
+            UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
+            UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0)
+            ])
+        KRProgressHUD.show()
+        
         let code = codeTextField.text
         
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationId, verificationCode: code!)
         Auth.auth().signIn(with: credential) { authData, error in
             if error != nil {
+                KRProgressHUD.dismiss()// ローディング終了
                 self.showMessagePrompt(message: "認証に失敗しました")
                 return
             }
@@ -66,17 +78,17 @@ class PhoneNumberCheckViewController: UIViewController {
                     RootTabBarController.UserInfo = userDoc
                     RootTabBarController.AuthCheck = true
                     
-                    
                     if userDoc["status"] as? Int == 0 {
                         // 仮登録済みの場合
+                        KRProgressHUD.dismiss()// ローディング終了
                         let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
                         self.present(presentController, animated: true, completion: {
                             presentController.fromWhere = "afterAuth"
                         })
                     }  else {
                         // 本登録済みの場合
+                        KRProgressHUD.dismiss()// ローディング終了
                         self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: nil)
-                        //                    let referenceForTabBarController = self.presentingViewController?.presentingViewController as! RootTabBarController
                     }
                     
                 } else {
@@ -100,16 +112,17 @@ class PhoneNumberCheckViewController: UIViewController {
                     self.db.collection("users").document(userId).setData(fields) { err in
                         if let err = err {
                             print("Error adding document: \(err)")
+                            KRProgressHUD.dismiss()// ローディング終了
                         } else {
                             print("登録")
                             RootTabBarController.UserId = userId
                             RootTabBarController.UserInfo = fields
                             RootTabBarController.AuthCheck = true
-                            
+                            KRProgressHUD.dismiss()// ローディング終了
                             // 本登録へ
                             let presentController = self.storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
                             self.present(presentController, animated: true, completion: {
-                                presentController.fromWhere = "afterAuth"
+                                presentController.fromWhere = "PhoneNumberCheckViewController"
                             })
 
                         }

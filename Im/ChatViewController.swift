@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import FirebaseUI
+import FirebaseFirestore
 
 class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource {
     
@@ -244,15 +245,25 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
             }
         }
         
-        let tapGesture = UserTapGestureRecognizer(
+        let tapImgGesture = UserTapGestureRecognizer(
             target: self,
-            action: #selector(ChatViewController.tapImg(_:)))
+            action: #selector(ChatViewController.tapSegue(_:)))
         
-        tapGesture.user = (self.messageArr[indexPath.row]["senderId"] as! String)
-        tapGesture.userDoc = messageArr[indexPath.row]
+        let tapNameGesture = UserTapGestureRecognizer(
+            target: self,
+            action: #selector(ChatViewController.tapSegue(_:)))
+        
+        tapImgGesture.user = (self.messageArr[indexPath.row]["senderId"] as! String)
+        tapImgGesture.userDoc = messageArr[indexPath.row]
+        
+        tapNameGesture.user = (self.messageArr[indexPath.row]["senderId"] as! String)
+        tapNameGesture.userDoc = messageArr[indexPath.row]
         
         imgView?.isUserInteractionEnabled = true
-        imgView!.addGestureRecognizer(tapGesture)
+        imgView!.addGestureRecognizer(tapImgGesture)
+        
+        name?.isUserInteractionEnabled = true
+        name?.addGestureRecognizer(tapNameGesture)
         
         message!.text = (messageArr[indexPath.row]["message"] as! String)
         message!.sizeToFit()
@@ -319,10 +330,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     }
 
     // DM画面にページ遷移
-    @objc func tapImg(_ sender: UserTapGestureRecognizer) {
-        print("タップ")
-        print(sender.user!)
-        print(RootTabBarController.UserId)
+    @objc func tapSegue(_ sender: UserTapGestureRecognizer) {
         // IDチェック
         getId = sender.user!
         if getId == RootTabBarController.UserId {

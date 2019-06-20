@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseFirestore
 
 class DeleteViewController: UIViewController {
     
@@ -33,6 +34,7 @@ class DeleteViewController: UIViewController {
                     let firebaseAuth = Auth.auth()
                     do {
                         try firebaseAuth.signOut()
+                        RootTabBarController.profileListener.remove()
                         self.showMessagePrompt(message: "アカウントを削除するには再認証が必要です")
                     } catch let signOutError as NSError {
                         print ("Error signing out: %@", signOutError)
@@ -64,7 +66,8 @@ class DeleteViewController: UIViewController {
                         }
                     }
                 }
-
+                RootTabBarController.profileListener.remove()
+                RootTabBarController.profileListener = nil
                 self.tabBarController?.selectedIndex = 0
             })
             

@@ -9,6 +9,8 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import FirebaseFirestore
+import TwitterKit
 
 class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UINavigationControllerDelegate {
     
@@ -68,15 +70,27 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController!.navigationBar.shadowImage = UIImage()
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-
+        print("フラッシュ")
+        print(RootTabBarController.profileListener)
+        setupFirebase()
+        print(RootTabBarController.profileListener)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("どうなん")
+        print(RootTabBarController.profileListener)
+        if (RootTabBarController.profileListener != nil) {
+            print("リッスン済み")
+            return
+        }
+        
+        print("再度リッスン")
         setupFirebase()
     }
     
     func setupFirebase() {
-//        print(UserInfo)
-        print(RootTabBarController.UserInfo)
-        print(RootTabBarController.UserId)
-        db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
+        RootTabBarController.profileListener = db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
             guard let document = documentSnapshot else {
                 print("Error fetching document: \(error!)")
                 return
@@ -336,6 +350,18 @@ extension AccountViewController: SidemenuViewControllerDelegate {
     func logout() {
         tabBarController?.selectedIndex = 0
         RootTabBarController.AuthCheck = false
+        print("リムーブ")
+        RootTabBarController.profileListener.remove()
+        RootTabBarController.profileListener = nil
+        print(RootTabBarController.profileListener)
+//        let sessionStore = TWTRTwitter.sharedInstance().sessionStore
+//        // アクティブなアカウントのsessionを取得
+//        if let session = sessionStore.session() {
+//            // userIDでログアウト
+//            print("twitterログアウト")
+//            sessionStore.logOutUserID(session.userID)
+//        }
+
     }
     
     func shouldPresentForSidemenuViewController(_ sidemenuViewController: SidemenuViewController) -> Bool {

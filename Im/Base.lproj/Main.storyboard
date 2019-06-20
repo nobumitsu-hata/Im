@@ -227,10 +227,10 @@
             </objects>
             <point key="canvasLocation" x="1681" y="-2364"/>
         </scene>
-        <!--Login Test View Controller-->
+        <!--View Controller-->
         <scene sceneID="LAc-d7-XCQ">
             <objects>
-                <viewController storyboardIdentifier="LoginTestViewController" id="MbJ-Zt-YsD" customClass="LoginTestViewController" customModule="Im" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginTestViewController" id="MbJ-Zt-YsD" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="t9Q-Ax-HSW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -238,9 +238,6 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aV1-R1-Mht">
                                 <rect key="frame" x="164.5" y="588" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="tapGoogleSingIn:" destination="MbJ-Zt-YsD" eventType="touchUpInside" id="b2V-G3-I83"/>
-                                </connections>
                             </button>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="k8K-b5-oaG">
                                 <rect key="frame" x="0.0" y="258.5" width="375" height="150"/>
@@ -268,9 +265,8 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="iST-0c-i2m"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="" image="BellOff" selectedImage="BellOn" id="z6h-aZ-icb"/>
+                    <tabBarItem key="tabBarItem" title="" image="PlaceOff" selectedImage="PlaceOn" id="z6h-aZ-icb"/>
                     <connections>
-                        <outlet property="collectionView" destination="k8K-b5-oaG" id="SLu-XH-QZZ"/>
                         <outlet property="collectionViewLayout" destination="lQs-6J-E2a" id="M2O-hN-rmb"/>
                     </connections>
                 </viewController>
@@ -528,8 +524,8 @@
                     </tabBar>
                     <connections>
                         <segue destination="1UV-LJ-b9a" kind="relationship" relationship="viewControllers" id="R6p-G6-oxX"/>
-                        <segue destination="MbJ-Zt-YsD" kind="relationship" relationship="viewControllers" id="bcX-cK-X7U"/>
                         <segue destination="0Wx-Dp-0fz" kind="relationship" relationship="viewControllers" id="g99-5Y-eZm"/>
+                        <segue destination="MbJ-Zt-YsD" kind="relationship" relationship="viewControllers" id="eh2-dg-rE5"/>
                         <segue destination="vBG-aF-yVO" kind="relationship" relationship="viewControllers" id="s0V-7T-nC4"/>
                     </connections>
                 </tabBarController>
@@ -760,6 +756,7 @@
                                                             </imageView>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T1i-un-oXF">
                                                                 <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.30158390410958902" colorSpace="calibratedRGB"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="80" id="G4g-Sz-ENR"/>
                                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="80" id="naT-fj-hK3"/>
@@ -1111,6 +1108,7 @@
                                                     </imageView>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KOA-2s-EN0">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.10458583047945205" colorSpace="calibratedRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="80" id="Yf5-FY-2Mw"/>
                                                             <constraint firstAttribute="height" constant="80" id="p2I-QF-ec9"/>
@@ -1388,7 +1386,6 @@
                                 </connections>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="HZR-Bu-oSc" firstAttribute="top" secondItem="3pA-oh-Gqr" secondAttribute="top" constant="-64" id="5Oq-Tr-EaB"/>
@@ -1585,8 +1582,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="BellOff" width="25" height="25"/>
-        <image name="BellOn" width="25" height="25"/>
         <image name="Camera" width="256" height="256"/>
         <image name="Facebook" width="510" height="510"/>
         <image name="Google" width="256" height="256"/>
@@ -1596,12 +1591,14 @@
         <image name="MessageOff" width="25" height="25"/>
         <image name="MessageOn" width="25" height="25"/>
         <image name="Phone" width="128" height="128"/>
+        <image name="PlaceOff" width="26" height="25"/>
+        <image name="PlaceOn" width="26" height="25"/>
         <image name="Twitter" width="200" height="200"/>
         <image name="UserOff" width="21.5" height="25"/>
         <image name="UserOn" width="18" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="7yU-eP-Aef"/>
-        <segue reference="zeq-Q6-ID4"/>
+        <segue reference="kMT-tV-zvX"/>
     </inferredMetricsTieBreakers>
 </document>

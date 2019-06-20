@@ -9,7 +9,8 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
-//import FirebaseUI
+import FirebaseUI
+import FirebaseFirestore
 import CoreLocation
 
 class MyTapGestureRecognizer: UITapGestureRecognizer {
@@ -22,6 +23,7 @@ class ScrollViewController: UIViewController {
     
     var storage: Storage!
     private let db = Firestore.firestore()
+    var appGuideView:UIView!
     
     var communityKey:[String] = []
     var communityVal:[[String:Any]] = []
@@ -32,26 +34,54 @@ class ScrollViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        screenSize = UIScreen.main.bounds
+
         // ページスクロールとするためにページ幅を合わせる
+        screenSize = UIScreen.main.bounds
         scrollScreenWidth = screenSize.width
         scrollScreenHeight = screenSize.height
         self.view.setGradientLayer()
+        setAppGuide()
         setupFirebase()
         
+    }
+    
+    func setAppGuide() {
+        let communityXib = UINib(nibName: "CommunityTableViewCell", bundle: Bundle(for: type(of: self)))
+        appGuideView = communityXib.instantiate(withOwner: self, options: nil).first as? UIView
+        appGuideView.isUserInteractionEnabled = true
+        // 描画開始の x,y 位置
+        let px:CGFloat = 0.0
+        let py:CGFloat = 0.0
+        
+        // コミュニティー画像設定
+        let imgView  = appGuideView.viewWithTag(2) as! UIImageView
+        imgView.image = UIImage(named: "AppGuide")
+        imgView.isUserInteractionEnabled = true
+        
+        // 描画開始設定
+        var viewFrame:CGRect = appGuideView.frame
+        viewFrame.size.width = self.scrollScreenWidth
+        viewFrame.size.height = self.scrollScreenHeight
+        viewFrame.origin = CGPoint(x: px, y: py)
+        appGuideView.frame = viewFrame
+        
+        self.scrollView.addSubview(appGuideView)
+        
+        // スクロール範囲の設定
+        let nHeight:CGFloat = self.scrollScreenHeight * CGFloat(1)
+        self.scrollView.contentSize = CGSize(width: self.scrollScreenWidth, height: nHeight)
     }
     
     func setupFirebase() {
         storage = Storage.storage()
         
-        // 自作セルをテーブルビューに登録する
         let communityXib = UINib(nibName: "CommunityTableViewCell", bundle: Bundle(for: type(of: self)))
         
         // 描画開始の x,y 位置
         let px:CGFloat = 0.0
         var py:CGFloat = 0.0
         
-        var counter = 0
+        var counter = 1
         
         db.collection("locations").getDocuments() { (querySnapshot, err) in
             if let err = err {
@@ -114,9 +144,17 @@ class ScrollViewController: UIViewController {
                         viewFrame.size.height = self.scrollScreenHeight
                         viewFrame.origin = CGPoint(x: px, y: py)
                         communityView.frame = viewFrame
+                        
                         // 次の描画位置設定
                         py += (self.screenSize.height)
                         counter += 1
+                        
+                        var appGuideViewFrame:CGRect = self.appGuideView.frame
+                        appGuideViewFrame.size.width = self.scrollScreenWidth
+                        appGuideViewFrame.size.height = self.scrollScreenHeight
+                        appGuideViewFrame.origin = CGPoint(x: px, y: py)
+                        self.appGuideView.frame = appGuideViewFrame
+                        
                         // スクロール範囲の設定
                         let nHeight:CGFloat = self.scrollScreenHeight * CGFloat(counter)
                         self.scrollView.contentSize = CGSize(width: self.scrollScreenWidth, height: nHeight)
@@ -145,8 +183,33 @@ class ScrollViewController: UIViewController {
     }
     
     @objc func btnClick(_ sender:MyTapGestureRecognizer) {
-        tabBarController?.tabBar.isHidden = true
-        performSegue(withIdentifier: "toChatViewController", sender: sender.targetString)
+        
+        //  ログイン済み
+        if RootTabBarController.AuthCheck {
+            // 仮登録状態の場合
+            if RootTabBarController.UserInfo["status"] as? Int  == 0 {
+                let modalViewController = storyboard?.instantiateViewController(withIdentifier: "RegisterViewController") as! RegisterViewController
+                present(modalViewController, animated: true, completion: {
+                    modalViewController.fromWhere = "RootTabBarController"
+                })
+                
+            } else {
+                tabBarController?.tabBar.isHidden = true
+                performSegue(withIdentifier: "toChatViewController", sender: sender.targetString)
+            }
+        } else {
+            
+            let modalViewController = storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            modalViewController.modalPresentationStyle = .custom
+            modalViewController.transitioningDelegate = self
+            present(modalViewController, animated: true, completion: nil)
+        }
     }
     
+}
+
+extension ScrollViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return LoginPresentationController(presentedViewController: presented, presenting: presenting)
+    }
 }

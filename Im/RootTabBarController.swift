@@ -9,11 +9,14 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import FirebaseFirestore
 import FirebaseUI
 import CoreLocation
 import FBSDKCoreKit
 import FBSDKLoginKit
 import OneSignal
+import KRProgressHUD
+import TwitterKit
 
 class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -22,8 +25,8 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     static var AuthCheck = false
     static var currentUser:User!
     static var unreadCountDic:[String:Int] = [:]
+    static var profileListener: ListenerRegistration!
     private let db = Firestore.firestore()
-    var authCheck = false
     var picker: UIImagePickerController! = UIImagePickerController()
     
     // 位置情報

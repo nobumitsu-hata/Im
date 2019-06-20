@@ -26,8 +26,8 @@
                             <constraint firstAttribute="width" constant="30" id="Puk-Z1-jO0"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bdt-wt-BLb">
-                        <rect key="frame" x="60" y="10" width="260" height="17"/>
+                    <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="La" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bdt-wt-BLb">
+                        <rect key="frame" x="60" y="10" width="18" height="17"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="17" id="iGe-G9-peK"/>
                         </constraints>
@@ -46,7 +46,6 @@
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="bdt-wt-BLb" secondAttribute="trailing" id="AYT-nN-sV3"/>
                     <constraint firstItem="bdt-wt-BLb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="HdY-ND-Ojg"/>
                     <constraint firstAttribute="bottom" secondItem="4S5-R3-oST" secondAttribute="bottom" id="Puy-HF-xpB"/>
                     <constraint firstItem="4S5-R3-oST" firstAttribute="leading" secondItem="91M-ji-nEn" secondAttribute="trailing" constant="15" id="Vbz-KX-a4b"/>

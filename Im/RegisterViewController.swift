@@ -9,6 +9,8 @@
 import UIKit
 import Firebase
 import RSKImageCropper
+import FirebaseFirestore
+import KRProgressHUD
 
 class RegisterViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, UITextFieldDelegate {
 
@@ -58,11 +60,10 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
             colorTwo: UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0)
         )
         
-        // 角丸にする
         self.imgView.layer.cornerRadius = self.imgView.frame.size.width * 0.5
         self.imgView.clipsToBounds = true
-        
-        imgBtn.imageEdgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)// ボタンの画像縮小
+        imgBtn.imageEdgeInsets = UIEdgeInsets(top: 25, left: 25, bottom: 25, right: 25)// ボタンの画像縮小
+        imgBtn.layer.cornerRadius = self.imgView.frame.size.width * 0.5
         wrapperView.layer.cornerRadius = 20
         
         nameTextField.text = RootTabBarController.UserInfo["name"] as? String
@@ -123,6 +124,14 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
             return
         }
         
+        // ローディング開始
+        let appearance = KRProgressHUD.appearance()
+        appearance.activityIndicatorColors = [UIColor]([
+            UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
+            UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0)
+            ])
+        KRProgressHUD.show()
+        
         let name = nameTextField.text!
         let sex  = sexTextField.text!
         
@@ -156,6 +165,7 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
                 
                 if error != nil {
                     print(error!.localizedDescription)
+                    KRProgressHUD.dismiss()// ローディング終了
                     return
                 }
 
@@ -163,6 +173,7 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
                 self.db.collection("users").document(RootTabBarController.UserId).updateData(["name": name, "birthday": birthday, "sex": sex, "status": 1, "img": fileName]) { err in
                     if let err = err {
                         print("Error updating document: \(err)")
+                        KRProgressHUD.dismiss()// ローディング終了
                         return
                     }
                     
@@ -175,18 +186,23 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
                     // プロフィール画像が空の場合
                     guard RootTabBarController.UserInfo["img"] as? String != ""  else {
                         RootTabBarController.UserInfo["img"] = fileName
-                        // 仮登録直後の場合
+                        // 仮登録直後の電話番号認証から
                         if self.fromWhere == "PhoneNumberCheckViewController" {
+                            KRProgressHUD.dismiss()// ローディング終了
                             let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
                             self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
                                 referenceForTabBarController.selectedIndex = 3
                             })
                         } else if self.fromWhere == "snsAuth" {
+                        // 仮登録直後のSNS認証から
+                            KRProgressHUD.dismiss()// ローディング終了
                             let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
-                            self.presentingViewController!.presentingViewController!.dismiss(animated: false, completion: {
+                            self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
                                 referenceForTabBarController.selectedIndex = 3
                             })
                         } else {
+                        // 仮登録のままだったユーザー
+                            KRProgressHUD.dismiss()// ローディング終了
                             let referenceForTabBarController = self.presentingViewController as! RootTabBarController
                             self.dismiss(animated: true, completion: {
                                 referenceForTabBarController.selectedIndex = 3
@@ -210,18 +226,23 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
                         }
                         
                         RootTabBarController.UserInfo["img"] = fileName
-                        // 仮登録直後の場合
+                        // 仮登録直後の電話番号認証から
                         if self.fromWhere == "PhoneNumberCheckViewController" {
+                            KRProgressHUD.dismiss()// ローディング終了
                             let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
                             self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
                                 referenceForTabBarController.selectedIndex = 3
                             })
                         } else if self.fromWhere == "snsAuth" {
+                        // 仮登録直後のSNS認証から
+                            KRProgressHUD.dismiss()// ローディング終了
                             let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
-                            self.presentingViewController!.presentingViewController!.dismiss(animated: false, completion: {
+                            self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
                                 referenceForTabBarController.selectedIndex = 3
                             })
                         } else {
+                        // 仮登録のままだったユーザー
+                            KRProgressHUD.dismiss()// ローディング終了
                             let referenceForTabBarController = self.presentingViewController as! RootTabBarController
                             self.dismiss(animated: true, completion: {
                                 referenceForTabBarController.selectedIndex = 3
@@ -239,6 +260,7 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
             self.db.collection("users").document(RootTabBarController.UserId).updateData(["name": name, "birthday": birthday, "sex": sex, "status": 1]) { err in
                 if let err = err {
                     print("Error updating document: \(err)")
+                    KRProgressHUD.dismiss()// ローディング終了
                     return
                 }
                 
@@ -249,16 +271,19 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
                 
                 // 仮登録直後の場合
                 if self.fromWhere == "PhoneNumberCheckViewController" {
+                    KRProgressHUD.dismiss()// ローディング終了
                     let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
                     self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
                         referenceForTabBarController.selectedIndex = 3
                     })
                 } else if self.fromWhere == "snsAuth" {
+                    KRProgressHUD.dismiss()// ローディング終了
                     let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
                     self.presentingViewController!.presentingViewController!.dismiss(animated: false, completion: {
                         referenceForTabBarController.selectedIndex = 3
                     })
                 } else {
+                    KRProgressHUD.dismiss()// ローディング終了
                     let referenceForTabBarController = self.presentingViewController as! RootTabBarController
                     self.dismiss(animated: true, completion: {
                         referenceForTabBarController.selectedIndex = 3

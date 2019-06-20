@@ -15,6 +15,7 @@ import Photos
 import IDMPhotoBrowser
 import ImageViewer
 import OneSignal
+import FirebaseFirestore
 
 class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, IDMPhotoBrowserDelegate {
     
@@ -125,6 +126,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
         
     }
+    
     
     func setupFirebase() {
         listener = db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
@@ -685,16 +687,13 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
             let mediaItem = message.media as! JSQPhotoMediaItem
             let photos = IDMPhoto.photos(withImages: [mediaItem.image])
             let browser = IDMPhotoBrowser(photos: photos)
-            browser?.displayDoneButton = false
-            browser?.useWhiteBackgroundColor = true
-            browser?.doneButtonImage = UIImage(named: "Close")
-//            browser?.doneButtonImage.resize(size: CGSize(width: 30, height: 30))
             browser?.delegate = self
-            browser?.disableVerticalSwipe = true
+            let closeImg = UIImage(named: "Close")
+            browser!.doneButtonImage = closeImg
+            browser!.doneButtonSize = CGSize(width: 30, height: 30)
             browser?.autoHideInterface = true
             browser?.usePopAnimation = false
-            browser?.dismissOnTouch = true
-            browser?.dismissOnTouch = true
+            browser?.actionButtonImage = closeImg
             self.present(browser!, animated: true, completion: nil)
         }
         

@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import RSKImageCropper
+import FirebaseFirestore
 
 class EditProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, UITextFieldDelegate {
     

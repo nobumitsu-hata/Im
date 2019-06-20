@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import FirebaseFirestore
 
 class OtherProfileViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
