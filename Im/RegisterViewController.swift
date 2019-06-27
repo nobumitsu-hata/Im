@@ -69,7 +69,7 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
         nameTextField.text = RootTabBarController.UserInfo["name"] as? String
         
         let imageView = UIImageView()
-        let image = UIImage(named: "Picker")
+        let image = UIImage(named: "RegisterPicker")
         imageView.image = image
         imageView.frame = CGRect(x: CGFloat(birthdayTextField.frame.size.width - 50), y: CGFloat(30), width: CGFloat(25), height: CGFloat(25))
         birthdayTextField.rightView = imageView
@@ -93,9 +93,10 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
         
         textField.inputView = pickerView
         textField.inputAccessoryView = createToolbar()
+        textField.tintColor = .clear
         
         let imageView = UIImageView()
-        let image = UIImage(named: "Picker")
+        let image = UIImage(named: "RegisterPicker")
         imageView.image = image
         imageView.frame = CGRect(x: CGFloat(textField.frame.size.width - 50), y: CGFloat(30), width: CGFloat(25), height: CGFloat(25))
         textField.rightView = imageView
@@ -168,90 +169,98 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
                     KRProgressHUD.dismiss()// ローディング終了
                     return
                 }
-
-                // DB 本登録
-                self.db.collection("users").document(RootTabBarController.UserId).updateData(["name": name, "birthday": birthday, "sex": sex, "status": 1, "img": fileName]) { err in
+                
+                // プロフ画URL取得
+                ref.downloadURL(completion: { (url, err) in
+                    
                     if let err = err {
-                        print("Error updating document: \(err)")
+                        print(err.localizedDescription)
                         KRProgressHUD.dismiss()// ローディング終了
                         return
                     }
                     
-                    RootTabBarController.UserInfo["name"] = name
-                    RootTabBarController.UserInfo["birthday"] = birthday
-                    
-                    RootTabBarController.UserInfo["sex"] = sex
-                    RootTabBarController.UserInfo["status"] = 1
-                    
-                    // プロフィール画像が空の場合
-                    guard RootTabBarController.UserInfo["img"] as? String != ""  else {
-                        RootTabBarController.UserInfo["img"] = fileName
-                        // 仮登録直後の電話番号認証から
-                        if self.fromWhere == "PhoneNumberCheckViewController" {
+                    // DB 本登録
+                    self.db.collection("users").document(RootTabBarController.UserId).updateData(
+                        ["name": name, "birthday": birthday, "sex": sex, "status": 1, "img": fileName, "imgUrl": url!.absoluteString]
+                    ) { err in
+                        
+                        if let err = err {
+                            print("Error updating document: \(err)")
                             KRProgressHUD.dismiss()// ローディング終了
-                            let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
-                            self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
-                                referenceForTabBarController.selectedIndex = 3
-                            })
-                        } else if self.fromWhere == "snsAuth" {
-                        // 仮登録直後のSNS認証から
-                            KRProgressHUD.dismiss()// ローディング終了
-                            let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
-                            self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
-                                referenceForTabBarController.selectedIndex = 3
-                            })
-                        } else {
-                        // 仮登録のままだったユーザー
-                            KRProgressHUD.dismiss()// ローディング終了
-                            let referenceForTabBarController = self.presentingViewController as! RootTabBarController
-                            self.dismiss(animated: true, completion: {
-                                referenceForTabBarController.selectedIndex = 3
-                            })
+                            return
                         }
-                        return
-                    }
-                    
-                    // 既存ファイル削除
-                    self.storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String).delete { delError in
-                        if let delError = delError {
-                            // Uh-oh, an error occurred!
-                            print(delError.localizedDescription)
-                        } else {
-                            // File deleted successfully
-                            print("File deleted successfully")
+                        
+                        RootTabBarController.UserInfo["name"] = name
+                        RootTabBarController.UserInfo["birthday"] = birthday
+                        RootTabBarController.UserInfo["imgUrl"] = url!.absoluteString
+                        RootTabBarController.UserInfo["sex"] = sex
+                        RootTabBarController.UserInfo["status"] = 1
+                        
+                        // プロフィール画像が空の場合
+                        guard RootTabBarController.UserInfo["img"] as? String != ""  else {
                             RootTabBarController.UserInfo["img"] = fileName
-                            ref.downloadURL(completion: { (url, err) in
-                                RootTabBarController.UserInfo["imgUrl"] = url?.absoluteString
-                            })
+                            // 仮登録直後の電話番号認証から
+                            if self.fromWhere == "PhoneNumberCheckViewController" {
+                                KRProgressHUD.dismiss()// ローディング終了
+                                let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
+                                self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
+                                    referenceForTabBarController.selectedIndex = 3
+                                })
+                            } else if self.fromWhere == "snsAuth" {
+                                // 仮登録直後のSNS認証から
+                                KRProgressHUD.dismiss()// ローディング終了
+                                let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
+                                self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
+                                    referenceForTabBarController.selectedIndex = 3
+                                })
+                            } else {
+                                // 仮登録のままだったユーザー
+                                KRProgressHUD.dismiss()// ローディング終了
+                                let referenceForTabBarController = self.presentingViewController as! RootTabBarController
+                                self.dismiss(animated: true, completion: {
+                                    referenceForTabBarController.selectedIndex = 3
+                                })
+                            }
+                            return
                         }
                         
-                        RootTabBarController.UserInfo["img"] = fileName
-                        // 仮登録直後の電話番号認証から
-                        if self.fromWhere == "PhoneNumberCheckViewController" {
-                            KRProgressHUD.dismiss()// ローディング終了
-                            let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
-                            self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
-                                referenceForTabBarController.selectedIndex = 3
-                            })
-                        } else if self.fromWhere == "snsAuth" {
-                        // 仮登録直後のSNS認証から
-                            KRProgressHUD.dismiss()// ローディング終了
-                            let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
-                            self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
-                                referenceForTabBarController.selectedIndex = 3
-                            })
-                        } else {
-                        // 仮登録のままだったユーザー
-                            KRProgressHUD.dismiss()// ローディング終了
-                            let referenceForTabBarController = self.presentingViewController as! RootTabBarController
-                            self.dismiss(animated: true, completion: {
-                                referenceForTabBarController.selectedIndex = 3
-                            })
+                        // 既存ファイル削除
+                        self.storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String).delete { delError in
+                            if let delError = delError {
+                                // Uh-oh, an error occurred!
+                                print(delError.localizedDescription)
+                            }
+                            
+                            RootTabBarController.UserInfo["img"] = fileName
+                            // 仮登録直後の電話番号認証から
+                            if self.fromWhere == "PhoneNumberCheckViewController" {
+                                KRProgressHUD.dismiss()// ローディング終了
+                                let referenceForTabBarController = self.presentingViewController!.presentingViewController!.presentingViewController as! RootTabBarController
+                                self.presentingViewController!.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
+                                    referenceForTabBarController.selectedIndex = 3
+                                })
+                            } else if self.fromWhere == "snsAuth" {
+                                // 仮登録直後のSNS認証から
+                                KRProgressHUD.dismiss()// ローディング終了
+                                let referenceForTabBarController = self.presentingViewController!.presentingViewController as! RootTabBarController
+                                self.presentingViewController!.presentingViewController!.dismiss(animated: true, completion: {
+                                    referenceForTabBarController.selectedIndex = 3
+                                })
+                            } else {
+                                // 仮登録のままだったユーザー
+                                KRProgressHUD.dismiss()// ローディング終了
+                                let referenceForTabBarController = self.presentingViewController as! RootTabBarController
+                                self.dismiss(animated: true, completion: {
+                                    referenceForTabBarController.selectedIndex = 3
+                                })
+                            }
+                            
                         }
                         
                     }
-                    
-                }
+                })
+
+                
             })
 
         } else {
@@ -341,6 +350,12 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
         let day = String(format: "%02d", Int(componentsMonth[1].replacingOccurrences(of: "日", with: ""))!)
         
         return Int(year+month+day) ?? 0
+    }
+    
+    // カーソル非表示
+    func caretRect(for position: UITextPosition) -> CGRect {
+        print("カーソル")
+        return CGRect(x: 0, y: 0, width: 0, height: 0)
     }
     
 }

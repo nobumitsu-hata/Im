@@ -18,6 +18,10 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     private let db = Firestore.firestore()
     let contentViewController = UINavigationController(rootViewController: UIViewController())
     let sidemenuViewController = SidemenuViewController()
+    static var profileListener: ListenerRegistration!
+    static var belongsListener: ListenerRegistration!
+    static var listenerFlg = true
+    
     private var isShownSidemenu: Bool {
         return sidemenuViewController.parent == self
     }
@@ -70,31 +74,31 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         self.navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController!.navigationBar.shadowImage = UIImage()
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        print("フラッシュ")
-        print(RootTabBarController.profileListener)
+        
         setupFirebase()
-        print(RootTabBarController.profileListener)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("どうなん")
-        print(RootTabBarController.profileListener)
-        if (RootTabBarController.profileListener != nil) {
-            print("リッスン済み")
+        
+        if AccountViewController.listenerFlg {
             return
         }
         
-        print("再度リッスン")
+        AccountViewController.listenerFlg = true
         setupFirebase()
+        
     }
     
     func setupFirebase() {
-        RootTabBarController.profileListener = db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
+        AccountViewController.profileListener = db.collection("users").document(RootTabBarController.UserId).addSnapshotListener { documentSnapshot, error in
+            
             guard let document = documentSnapshot else {
                 print("Error fetching document: \(error!)")
                 return
             }
+            
             self.userData = document.data()
             let storageRef = self.storage.reference()
             if self.userData?["img"] as! String != "" {
@@ -111,48 +115,73 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
 
             if (self.userData?["introduction"] as? String != "") {
                 print("紹介文あり")
+                self.introduction.isHidden = false
                 self.introduction.text = self.userData?["introduction"] as? String
             } else {
                 print("紹介文なし")
                 self.introduction.isHidden = true
             }
+            
+            self.tableView.reloadData()
 
-            self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").getDocuments() { (querySnapshot, err) in
-                guard let documents = querySnapshot?.documents else {
-                    print("Error fetching documents: \(error!)")
-                    return
-                }
-                guard documents.count > 0 else {
-                    return
-                }
-
-                for document in documents {
-
-                    self.communityId = document.documentID
-                    let data = document.data()
-                    self.db.collection("communities").document(self.communityId).getDocument { (communityDoc, error) in
-
-                        let communityData = communityDoc?.data()
-
-                        self.belongsVal[0] = communityData?["name"] as! String
-                        if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
-                        else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
-                        // ファンレベル
-                        guard data["level"] as? String != "" else {
-                            return
+        }
+        
+        AccountViewController.belongsListener = db.collection("users").document(RootTabBarController.UserId).collection("belongs").addSnapshotListener { querySnapshot, error in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+            guard documents.count > 0 else {
+                self.belongsVal[0] = "未設定"
+                self.belongsVal[1] = "未設定"
+                self.belongsVal[2] = "未設定"
+                print("未設定")
+                self.communityId = ""
+                self.tableView.reloadData()
+                return
+            }
+            
+            for document in documents {
+                self.communityId = document.documentID
+                let data = document.data()
+                self.db.collection("communities").document(self.communityId).getDocument { (communityDoc, error) in
+                    
+                    let communityData = communityDoc?.data()
+                    
+                    self.belongsVal[0] = communityData?["name"] as! String
+                    
+                    if data["friend"] as? String == "" {
+                        self.belongsVal[1] = "未設定"
+                        print("未設定")
+                    } else {
+                        if (data["friend"] as! Bool) {
+                            self.belongsVal[1] = "いる"
+                            print("いる")
                         }
-                        self.db.collection("levels").document(data["level"] as! String).getDocument { (levelDoc, error) in
-                            if let levelDoc = levelDoc, levelDoc.exists {
-                                let levelData = levelDoc.data()
-                                self.belongsVal[2] = levelData?["name"] as! String
-                                self.tableView.reloadData()
-                            } else {
-                                print("Document does not exist")
-                            }
+                        else {
+                            print("いない")
+                            self.belongsVal[1] = "いない"
+                            
                         }
-
-                        self.tableView.reloadData()
                     }
+                    
+                    // ファンレベル
+                    guard data["level"] as? String != "" else {
+                        self.belongsVal[2] = "未設定"
+                        self.tableView.reloadData()
+                        return
+                    }
+                    self.db.collection("levels").document(data["level"] as! String).getDocument { (levelDoc, error) in
+                        if let levelDoc = levelDoc, levelDoc.exists {
+                            let levelData = levelDoc.data()
+                            self.belongsVal[2] = levelData?["name"] as! String
+                            self.tableView.reloadData()
+                        } else {
+                            print("Document does not exist")
+                        }
+                    }
+                    
+                    self.tableView.reloadData()
                 }
             }
         }
@@ -165,7 +194,8 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         // セル生成
         let cell = table.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileTableViewCell
         cell.backgroundColor = UIColor.clear
-        
+        cell.keyLbl.text = nil
+        cell.valLbl.text = nil
         cell.keyLbl.text = belongsArr[indexPath.row]
         cell.valLbl.text = belongsVal[indexPath.row]
         
@@ -340,6 +370,7 @@ extension UIView {
         
         superview!.layer.mask = gradientLayer
     }
+    
 }
 
 extension AccountViewController: SidemenuViewControllerDelegate {
@@ -351,9 +382,9 @@ extension AccountViewController: SidemenuViewControllerDelegate {
         tabBarController?.selectedIndex = 0
         RootTabBarController.AuthCheck = false
         print("リムーブ")
-        RootTabBarController.profileListener.remove()
-        RootTabBarController.profileListener = nil
-        print(RootTabBarController.profileListener)
+        AccountViewController.profileListener.remove()
+        AccountViewController.belongsListener.remove()
+        AccountViewController.listenerFlg = false
 //        let sessionStore = TWTRTwitter.sharedInstance().sessionStore
 //        // アクティブなアカウントのsessionを取得
 //        if let session = sessionStore.session() {

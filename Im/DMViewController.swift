@@ -61,6 +61,12 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         
         automaticallyScrollsToMostRecentMessage = true
         
+        // fix for iPhoneX
+        let constraint = perform(Selector(("toolbarBottomLayoutGuide")))?.takeUnretainedValue() as! NSLayoutConstraint
+        constraint.priority = UILayoutPriority(rawValue: 1000)
+        inputToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        // end of iPhoneX fix
+        
         navigationController?.delegate = self
         // ナビバー表示
         self.navigationController!.navigationBar.isHidden = false
@@ -76,6 +82,12 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         loadMoreMessages()
         
     }
+    
+    // fix for iPhoneX
+    override func viewDidLayoutSubviews() {
+        perform(Selector(("jsq_updateCollectionViewInsets")))
+    }
+    // end of iPhoneX fix
     
     func getPrivateChatId() {
         let val = RootTabBarController.UserId.compare(partnerId).rawValue
@@ -115,14 +127,14 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // 送信ボタンの文字色 アクティブ
         self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(UIColor(displayP3Red: 23/255, green: 232/255, blue: 252/255, alpha: 1.0), for: .normal)
         // 入力欄の背景色
-        inputToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+        inputToolbar.setBackgroundImage(UIImage(named: "White"), forToolbarPosition: .any, barMetrics: .default)
         inputToolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
         collectionView.removeConstraints(collectionView!.constraints)
         
         self.view.setGradientLayer()
-        self.collectionView.backgroundColor = UIColor.clear// 画面の背景色
+        self.collectionView.backgroundColor = UIColor.clear
         self.inputToolbar.backgroundColor = UIColor.white
-        self.inputToolbar.contentView.backgroundColor = UIColor.clear
+        self.inputToolbar.contentView.backgroundColor = UIColor.white
         self.inputToolbar.contentView.textView.backgroundColor = UIColor(displayP3Red: 255/255, green: 255/255, blue: 255/255, alpha: 0)
         
     }
@@ -137,7 +149,6 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
             }
 
             guard documents.count > 0 else { return }
-            print("カウント\(documents.count)")
             guard let snapshot = querySnapshot else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -447,7 +458,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 } else {
                     self.createFlg = true
                     print("Transaction successfully committed!")
-                    OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんからメッセージが届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String], "content_available":  true])
+                    OneSignal.postNotification(["contents": ["en": "\(RootTabBarController.UserInfo["name"] as! String)さんからメッセージが届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String], "content_available":  true])
                 }
             }
             
@@ -489,7 +500,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                     print("Transaction failed: \(error)")
                 } else {
                     self.createFlg = true
-                    OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんからメッセージが届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
+                    OneSignal.postNotification(["contents": ["en": "\(RootTabBarController.UserInfo["name"] as! String)さんからメッセージが届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
                     print("Transaction successfully committed!")
                 }
             }
@@ -623,7 +634,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                             } else {
                                 self.createFlg = true
                                 print("Transaction successfully committed!")
-                                OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
+                                OneSignal.postNotification(["contents": ["en": "\(RootTabBarController.UserInfo["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
                             }
                         }
                         
@@ -665,7 +676,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                                 print("Transaction failed: \(error)")
                             } else {
                                 self.createFlg = true
-                                OneSignal.postNotification(["contents": ["en": "\(self.partnerData["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
+                                OneSignal.postNotification(["contents": ["en": "\(RootTabBarController.UserInfo["name"] as! String)さんから画像が届きました"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : [self.partnerData["pushId"] as! String]])
                                 print("Transaction successfully committed!")
                             }
                         }
@@ -897,5 +908,15 @@ extension UIImage {
         UIGraphicsEndImageContext()
         
         return resizedImage
+    }
+}
+
+extension JSQMessagesInputToolbar {
+    override open func didMoveToWindow() {
+        super.didMoveToWindow()
+        if #available(iOS 11.0, *), let window = self.window {
+            let anchor = window.safeAreaLayoutGuide.bottomAnchor
+            bottomAnchor.constraint(lessThanOrEqualToSystemSpacingBelow: anchor, multiplier: 1.0).isActive = true
+        }
     }
 }

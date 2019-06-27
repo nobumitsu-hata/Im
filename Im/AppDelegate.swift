@@ -47,8 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("User accepted notifications: \(accepted)")
         })
         
-//        OneSignal.postNotification(["contents": ["en": "プッシュが来たぞー"], "ios_badgeType" : "Increase", "ios_badgeCount" : 1, "include_player_ids" : ["d5f886fc-c769-4b97-a50f-7d43d771db9d"]])
-        
         if ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) {
             return true
         }

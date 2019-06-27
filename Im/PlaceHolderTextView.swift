@@ -19,10 +19,7 @@ import UIKit
     }
     
     /// [プレースホルダー]ラベル
-    private lazy var placeHolderLabel: UILabel = UILabel(frame: CGRect(x: 0,
-                                                                       y: 0,
-                                                                       width: 0.0,
-                                                                       height: 0.0))
+    private lazy var placeHolderLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0.0, height: 0.0))
     
     // MARK: Initializers
     
@@ -48,7 +45,7 @@ import UIKit
     /// プレースホルダーを構築する
     private func configurePlaceHolder() {
         self.placeHolderLabel.lineBreakMode = .byWordWrapping
-        self.placeHolderLabel.numberOfLines = 0
+        self.placeHolderLabel.numberOfLines = 1
         self.placeHolderLabel.font = self.font
         self.placeHolderLabel.textColor = UIColor(red: 0.0,
                                                   green: 0.0,
@@ -59,10 +56,12 @@ import UIKit
     }
     
     /// プレースホルダーの表示/非表示を切り替える
-    private func changeVisiblePlaceHolder() {
-        if self.placeHolder.isEmpty || !self.text.isEmpty {
+    public func changeVisiblePlaceHolder() {
+        if self.placeHolder.isEmpty || self.text != "" {
             self.placeHolderLabel.alpha = 0.0
+            print("非表示")
         } else {
+            print("表示")
             self.placeHolderLabel.alpha = 1.0
         }
     }
@@ -74,4 +73,13 @@ import UIKit
         changeVisiblePlaceHolder()
     }
 
+}
+
+// MARK: -  UITextView Delegate
+extension PlaceHolderTextView: UITextViewDelegate {
+    /// テキストが書き換えられるたびに呼ばれる ※privateにはできない
+    func textViewDidChange(_ textView: UITextView) {
+        print("書き換え")
+        changeVisiblePlaceHolder()
+    }
 }

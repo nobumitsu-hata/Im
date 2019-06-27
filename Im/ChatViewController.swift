@@ -222,6 +222,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         let cell = tableView.dequeueReusableCell(withIdentifier: "communityChatCell", for: indexPath) as! ChatTableViewCell
 
         let imgView = cell.img
+//        imgView?.image = nil
         let name = cell.name
         let message = cell.message
         

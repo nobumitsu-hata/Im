@@ -34,7 +34,9 @@ class DeleteViewController: UIViewController {
                     let firebaseAuth = Auth.auth()
                     do {
                         try firebaseAuth.signOut()
-                        RootTabBarController.profileListener.remove()
+                        AccountViewController.profileListener.remove()
+                        AccountViewController.belongsListener.remove()
+                        AccountViewController.listenerFlg = false
                         self.showMessagePrompt(message: "アカウントを削除するには再認証が必要です")
                     } catch let signOutError as NSError {
                         print ("Error signing out: %@", signOutError)
@@ -66,8 +68,9 @@ class DeleteViewController: UIViewController {
                         }
                     }
                 }
-                RootTabBarController.profileListener.remove()
-                RootTabBarController.profileListener = nil
+                AccountViewController.profileListener.remove()
+                AccountViewController.belongsListener.remove()
+                AccountViewController.listenerFlg = false
                 self.tabBarController?.selectedIndex = 0
             })
             

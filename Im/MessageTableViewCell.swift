@@ -13,11 +13,13 @@ class MessageTableViewCell: UITableViewCell {
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var name: UILabel!
     @IBOutlet weak var lastMsg: UILabel!
+    @IBOutlet weak var unreadMark: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         lastMsg.textColor = UIColor.white
+        unreadMark.layer.cornerRadius = 5
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

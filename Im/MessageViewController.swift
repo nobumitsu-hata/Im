@@ -138,6 +138,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                                 dic["name"] = partnerDoc?["name"] as! String
                                 dic["pushId"] = partnerDoc?["pushId"] as! String
                                 dic["partnerId"] = diff.document.documentID
+                                dic["unreadCount"] = data["unreadCount"] as! Int
                                 self.chatListArr.append(dic)
                                 self.chatListArr = self.chatListArr.sorted{ ($0["updateTime"] as! TimeInterval) > ($1["updateTime"] as! TimeInterval) }
                                 print(self.chatListArr)
@@ -145,6 +146,12 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                             
                             self.tableView.reloadData()
                         }
+                    }
+                case .modified:
+                    if let firstIndex = self.chatListArr.index(where: {$0["partnerId"] as! String == diff.document.documentID}) {
+                        let data = diff.document.data()
+                        self.chatListArr[firstIndex]["unreadCount"] = data["unreadCount"] as! Int
+                        self.tableView.reloadData()
                     }
                 default:
                     break
@@ -170,6 +177,12 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
             }
         } else {
             cell.imgView.image = UIImage(named: "UserImg")
+        }
+        
+        if chatListArr[indexPath.row]["unreadCount"] as? Int ?? 0 > 0 {
+            cell.unreadMark.backgroundColor = .white
+        } else  {
+            cell.unreadMark.backgroundColor = .clear
         }
         
         cell.imgView.layer.cornerRadius = cell.imgView.frame.size.width * 0.5

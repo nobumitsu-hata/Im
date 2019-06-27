@@ -25,7 +25,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     static var AuthCheck = false
     static var currentUser:User!
     static var unreadCountDic:[String:Int] = [:]
-    static var profileListener: ListenerRegistration!
+    static var locationFlg = false
     private let db = Firestore.firestore()
     var picker: UIImagePickerController! = UIImagePickerController()
     
@@ -50,27 +50,38 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
         
         UITabBar.appearance().unselectedItemTintColor = UIColor.white
         
-//        setupLocationManager()
+        setupLocationManager()
     }
     
-//    func setupLocationManager() {
-//        // 初期化
-//        locationManager = CLLocationManager()
-//        // 初期化に成功しているかどうか
-//        guard let locationManager = locationManager else { return }
-//        // 位置情報を許可するリクエスト
-//        locationManager.requestWhenInUseAuthorization()
-//
-//        let status = CLLocationManager.authorizationStatus()
-//        // ユーザから「アプリ使用中の位置情報取得」の許可が得られた場合
-//        if status == .authorizedWhenInUse {
-//            locationManager.delegate = self
-//            // 管理マネージャが位置情報を更新するペース
-//            locationManager.distanceFilter = 20// メートル単位
-//            // 位置情報の取得を開始
-//            locationManager.startUpdatingLocation()
-//        }
-//    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard RootTabBarController.locationFlg else  {
+            showMessagePrompt(message: "位置情報を許可してください")
+            return
+        }
+    }
+    
+    func setupLocationManager() {
+        // 初期化
+        locationManager = CLLocationManager()
+        // 初期化に成功しているかどうか
+        guard let locationManager = locationManager else { return }
+        // 位置情報を許可するリクエスト
+        locationManager.requestWhenInUseAuthorization()
+
+        let status = CLLocationManager.authorizationStatus()
+        // ユーザから「アプリ使用中の位置情報取得」の許可が得られた場合
+        if status == .authorizedWhenInUse {
+            locationManager.delegate = self
+            // 管理マネージャが位置情報を更新するペース
+            locationManager.distanceFilter = 50// メートル単位
+            // 位置情報の取得を開始
+            locationManager.startUpdatingLocation()
+            RootTabBarController.locationFlg = true
+        } else {
+            RootTabBarController.locationFlg = false
+        }
+    }
     
     func badgeCount() {
         
@@ -96,12 +107,12 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                     let val = RootTabBarController.unreadCountDic.values
                     let sum = val.reduce(0, { $0 + $1 })
                     if sum > 0 {
-                        if let tabItem = self.tabBar.items?[2] {
+                        if let tabItem = self.tabBar.items?[1] {
                             tabItem.badgeValue = String(sum)
                             UIApplication.shared.applicationIconBadgeNumber = sum
                         }
                     } else {
-                        if let tabItem = self.tabBar.items?[2] {
+                        if let tabItem = self.tabBar.items?[1] {
                             tabItem.badgeValue = nil
                             UIApplication.shared.applicationIconBadgeNumber = 0
                         }
@@ -112,12 +123,12 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                     let val = RootTabBarController.unreadCountDic.values
                     let sum = val.reduce(0, { $0 + $1 })
                     if sum > 0 {
-                        if let tabItem = self.tabBar.items?[2] {
+                        if let tabItem = self.tabBar.items?[1] {
                             tabItem.badgeValue = String(sum)
                             UIApplication.shared.applicationIconBadgeNumber = sum
                         }
                     } else {
-                        if let tabItem = self.tabBar.items?[2] {
+                        if let tabItem = self.tabBar.items?[1] {
                             tabItem.badgeValue = nil
                             UIApplication.shared.applicationIconBadgeNumber = 0
                         }
@@ -164,7 +175,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         
-        if viewController is ScrollViewController {
+        if viewController is ScrollViewController || viewController is SpotViewController {
             return true
         }
         
@@ -235,14 +246,14 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
 
 extension RootTabBarController: CLLocationManagerDelegate {
     
-//    // 位置情報を取得・更新するたびに呼ばれる
-//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        let location = locations.first
-//        RootTabBarController.latitude = location!.coordinate.latitude
-//        RootTabBarController.longitude = location!.coordinate.longitude
-//
-//        print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
-//    }
+    // 位置情報を取得・更新するたびに呼ばれる
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.first
+        RootTabBarController.latitude = location!.coordinate.latitude
+        RootTabBarController.longitude = location!.coordinate.longitude
+        print("移動2")
+        print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
+    }
 
 }
 

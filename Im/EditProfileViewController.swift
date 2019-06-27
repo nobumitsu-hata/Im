@@ -40,7 +40,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     @IBOutlet weak var nameField: UITextField!
     @IBOutlet weak var saveBtn: UIBarButtonItem!
     @IBOutlet weak var imgBtn: UIButton!
-    @IBOutlet weak var introduction: UITextView!
+    @IBOutlet weak var introduction: PlaceHolderTextView!
     @IBOutlet weak var birthdayField: DatePickerKeyboard!
     @IBOutlet weak var communityField: UITextField!
     @IBOutlet weak var friendField: UITextField!
@@ -49,13 +49,12 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        setupFirebase()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = UIColor.white
-        
+        print("ディア")
         nameField.delegate = self
         introduction.delegate = self
         
@@ -97,16 +96,21 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         introduction.textContainerInset = UIEdgeInsets.zero
         introduction.textContainer.lineFragmentPadding = 0
         
-        imgBtn.imageEdgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)// ボタンの画像縮小
+        imgBtn.imageEdgeInsets = UIEdgeInsets(top: 25, left: 25, bottom: 25, right: 25)// ボタンの画像縮小
+        imgBtn.layer.cornerRadius = self.imgView.frame.size.width * 0.5
         wrapperView.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.2)
         wrapperView.layer.cornerRadius = 20
         mainView.layer.cornerRadius = 20
-        
+        print("いま")
         nameField.text = RootTabBarController.UserInfo["name"] as? String
         introduction.text = RootTabBarController.UserInfo["introduction"] as? String
-        if RootTabBarController.UserInfo["birthday"] as! Int > 0 {
+        introduction.changeVisiblePlaceHolder()
+        
+        if RootTabBarController.UserInfo["birthday"] as? Int ?? 0 > 0 {
             birthdayField.text = birthdayToString(birthdayInt: RootTabBarController.UserInfo["birthday"] as! Int)
         }
+        
+        setupFirebase()
 
     }
     
@@ -115,7 +119,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         pickerViewArr[num].delegate = self
         pickerViewArr[num].dataSource = self
         pickerViewArr[num].tag = num
-        
+        print("フィールド")
         let i = list[num].index(of: belongsVal[num])
         if  i !=  nil {
             pickerViewArr[num].selectRow(i!, inComponent: 0, animated: false)
@@ -123,6 +127,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         
         textField.inputView = pickerViewArr[num]
         textField.inputAccessoryView = createToolbar()
+        textField.tintColor = .clear
  
         let imageView = UIImageView()
         let image = UIImage(named: "Picker")
@@ -165,8 +170,8 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             }
 
             self.communityKey = Array(self.communityDic.keys)
-            let arr = Array(self.communityDic.values) as! [[String:String]]
-            self.list[0] += arr.map({($0["name"])!})
+            let arr = Array(self.communityDic.values) as! [[String:Any]]
+            self.list[0] += arr.map({($0["name"] as! String)})
             
             let i = self.list[0].index(of: self.belongsVal[0])
             if  i !=  nil {
@@ -300,37 +305,84 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                 ["name": name!, "birthday": birthday, "introduction":intro!],
                 forDocument: self.db.collection("users").document(RootTabBarController.UserId)
             )
+            print("コミュニthー")
+            print(communityId)
+            print(self.belongsCommunityId)
             
-            if communityId != "" {
-                // 削除
-                if self.belongsCommunityId != "" {
-                    transaction.deleteDocument(
-                        self.db.collection("communities").document(self.belongsCommunityId).collection("members").document(RootTabBarController.UserId)
+            // すでに所属コミュニティーがある場合
+            if self.belongsCommunityId != "" {
+                
+                if communityId == self.belongsCommunityId {
+                    
+                    // 更新
+                    let userRef = self.db.collection("users").document(RootTabBarController.UserId)
+                    transaction.updateData(
+                        ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],
+                        forDocument: self.db.collection("communities").document(communityId).collection("members").document(RootTabBarController.UserId)
                     )
-                    transaction.deleteDocument(
-                        self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(self.belongsCommunityId)
+                    
+                    transaction.updateData(
+                        ["friend": friend!, "level": level],
+                        forDocument: self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(communityId)
                     )
+                    
+                    return nil
                 }
                 
-                // 更新
-                transaction.updateData(
-                    ["friend": friend!, "level": level],
-                    forDocument: self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(communityId)
+                // 削除
+                transaction.deleteDocument(
+                    self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(self.belongsCommunityId)
                 )
                 
+                // メンバーから削除
+                transaction.deleteDocument(
+                    self.db.collection("communities").document(self.belongsCommunityId).collection("members").document(RootTabBarController.UserId)
+                )
+                
+                if communityId == "" {
+                    return nil
+                }
+                
+                // メンバーに新規追加
                 let userRef = self.db.collection("users").document(RootTabBarController.UserId)
-                transaction.updateData(
+                transaction.setData(
                     ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],
                     forDocument: self.db.collection("communities").document(communityId).collection("members").document(RootTabBarController.UserId)
                 )
+                
+                
+                
+                return nil
+                
             }
+            
+            if communityId == "" {
+                return nil
+            }
+
+            // 新規でコミュニティーに参加
+            transaction.setData(
+                ["friend": friend!, "level": level],
+                forDocument: self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(communityId)
+            )
+            
+            let userRef = self.db.collection("users").document(RootTabBarController.UserId)
+            transaction.setData(
+                ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],
+                forDocument: self.db.collection("communities").document(communityId).collection("members").document(RootTabBarController.UserId)
+            )
+            
+            
             
             return nil
         }) { (object, error) in
             if let error = error {
                 print("Transaction failed: \(error)")
             } else {
+                
+                // プロフ画の変更がある場合
                 if self.changeImgFlg {
+                    
                     var img = self.imgView.image
                     if self.imgView.image?.size.width ?? 0 > CGFloat(1024) {
                         let aspect = self.imgView.image!.size.height / self.imgView.image!.size.width
@@ -342,36 +394,53 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                         let date = Date().toStringDateImg()
                         let fileName = RootTabBarController.UserId + date + ".jpg"
                         let meta = StorageMetadata()
-                        meta.contentType = "image/jpeg" // <- これ！！
+                        meta.contentType = "image/jpeg"
+                        
+                        // アップロード
                         let ref = self.storageRef.child("users").child(fileName)
                         ref.putData(imgData, metadata: meta, completion: { metaData, error in
                             if error != nil {
                                 print(error!.localizedDescription)
                                 return
                             }
-                            
-                            self.db.collection("users").document(RootTabBarController.UserId).updateData(["img": fileName]) { err in
-                                if let err = err {
+                            print("アップロード")
+                            // プロフ画URL取得
+                            ref.downloadURL(completion: { (url, downloadErr) in
+                                
+                                if let err = downloadErr {
                                     print("Error updating document: \(err)")
-                                } else {
+                                    return
+                                }
+                                
+                                self.db.collection("users").document(RootTabBarController.UserId).updateData(["img": fileName, "imgUrl": url!.absoluteString]) { err in
+                                    
+                                    if let err = err {
+                                        print("Error updating document: \(err)")
+                                        return
+                                    }
+                                    
+                                    
                                     print("Document successfully updated")
+                                    // 既存の画像がある場合
                                     if RootTabBarController.UserInfo["img"] as! String != "" {
-                                        self.storageRef.child("users").child(RootTabBarController.UserInfo["img"] as! String).delete { delError in
+                                        let deleteFilename = RootTabBarController.UserInfo["img"]
+                                        // ファイル削除
+                                        self.storageRef.child("users").child(deleteFilename as! String).delete { delError in
                                             if let delError = delError {
                                                 // Uh-oh, an error occurred!
                                                 print(delError.localizedDescription)
                                             } else {
                                                 // File deleted successfully
                                                 print("File deleted successfully")
-                                                RootTabBarController.UserInfo["img"] = fileName
-                                                ref.downloadURL(completion: { (url, err) in
-                                                    RootTabBarController.UserInfo["imgUrl"] = url?.absoluteString
-                                                })
                                             }
                                         }
                                     }
+                                    
+                                    RootTabBarController.UserInfo["img"] = fileName
+                                    RootTabBarController.UserInfo["imgUrl"] = url?.absoluteString
+                                    
                                 }
-                            }
+                            })
 
                         })
                     }
@@ -448,6 +517,7 @@ extension EditProfileViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return list[pickerView.tag][row]
     }
+    
     // 選択時
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         // 観戦仲間もしくはファンレベルが選択中にコミュニティーが未選択の場合
@@ -467,6 +537,12 @@ extension EditProfileViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     @objc func done() {
         // キーボードを閉じる
         self.view.endEditing(true)
+    }
+    
+    // カーソル非表示
+    func caretRect(for position: UITextPosition) -> CGRect {
+        print("カーソル")
+        return CGRect(x: 0, y: 0, width: 0, height: 0)
     }
     
     func birthdayToInt(birthdayStr:String) -> Int {
