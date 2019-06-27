@@ -43,7 +43,6 @@ class LoginPresentationController: UIPresentationController {
         }
     }
     
-//    let margin = (x: CGFloat(0), y: CGFloat(220.0))
     // 子のコンテナサイズを返す
     override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
         return CGSize(width: parentSize.width, height: 249)

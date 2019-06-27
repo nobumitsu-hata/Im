@@ -50,7 +50,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // ユーザー情報セット
         self.senderId = RootTabBarController.UserId
         self.senderDisplayName = RootTabBarController.UserInfo["name"] as? String
-        print("ディドロード")
+
         // 初期化
         self.messages = []
         self.collectionView.reloadData()
@@ -142,7 +142,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     
     func setupFirebase() {
         listener = db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
-            print("リッスン")
+
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -229,13 +229,13 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
             }
             
             guard querySnapshot!.documents.count > 0 else {
-                print("読み込むメッセージはない")
+                print("empty")
                 return
             }
             
             if querySnapshot!.documents.count < 10 {
                 self.loadingFlg = false
-                print("次は読み込まない")
+                print("No more")
             }
             
             var unreadCountFlg = true
@@ -795,14 +795,12 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // ViewControllerが表示された時に実行したい処理
         if viewController is OtherProfileViewController {
             //挿入したい処理
-            print("リムーブmしてまうs")
             listener.remove()
         }
         
         if viewController is MessageViewController {
             //挿入したい処理
             listener.remove()
-            print("リムーブ")
         }
     }
     

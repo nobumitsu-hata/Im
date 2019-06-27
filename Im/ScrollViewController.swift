@@ -26,7 +26,7 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
     var storage: Storage!
     private let db = Firestore.firestore()
     var appGuideView:UIView!
-//    var locationManager: CLLocationManager!
+
     fileprivate let refreshCtl = UIRefreshControl()
     
     var communityKey:[String] = []
@@ -39,9 +39,7 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        locationManager = CLLocationManager()
-//        locationManager.delegate = self
-//
+        
         scrollView.delegate = self
         
         refreshCtl.tintColor  = .white
@@ -154,11 +152,9 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
                 let radius = community["radius"] as! Double
                 
                 if radius < distanceLocation  {
-                    print("県外")
+                    print("outside")
                     continue
                 }
-                
-                print("community: \(community)")
                 
                 // コミュニティー名設定
                 let titleLabel = communityView.viewWithTag(1) as! UILabel

@@ -89,10 +89,8 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
             self.nameLbl.text = (self.userData!["name"] as! String)
             
             if (self.userData?["introduction"] as? String != "") {
-                print("紹介文あり")
                 self.introduction.text = self.userData?["introduction"] as? String
             } else {
-                print("紹介文なし")
                 self.introduction.isHidden = true
             }
             

@@ -105,6 +105,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         nameField.text = RootTabBarController.UserInfo["name"] as? String
         introduction.text = RootTabBarController.UserInfo["introduction"] as? String
         introduction.changeVisiblePlaceHolder()
+        counter.text = String(120 - introduction.text.count)
         
         if RootTabBarController.UserInfo["birthday"] as? Int ?? 0 > 0 {
             birthdayField.text = birthdayToString(birthdayInt: RootTabBarController.UserInfo["birthday"] as! Int)
@@ -119,7 +120,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         pickerViewArr[num].delegate = self
         pickerViewArr[num].dataSource = self
         pickerViewArr[num].tag = num
-        print("フィールド")
+        
         let i = list[num].index(of: belongsVal[num])
         if  i !=  nil {
             pickerViewArr[num].selectRow(i!, inComponent: 0, animated: false)
@@ -266,11 +267,16 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
         }
         return true
     }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        //リターンキーが押された時に実行される
+        self.view.endEditing(true)
+        return true
+    }
     
     // 紹介文 文字数制限
     func textViewDidChange(_ textView: UITextView) {
         let dif = 120 - textView.text.count
-        textView.text = textView.text.replacingOccurrences(of: "\n", with: " ")
+        textView.text = textView.text.replacingOccurrences(of: "\n", with: "")
         counter.text = String(dif)
         if textView.text.count > 120 {
             counter.textColor = UIColor.red
@@ -282,10 +288,19 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
             saveFlg = true
         }
     }
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        if (text == "\n") {
+            //あなたのテキストフィールド
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
     
     @IBAction func saveProfile(_ sender: Any) {
         guard saveFlg else { return }
-        print("保存")
+
         // 取得
         let name = nameField.text
         var birthday = 0
@@ -305,9 +320,6 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                 ["name": name!, "birthday": birthday, "introduction":intro!],
                 forDocument: self.db.collection("users").document(RootTabBarController.UserId)
             )
-            print("コミュニthー")
-            print(communityId)
-            print(self.belongsCommunityId)
             
             // すでに所属コミュニティーがある場合
             if self.belongsCommunityId != "" {
@@ -349,8 +361,6 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                     ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],
                     forDocument: self.db.collection("communities").document(communityId).collection("members").document(RootTabBarController.UserId)
                 )
-                
-                
                 
                 return nil
                 
@@ -478,8 +488,8 @@ extension EditProfileViewController: RSKImageCropViewControllerDelegate {
     }
     //完了を押した後の処理
     func imageCropViewController(_ controller: RSKImageCropViewController, didCropImage croppedImage: UIImage, usingCropRect cropRect: CGRect, rotationAngle: CGFloat) {
+        
         changeImgFlg = true
-        print("画像変更")
         DispatchQueue.main.async {
             self.imgView.image = croppedImage
             self.imgView.setNeedsLayout()
@@ -541,7 +551,6 @@ extension EditProfileViewController: UIPickerViewDelegate, UIPickerViewDataSourc
     
     // カーソル非表示
     func caretRect(for position: UITextPosition) -> CGRect {
-        print("カーソル")
         return CGRect(x: 0, y: 0, width: 0, height: 0)
     }
     

@@ -34,6 +34,7 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        nameTextField.delegate = self
         setupUI()
     }
     
@@ -358,6 +359,12 @@ class RegisterViewController: UIViewController, UIImagePickerControllerDelegate,
         return CGRect(x: 0, y: 0, width: 0, height: 0)
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        //リターンキーが押された時に実行される
+        self.view.endEditing(true)
+        return true
+    }
+    
 }
 
 extension RegisterViewController: UIPickerViewDelegate, UIPickerViewDataSource {
@@ -412,7 +419,7 @@ extension RegisterViewController: RSKImageCropViewControllerDelegate {
     func imageCropViewController(_ controller: RSKImageCropViewController, didCropImage croppedImage: UIImage, usingCropRect cropRect: CGRect, rotationAngle: CGFloat) {
         
         changeImgFlg = true
-        print("画像変更")
+
         self.imgView.image = croppedImage
         dismiss(animated: true)
     }

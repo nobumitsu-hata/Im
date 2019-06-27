@@ -102,7 +102,6 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
             }
             
             guard querySnapshot!.documents.count > 0 else {
-                print("読み込むメッセージはない")
                 return
             }
             
@@ -283,7 +282,6 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     // スクロールして途中指で止めた場合のみ
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate == false {
-            print("スクロール止めた")
             autoScrollFlg = false
         }
     }
@@ -292,12 +290,10 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         
         guard tableView.cellForRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0)) != nil else {
             autoScrollFlg = false
-            print("じゃないほう")
             return
         }
         // 1番下
         if tableView.contentOffset.y > 0 {
-            print("1番した")
             autoScrollFlg = true
         }
         

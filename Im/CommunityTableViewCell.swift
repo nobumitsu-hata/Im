@@ -18,7 +18,6 @@ class CommunityTableViewCell: UITableViewCell {
         
         // 新機種 レスポンシブ
         if UIScreen.main.nativeBounds.height == 2436 || UIScreen.main.nativeBounds.height == 2688 || UIScreen.main.nativeBounds.height == 1792 {
-            print("レスポンシブ")
             nameTopConstraint.constant = 59
         } else {
             nameTopConstraint.constant = 15

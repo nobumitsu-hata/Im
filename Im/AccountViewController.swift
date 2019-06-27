@@ -114,11 +114,9 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
             self.nameLbl.text = (self.userData!["name"] as! String)
 
             if (self.userData?["introduction"] as? String != "") {
-                print("紹介文あり")
                 self.introduction.isHidden = false
                 self.introduction.text = self.userData?["introduction"] as? String
             } else {
-                print("紹介文なし")
                 self.introduction.isHidden = true
             }
             
@@ -135,7 +133,7 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                 self.belongsVal[0] = "未設定"
                 self.belongsVal[1] = "未設定"
                 self.belongsVal[2] = "未設定"
-                print("未設定")
+
                 self.communityId = ""
                 self.tableView.reloadData()
                 return
@@ -152,14 +150,11 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
                     
                     if data["friend"] as? String == "" {
                         self.belongsVal[1] = "未設定"
-                        print("未設定")
                     } else {
                         if (data["friend"] as! Bool) {
                             self.belongsVal[1] = "いる"
-                            print("いる")
                         }
                         else {
-                            print("いない")
                             self.belongsVal[1] = "いない"
                             
                         }
@@ -381,7 +376,6 @@ extension AccountViewController: SidemenuViewControllerDelegate {
     func logout() {
         tabBarController?.selectedIndex = 0
         RootTabBarController.AuthCheck = false
-        print("リムーブ")
         AccountViewController.profileListener.remove()
         AccountViewController.belongsListener.remove()
         AccountViewController.listenerFlg = false

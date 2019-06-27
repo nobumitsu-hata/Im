@@ -120,7 +120,6 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                             let privateChatDoc = document.data()
                             // 既存チャットの最新メッセージを更新
                             if let firstIndex = self.chatListArr.index(where: {$0["partnerId"] as! String == diff.document.documentID}) {
-                                print("インデックス番号: \(firstIndex)")
                                 self.chatListArr[firstIndex]["updateTime"] = privateChatDoc?["updateTime"] as! TimeInterval
                                 self.chatListArr[firstIndex]["lastMessage"] = privateChatDoc?["lastMessage"] as! String
                                 self.chatListArr[firstIndex]["type"] = privateChatDoc?["type"] as! String
@@ -141,7 +140,6 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                                 dic["unreadCount"] = data["unreadCount"] as! Int
                                 self.chatListArr.append(dic)
                                 self.chatListArr = self.chatListArr.sorted{ ($0["updateTime"] as! TimeInterval) > ($1["updateTime"] as! TimeInterval) }
-                                print(self.chatListArr)
                             }
                             
                             self.tableView.reloadData()
@@ -171,7 +169,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         if chatListArr[indexPath.row]["img"] as! String != "" {
             let getImg = self.storage.child("users").child(chatListArr[indexPath.row]["img"] as! String)
             DispatchQueue.main.async {
-                print("画像")
+
                 cell.imgView.sd_setImage(with: getImg)
                 cell.imgView.setNeedsLayout()
             }

@@ -19,7 +19,6 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
     
     private let db = Firestore.firestore()
     private let storageRef = Storage.storage().reference()
-    var dstView:LoginTestViewController!
     
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var LoginBtns: UIView!
@@ -68,7 +67,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
             let fbloginresult : LoginManagerLoginResult = result!
             if(fbloginresult.isCancelled) {
                 //Show Cancel alert
-                print("キャンセル")
+                print("cancel")
                 return
             }
                 
@@ -93,11 +92,10 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
             // Firebaseの認証
             Auth.auth().signIn(with: credential) { (authResult, error) in
                 if error != nil {
-                    print("エラー")
                     print(error!.localizedDescription)
                     return
                 }
-                print("ログイン成功")
+                print("Firebase Auth success")
                 
                 // ログイン成功時の処理
                 let userId = (authResult?.user.uid)!
@@ -158,7 +156,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                 guard image != nil  else {
                     return
                 }
-                print(img)
+
                 if let imgData = image?.jpegData(compressionQuality: 0.8) {
                     
                     let fileName = userId + ".jpg"
@@ -196,7 +194,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                 if let err = err {
                                     print("Error adding document: \(err)")
                                 } else {
-                                    print("登録")
+
                                     RootTabBarController.UserId = userId
                                     RootTabBarController.UserInfo = fields
                                     RootTabBarController.AuthCheck = true
@@ -229,7 +227,6 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
         // Twitter連携済み
         if let session = TWTRTwitter.sharedInstance().sessionStore.session() {
             
-            print("ツイッター連携済み")
             self.twitterAuthRegister(twitterSession: session, twitterAuthFlg: true)
             
         } else {
@@ -237,11 +234,10 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
             TWTRTwitter.sharedInstance().logIn(completion: { (session, error) in
 
                 guard session != nil else {
-                    print("twitterエラー")
                     print("error: \(error!.localizedDescription)")
                     return
                 }
-                print("ツイッター連携してない")
+
                 self.twitterAuthRegister(twitterSession: session!, twitterAuthFlg: false)
             })
         }
@@ -277,7 +273,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                 
             }
             //Sign In Completed
-            print("ログイン成功")
+            print("Firebase Auth success")
             
             // ログイン成功時の処理
             let userId = (authResult?.user.uid)!
@@ -345,7 +341,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                 if let err = err {
                                     print("Error adding document: \(err)")
                                 } else {
-                                    print("仮登録")
+
                                     RootTabBarController.UserId = userId
                                     RootTabBarController.UserInfo = fields
                                     RootTabBarController.AuthCheck = true
@@ -500,7 +496,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                 print(error as Any)
                 return
             }
-            print("ログイン成功")
+            print("Firebase Auth success")
             
             // ログイン成功時の処理
             let userId = (authResult?.user.uid)!
@@ -582,7 +578,7 @@ class LoginViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDeleg
                                         if let err = err {
                                             print("Error adding document: \(err)")
                                         } else {
-                                            print("登録")
+
                                             RootTabBarController.UserId = userId
                                             RootTabBarController.UserInfo = fields
                                             RootTabBarController.AuthCheck = true

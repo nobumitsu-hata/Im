@@ -59,9 +59,7 @@ import UIKit
     public func changeVisiblePlaceHolder() {
         if self.placeHolder.isEmpty || self.text != "" {
             self.placeHolderLabel.alpha = 0.0
-            print("非表示")
         } else {
-            print("表示")
             self.placeHolderLabel.alpha = 1.0
         }
     }
@@ -79,7 +77,6 @@ import UIKit
 extension PlaceHolderTextView: UITextViewDelegate {
     /// テキストが書き換えられるたびに呼ばれる ※privateにはできない
     func textViewDidChange(_ textView: UITextView) {
-        print("書き換え")
         changeVisiblePlaceHolder()
     }
 }

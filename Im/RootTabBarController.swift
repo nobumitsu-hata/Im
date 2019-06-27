@@ -209,22 +209,6 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
         return .none
     }
     
-    //画像が選択された時に呼ばれる.
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        if let image = info[.originalImage] as? UIImage {
-            let imageType = (info[.imageURL] as! NSURL).absoluteString! as NSString
-            let storyboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-            let nextView = storyboard.instantiateViewController(withIdentifier: "CreateViewController") as! CreateViewController
-            nextView.selectedImage = image
-            nextView.selectedImageType = imageType.pathExtension
-            self.dismiss(animated: false)
-            self.present(nextView, animated: true, completion: nil)
-        } else{
-            print("Error")
-        }
-    }
-    
     func startOneSignal() {
         let status: OSPermissionSubscriptionState = OneSignal.getPermissionSubscriptionState()
         let userID = status.subscriptionStatus.userId
@@ -251,7 +235,6 @@ extension RootTabBarController: CLLocationManagerDelegate {
         let location = locations.first
         RootTabBarController.latitude = location!.coordinate.latitude
         RootTabBarController.longitude = location!.coordinate.longitude
-        print("移動2")
         print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
     }
 

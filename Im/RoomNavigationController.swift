@@ -16,13 +16,4 @@ class RoomNavigationController: UINavigationController {
         // Do any additional setup after loading the view.
     }
     
-//    let zoomPercentDrivenInteractiveTransition = ZoomPercentDrivenInteractiveTransition()
-    
-//    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-//        print("画面遷移")
-//        // 画面遷移時に呼ばれるメソッド
-//        // zoomPercentDrivenInteractiveTransition を返すとインタラクティブになり nil を返すと通常の画面遷移になる
-//        return zoomPercentDrivenInteractiveTransition.isInteractive ? zoomPercentDrivenInteractiveTransition : nil
-//    }
-
 }

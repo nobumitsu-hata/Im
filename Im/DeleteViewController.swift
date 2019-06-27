@@ -44,7 +44,6 @@ class DeleteViewController: UIViewController {
                     self.tabBarController?.selectedIndex = 0
                     return
                 }
-                print("削除")
                 
                 let ref = self.db.collection("users").document(RootTabBarController.UserId)
                 ref.updateData(["name":"退会済みユーザー", "img": "", "deleteFlg": true, "pushId": ""]) { err in
