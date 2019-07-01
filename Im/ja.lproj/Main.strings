@@ -1,0 +1,99 @@
+
+/* Class = "UILabel"; text = "SMSで認証コードを送信します"; ObjectID = "2CF-FZ-OWz"; */
+"2CF-FZ-OWz.text" = "SMSで認証コードを送信します";
+
+/* Class = "UITextField"; placeholder = "生年月日を選択"; ObjectID = "3s4-3t-aqN"; */
+"3s4-3t-aqN.placeholder" = "生年月日を選択";
+
+/* Class = "UIViewController"; title = "こんにちは"; ObjectID = "9Iz-gB-6Uy"; */
+"9Iz-gB-6Uy.title" = "こんにちは";
+
+/* Class = "UIButton"; normalTitle = "送信"; ObjectID = "BDv-1E-OBB"; */
+"BDv-1E-OBB.normalTitle" = "送信";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "FuW-C8-C6A"; */
+"FuW-C8-C6A.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "トークする"; ObjectID = "GHG-IB-bTL"; */
+"GHG-IB-bTL.normalTitle" = "トークする";
+
+/* Class = "UITextView"; text = "登録した時点で、あなたは当社の利用規約とプライバシーポリシーを熟読し、同意したものとみなす"; ObjectID = "He8-VQ-s58"; */
+"He8-VQ-s58.text" = "登録した時点で、あなたは当社の利用規約とプライバシーポリシーを熟読し、同意したものとみなす";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "KXP-aq-7HO"; */
+"KXP-aq-7HO.text" = "Label";
+
+/* Class = "UILabel"; text = "はたぼー"; ObjectID = "P7n-9x-Kdr"; */
+"P7n-9x-Kdr.text" = "はたぼー";
+
+/* Class = "UITextField"; placeholder = "名前"; ObjectID = "PI4-eb-HjM"; */
+"PI4-eb-HjM.placeholder" = "名前";
+
+/* Class = "UIButton"; normalTitle = "登録完了"; ObjectID = "Pg1-us-w3D"; */
+"Pg1-us-w3D.normalTitle" = "登録完了";
+
+/* Class = "UILabel"; text = "観戦仲間"; ObjectID = "SF3-4m-TEl"; */
+"SF3-4m-TEl.text" = "観戦仲間";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "T1i-un-oXF"; */
+"T1i-un-oXF.normalTitle" = "Button";
+
+/* Class = "UITextField"; placeholder = "名前を入力"; ObjectID = "WAV-N3-agI"; */
+"WAV-N3-agI.placeholder" = "名前を入力";
+
+/* Class = "UIBarButtonItem"; title = "Item"; ObjectID = "WmN-uG-OCC"; */
+"WmN-uG-OCC.title" = "Item";
+
+/* Class = "UITextView"; text = "続けるにはImのアカウントが必要です"; ObjectID = "XFB-ZX-G4m"; */
+"XFB-ZX-G4m.text" = "続けるにはImのアカウントが必要です";
+
+/* Class = "UIBarButtonItem"; title = "保存"; ObjectID = "aAt-QZ-HI9"; */
+"aAt-QZ-HI9.title" = "保存";
+
+/* Class = "UILabel"; text = "120"; ObjectID = "bp3-cs-JuH"; */
+"bp3-cs-JuH.text" = "120";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "cid-cK-rtO"; */
+"cid-cK-rtO.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "アカウントを削除する"; ObjectID = "dS4-JE-vRP"; */
+"dS4-JE-vRP.normalTitle" = "アカウントを削除する";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "eZ0-Es-wMo"; */
+"eZ0-Es-wMo.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "送信"; ObjectID = "ehk-g8-oQg"; */
+"ehk-g8-oQg.normalTitle" = "送信";
+
+/* Class = "UITextField"; placeholder = "性別を選択"; ObjectID = "fqc-wO-NgV"; */
+"fqc-wO-NgV.placeholder" = "性別を選択";
+
+/* Class = "UIButton"; normalTitle = "プロフィールを編集"; ObjectID = "g2d-EG-HCM"; */
+"g2d-EG-HCM.normalTitle" = "プロフィールを編集";
+
+/* Class = "UITextField"; placeholder = "認証コード"; ObjectID = "klG-TA-xmq"; */
+"klG-TA-xmq.placeholder" = "認証コード";
+
+/* Class = "UILabel"; text = "好きなチーム"; ObjectID = "oL8-e5-ARd"; */
+"oL8-e5-ARd.text" = "好きなチーム";
+
+/* Class = "UINavigationItem"; title = "会場"; ObjectID = "otF-4b-qSg"; */
+"otF-4b-qSg.title" = "会場";
+
+/* Class = "UITextField"; placeholder = "生年月日を選択"; ObjectID = "rYO-91-pzq"; */
+"rYO-91-pzq.placeholder" = "生年月日を選択";
+
+/* Class = "UINavigationItem"; title = "トーク"; ObjectID = "umk-HS-psB"; */
+"umk-HS-psB.title" = "トーク";
+
+/* Class = "UILabel"; text = "名前"; ObjectID = "wBo-db-x3c"; */
+"wBo-db-x3c.text" = "名前";
+
+/* Class = "UITextField"; placeholder = "080 1234 5678"; ObjectID = "wda-Ln-XNh"; */
+"wda-Ln-XNh.placeholder" = "080 1234 5678";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "wdd-xB-iNh"; */
+"wdd-xB-iNh.text" = "Label";
+
+/* Class = "UILabel"; text = "ファンレベル"; ObjectID = "y6e-Q9-Tqh"; */
+"y6e-Q9-Tqh.text" = "ファンレベル";

@@ -19,6 +19,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     
     var ref: DatabaseReference!
     var storage: StorageReference!
@@ -46,6 +47,11 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         textField.backgroundColor = UIColor.clear
         coverView.backgroundColor = UIColor.clear
         
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // 使用デバイスがiPadの場合
+            tableViewHeight.constant = tableView.frame.height * 2
+        }
+        
         // ナビゲーションを透明にする
         self.navigationController!.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController!.navigationBar.shadowImage = UIImage()
@@ -64,7 +70,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
 
         // ボーダー設定
         let border = CALayer()
-        border.frame = CGRect(x: 0, y: 0, width:  textField.frame.size.width, height: textField.frame.size.height)
+        border.frame = CGRect(x: 0, y: 0, width:  UIScreen.main.bounds.width - 30, height: textField.frame.size.height)
         border.borderColor = UIColor.white.cgColor
         border.borderWidth = CGFloat(1.5)
         border.cornerRadius = 20

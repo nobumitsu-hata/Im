@@ -589,7 +589,7 @@
                                                                     <constraint firstAttribute="height" constant="80" id="cYZ-PB-7kc"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="はたぼー" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P7n-9x-Kdr">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P7n-9x-Kdr">
                                                                 <rect key="frame" x="90" y="10" width="170" height="16"/>
                                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <constraints>
@@ -1250,7 +1250,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="zDz-2D-yhJ">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zDz-2D-yhJ">
                                 <rect key="frame" x="10" y="74" width="355" height="593"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="14"/>
@@ -1438,6 +1438,7 @@
                         <outlet property="inputWrap" destination="3X3-Rl-d72" id="YdJ-Jb-rG2"/>
                         <outlet property="scrollView" destination="HZR-Bu-oSc" id="AZd-j8-fxq"/>
                         <outlet property="tableView" destination="CkX-eJ-ZZ3" id="CLQ-GP-8q6"/>
+                        <outlet property="tableViewHeight" destination="wvo-Gn-6lP" id="QO5-AW-OIm"/>
                         <outlet property="textField" destination="1Oa-VX-ws2" id="HCe-lh-tH8"/>
                         <segue destination="hlu-tn-8Rh" kind="show" identifier="toOtherProfileViewController" id="kMT-tV-zvX"/>
                     </connections>
@@ -1502,7 +1503,7 @@
         <image name="UserOn" width="18" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="5sE-30-nXO"/>
+        <segue reference="7yU-eP-Aef"/>
         <segue reference="kMT-tV-zvX"/>
     </inferredMetricsTieBreakers>
 </document>
