@@ -355,7 +355,13 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                     return nil
                 }
                 
-                // メンバーに新規追加
+                // コミュニティーに新規参加
+                transaction.setData(
+                    ["friend": friend!, "level": level],
+                    forDocument: self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(communityId)
+                )
+                
+                // コミュニティーのメンバーに新規追加
                 let userRef = self.db.collection("users").document(RootTabBarController.UserId)
                 transaction.setData(
                     ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],
@@ -376,6 +382,7 @@ class EditProfileViewController: UIViewController, UIImagePickerControllerDelega
                 forDocument: self.db.collection("users").document(RootTabBarController.UserId).collection("belongs").document(communityId)
             )
             
+            // コミュニティーのメンバーに新規追加
             let userRef = self.db.collection("users").document(RootTabBarController.UserId)
             transaction.setData(
                 ["sex": RootTabBarController.UserInfo["sex"]!, "friend": friend!, "level":  level, "userRef": userRef],

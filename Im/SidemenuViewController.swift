@@ -26,6 +26,9 @@ class SidemenuViewController: UIViewController {
     weak var delegate: SidemenuViewControllerDelegate?
     private var beganLocation: CGPoint = .zero
     private var beganState: Bool = false
+    private var startDragX:CGFloat = 0.0
+    private var endDragX:CGFloat = 0.0
+    
     let tableItem = ["アカウント管理", "ログアウト"]
     var isShown: Bool {
         return self.parent != nil
@@ -72,6 +75,57 @@ class SidemenuViewController: UIViewController {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped(sender:)))
         tapGestureRecognizer.delegate = self
         view.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    // 画面にタッチで呼ばれる
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touchesBegan")
+        if contentRatio == 0.0 {
+            return
+        }
+        // タッチイベントを取得
+        let touchEvent = touches.first!
+        
+        // ドラッグ前の座標, Swift 1.2 から
+        let preDx = touchEvent.previousLocation(in: self.view).x
+        startDragX = preDx
+        endDragX = 0
+        beganState = isShown
+
+        self.delegate?.sidemenuViewControllerDidRequestShowing(self, contentAvailability: false, animated: false)
+
+    }
+    
+    //　ドラッグ時に呼ばれる
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        // タッチイベントを取得
+        let touchEvent = touches.first!
+        
+        // ドラッグ後の座標
+        let newDx = touchEvent.location(in: self.view).x
+        endDragX = newDx
+        let distance = beganState ? newDx - startDragX : startDragX - newDx
+        if distance >= 0 {
+            let ratio = distance / (beganState ? (view.bounds.width - startDragX) : startDragX)
+            let contentRatio = beganState ? 1 - ratio : ratio
+            self.contentRatio = contentRatio
+        }
+    }
+    
+    // ドラッグ終了
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if contentRatio <= 1.0, contentRatio >= 0 {
+            let screenWidth = UIScreen.main.bounds.width
+            let dif = endDragX - startDragX
+            if dif >= screenWidth * 0.25 {
+                self.delegate?.sidemenuViewControllerDidRequestHiding(self, animated: true)
+            } else {
+                showContentView(animated: true)
+            }
+        }
+        beganLocation = .zero
+        beganState = false
     }
     
     @objc private func backgroundTapped(sender: UITapGestureRecognizer) {
@@ -141,7 +195,7 @@ class SidemenuViewController: UIViewController {
             }
         case .ended, .cancelled, .failed:
             if contentRatio <= 1.0, contentRatio >= 0 {
-                if location.x < beganLocation.x {
+                if location.x * 2 < beganLocation.x {
                     showContentView(animated: true)
                 } else {
                     self.delegate?.sidemenuViewControllerDidRequestHiding(self, animated: true)

@@ -195,6 +195,8 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.lastMsg.text = chatListArr[indexPath.row]["lastMessage"] as? String
         }
         
+        print("こんにちは")
+        
         // 選択された背景色を白に設定
         let cellSelectedBgView = UIView()
         cellSelectedBgView.backgroundColor = UIColor.clear

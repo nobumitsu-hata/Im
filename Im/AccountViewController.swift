@@ -213,13 +213,14 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         if segue.identifier == "toEditProfileViewController" {
             let editProfileViewController = segue.destination as! EditProfileViewController
+            var val = belongsVal
             for i in 0..<3 {
-                if belongsVal[i] == "未設定" {
-                    belongsVal[i] = "選択してください"
+                if val[i] == "未設定" {
+                    val[i] = "選択してください"
                 }
             }
             editProfileViewController.belongsCommunityId = communityId
-            editProfileViewController.belongsVal = belongsVal
+            editProfileViewController.belongsVal = val
         }
     }
     
@@ -306,7 +307,17 @@ extension UIView {
         //グラデーションの色をレイヤーに割り当てる
         gradientLayer.colors = gradientColors
         //グラデーションレイヤーをスクリーンサイズにする
-        gradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        if #available(iOS 11, *) {
+            
+            // 新機種 レスポンシブ
+            if UIScreen.main.nativeBounds.height == 2436 || UIScreen.main.nativeBounds.height == 2688 || UIScreen.main.nativeBounds.height == 1792 {
+                gradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+            } else {
+                gradientLayer.frame = CGRect(x: 0, y: 20, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+            }
+        } else {
+            gradientLayer.frame = CGRect(x: 0, y: 20, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        }
         // 上から下へグラデーション向きの設定
         gradientLayer.startPoint = CGPoint.init(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint.init(x: 1, y: 1)

@@ -20,6 +20,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     
     var ref: DatabaseReference!
     var storage: StorageReference!
@@ -50,6 +51,14 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         if UIDevice.current.userInterfaceIdiom == .pad {
             // 使用デバイスがiPadの場合
             tableViewHeight.constant = tableView.frame.height * 2
+        }
+        
+        if #available(iOS 11, *) {
+            
+            // 新機種 レスポンシブ
+            if UIScreen.main.nativeBounds.height == 2436 || UIScreen.main.nativeBounds.height == 2688 || UIScreen.main.nativeBounds.height == 1792 {
+                topConstraint.constant = -88
+            }
         }
         
         // ナビゲーションを透明にする
@@ -113,41 +122,59 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
             
             var subScrollFlg = false
             for document in querySnapshot!.documents {
-                let messageData = document.data()
-                self.messageArr.insert(messageData, at: 0)
+
+                var messageData:[String:Any] = document.data()
+                
                 if RootTabBarController.UserId == messageData["senderId"] as! String {
                     self.autoScrollFlg = true
                     subScrollFlg = true
-                }
-            }
-            
-            self.tableView.reloadData()
-            // グラデーション設定
-            let gradientLayer = CAGradientLayer()
-            gradientLayer.frame = self.tableView.superview!.bounds
-            let clearColor = UIColor.clear.cgColor
-            let whiteColor = UIColor.white.cgColor
-            gradientLayer.colors = [clearColor, whiteColor, whiteColor]
-            gradientLayer.locations = [0.45, 0.55, 1.0]
-            self.tableView.superview!.layer.mask = gradientLayer
-            self.tableView.backgroundColor = UIColor.clear
-            DispatchQueue.main.async {
-                self.tableView.performBatchUpdates({
                     
-                }) { (finished) in
-                    let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
-                    if dif < 0 {
-                        // 下詰め
-                        self.tableView.contentInset = UIEdgeInsets(top: dif * -1, left: 0, bottom: 0, right: 0)
-                        return
-                    } else {
-                        // マージン0
-                        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                        print(self.autoScrollFlg)
-                        guard self.autoScrollFlg || subScrollFlg else {
-                            return
+                }
+                
+                self.db.collection("users").document(messageData["senderId"] as! String).getDocument { (document, error) in
+                    if let user = document.flatMap({
+                        $0.data().flatMap({ (data) in
+                            return data
+                        })
+                    }) {
+                        
+                        messageData["user"] = user
+                        
+                        self.messageArr.insert(messageData, at: 0)
+                        self.messageArr = self.messageArr.sorted{ ($0["createTime"] as! TimeInterval) < ($1["createTime"] as! TimeInterval) }
+                        self.tableView.reloadData()
+                        
+                        // グラデーション設定
+                        let gradientLayer = CAGradientLayer()
+                        gradientLayer.frame = self.tableView.superview!.bounds
+                        let clearColor = UIColor.clear.cgColor
+                        let whiteColor = UIColor.white.cgColor
+                        gradientLayer.colors = [clearColor, whiteColor, whiteColor]
+                        gradientLayer.locations = [0.45, 0.55, 1.0]
+                        self.tableView.superview!.layer.mask = gradientLayer
+                        self.tableView.backgroundColor = UIColor.clear
+                        
+                        DispatchQueue.main.async {
+                            self.tableView.performBatchUpdates({
+                                
+                            }) { (finished) in
+                                let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
+                                if dif < 0 {
+                                    // 下詰め
+                                    self.tableView.contentInset = UIEdgeInsets(top: dif * -1, left: 0, bottom: 0, right: 0)
+                                    return
+                                } else {
+                                    // マージン0
+                                    self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                                    print(self.autoScrollFlg)
+                                    guard self.autoScrollFlg || subScrollFlg else {
+                                        return
+                                    }
+                                    self.tableView.setContentOffset(CGPoint(x: self.tableView.contentOffset.x, y: dif), animated: true)
+                                }
+                            }
+                            
                         }
-                        self.tableView.setContentOffset(CGPoint(x: self.tableView.contentOffset.x, y: dif), animated: true)
                     }
                 }
                 
@@ -175,47 +202,64 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
             snapshot.documentChanges.forEach { diff in
                 switch diff.type {
                 case .added:
-                    let messageData = diff.document.data()
-                    self.messageArr.append(messageData)
+                    
+                    var messageData = diff.document.data()
+                    
                     if RootTabBarController.UserId == messageData["senderId"] as! String {
                         self.autoScrollFlg = true
                         subScrollFlg = true
+                    }
+                    
+                    self.db.collection("users").document(messageData["senderId"] as! String).getDocument { (document, error) in
+                        if let user = document.flatMap({
+                            $0.data().flatMap({ (data) in
+                                return data
+                            })
+                        }) {
+                            
+                            messageData["user"] = user
+                            
+                            self.messageArr.append(messageData)
+                            self.messageArr = self.messageArr.sorted{ ($0["createTime"] as! TimeInterval) < ($1["createTime"] as! TimeInterval) }
+                            self.tableView.reloadData()
+                            
+                            // グラデーション設定
+                            let gradientLayer = CAGradientLayer()
+                            gradientLayer.frame = self.tableView.superview!.bounds
+                            let clearColor = UIColor.clear.cgColor
+                            let whiteColor = UIColor.white.cgColor
+                            gradientLayer.colors = [clearColor, whiteColor, whiteColor]
+                            gradientLayer.locations = [0.45, 0.55, 1.0]
+                            self.tableView.superview!.layer.mask = gradientLayer
+                            self.tableView.backgroundColor = UIColor.clear
+                            
+                            DispatchQueue.main.async {
+                                self.tableView.performBatchUpdates({
+                                    
+                                }) { (finished) in
+                                    let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
+                                    if dif < 0 {
+                                        // 下詰め
+                                        self.tableView.contentInset = UIEdgeInsets(top: dif * -1, left: 0, bottom: 0, right: 0)
+                                        return
+                                    } else {
+                                        // マージン0
+                                        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                                        guard self.autoScrollFlg || subScrollFlg else {
+                                            return
+                                        }
+                                        self.tableView.setContentOffset(CGPoint(x: self.tableView.contentOffset.x, y: dif), animated: true)
+                                    }
+                                }
+                                
+                            }
+                        }
                     }
                 default:
                     break
                 }
             }
-            self.tableView.reloadData()
-            // グラデーション設定
-            let gradientLayer = CAGradientLayer()
-            gradientLayer.frame = self.tableView.superview!.bounds
-            let clearColor = UIColor.clear.cgColor
-            let whiteColor = UIColor.white.cgColor
-            gradientLayer.colors = [clearColor, whiteColor, whiteColor]
-            gradientLayer.locations = [0.45, 0.55, 1.0]
-            self.tableView.superview!.layer.mask = gradientLayer
-            self.tableView.backgroundColor = UIColor.clear
-            DispatchQueue.main.async {
-                self.tableView.performBatchUpdates({
-
-                }) { (finished) in
-                    let dif = self.tableView.contentSize.height - self.tableView.frame.size.height
-                    if dif < 0 {
-                        // 下詰め
-                        self.tableView.contentInset = UIEdgeInsets(top: dif * -1, left: 0, bottom: 0, right: 0)
-                        return
-                    } else {
-                        // マージン0
-                        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                        print(self.autoScrollFlg)
-                        guard self.autoScrollFlg || subScrollFlg else {
-                            return
-                        }
-                        self.tableView.setContentOffset(CGPoint(x: self.tableView.contentOffset.x, y: dif), animated: true)
-                    }
-                }
-
-            }
+            
         }
         
     }
@@ -227,28 +271,17 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         let cell = tableView.dequeueReusableCell(withIdentifier: "communityChatCell", for: indexPath) as! ChatTableViewCell
 
         let imgView = cell.img
-//        imgView?.image = nil
         let name = cell.name
         let message = cell.message
+        let sender = messageArr[indexPath.row]["user"] as! [String:Any]
         
-        db.collection("users").document(messageArr[indexPath.row]["senderId"] as! String).getDocument { (document, error) in
-            if let user = document.flatMap({
-                $0.data().flatMap({ (data) in
-                    return data
-                })
-            }) {
-                name!.text = user["name"] as? String
-//                DispatchQueue.main.async {
-                if user["img"] as! String != "" {
-                    let imgRef = self.storage.child("users").child(user["img"] as! String)
-                    imgView!.sd_setImage(with: imgRef)
-//                    imgView!.setNeedsLayout()
-                } else {
-                    imgView?.image = UIImage(named: "UserImg")
-                }
-//                }
-
-            }
+        name!.text = sender["name"] as? String
+        
+        if sender["img"] as! String != "" {
+            let imgRef = self.storage.child("users").child(sender["img"] as! String)
+            imgView!.sd_setImage(with: imgRef)
+        } else {
+            imgView?.image = UIImage(named: "UserImg")
         }
         
         let tapImgGesture = UserTapGestureRecognizer(
@@ -399,6 +432,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         // キーボードを閉じる
         textField.resignFirstResponder()
     }
+    
 }
 
 class UserTapGestureRecognizer: UITapGestureRecognizer {

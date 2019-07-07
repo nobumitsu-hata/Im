@@ -23,6 +23,7 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     var storage: Storage!
     private let db = Firestore.firestore()
     var appGuideView:UIView!
@@ -60,7 +61,6 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         let safeAreaInsets: UIEdgeInsets
         if #available(iOS 11, *) {
             safeAreaInsets = view.safeAreaInsets
-            print(UIScreen.main.nativeBounds.height)
             
             // 新機種 レスポンシブ
             if UIScreen.main.nativeBounds.height == 2436 || UIScreen.main.nativeBounds.height == 2688 || UIScreen.main.nativeBounds.height == 1792 {
@@ -163,17 +163,17 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
                 let latitude = community["latitude"] as! Double
                 let longitude = community["longitude"] as! Double
                 
-                let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
-                let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
-                let distanceLocation = baseLocation.distance(from: targetLocation)
-                print("距離は \(distanceLocation)")
-                
-                let radius = community["radius"] as! Double
-                
-                if radius < distanceLocation  {
-                    print("outside")
-                    continue
-                }
+//                let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
+//                let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
+//                let distanceLocation = baseLocation.distance(from: targetLocation)
+//                print("距離は \(distanceLocation)")
+//
+//                let radius = community["radius"] as! Double
+//
+//                if radius < distanceLocation  {
+//                    print("outside")
+//                    continue
+//                }
                 
                 // コミュニティー名設定
                 let titleLabel = communityView.viewWithTag(1) as! UILabel
@@ -286,12 +286,31 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
             
             DispatchQueue.main.async {
                 // 通信終了後、endRefreshingを実行することでロードインジケーター（くるくる）が終了
-                sender.endRefreshing()
+                if sender.isRefreshing {
+                    sender.endRefreshing()
+                }
             }
         }
         
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        // 新機種 レスポンシブ
+        guard UIScreen.main.nativeBounds.height == 2436 || UIScreen.main.nativeBounds.height == 2688 || UIScreen.main.nativeBounds.height == 1792 else {
+            return
+        }
+        
+        if scrollView.contentOffset.y < 0 {
+            topConstraint.constant = -scrollView.contentOffset.y/2
+        } else {
+            topConstraint.constant = 0
+        }
+    }
 }
 
 extension ScrollViewController: UIViewControllerTransitioningDelegate {

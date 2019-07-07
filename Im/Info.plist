@@ -44,7 +44,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0.4</string>
+	<string>1.0.6</string>
 	<key>FacebookAppID</key>
 	<string>2795487553825546</string>
 	<key>FacebookDisplayName</key>
@@ -79,6 +79,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

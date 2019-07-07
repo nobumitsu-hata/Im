@@ -236,7 +236,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="MVm-ac-c6q">
-                                <rect key="frame" x="0.0" y="64" width="375" height="554"/>
+                                <rect key="frame" x="0.0" y="84" width="375" height="534"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SpotCell" id="JBd-0g-Q7Z">
@@ -287,7 +287,7 @@
                             <constraint firstItem="7Df-X0-tdk" firstAttribute="trailing" secondItem="MVm-ac-c6q" secondAttribute="trailing" id="Lw1-EA-DJh"/>
                             <constraint firstItem="FMo-U1-8QQ" firstAttribute="top" secondItem="7Df-X0-tdk" secondAttribute="top" id="dUv-Qw-eGW"/>
                             <constraint firstItem="FMo-U1-8QQ" firstAttribute="leading" secondItem="7Df-X0-tdk" secondAttribute="leading" id="kur-Ck-wwt"/>
-                            <constraint firstItem="MVm-ac-c6q" firstAttribute="top" secondItem="FMo-U1-8QQ" secondAttribute="bottom" id="qJD-u4-G3p"/>
+                            <constraint firstItem="MVm-ac-c6q" firstAttribute="top" secondItem="FMo-U1-8QQ" secondAttribute="bottom" constant="20" id="qJD-u4-G3p"/>
                             <constraint firstItem="MVm-ac-c6q" firstAttribute="bottom" secondItem="7Df-X0-tdk" secondAttribute="bottom" id="smy-rv-3rN"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="7Df-X0-tdk"/>
@@ -310,7 +310,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="biK-vU-IWr">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" pagingEnabled="YES" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="biK-vU-IWr">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </scrollView>
                         </subviews>
@@ -328,6 +328,7 @@
                     <connections>
                         <outlet property="bottomConstraint" destination="6PB-ey-mwj" id="Bp5-47-P0O"/>
                         <outlet property="scrollView" destination="biK-vU-IWr" id="B9C-zg-Hzi"/>
+                        <outlet property="topConstraint" destination="ncP-Jd-Yjf" id="kzo-rW-Ycj"/>
                         <segue destination="6gb-E6-x4P" kind="presentation" identifier="toChatViewController" id="Sdf-zN-S9W"/>
                     </connections>
                 </viewController>
@@ -1352,14 +1353,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HZR-Bu-oSc">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="HZR-Bu-oSc">
                                 <rect key="frame" x="0.0" y="-64" width="375" height="667"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4P9-qF-nY1">
-                                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3X3-Rl-d72">
-                                                <rect key="frame" x="0.0" y="523" width="375" height="80"/>
+                                                <rect key="frame" x="0.0" y="587" width="375" height="80"/>
                                                 <subviews>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Oa-VX-ws2" customClass="ChatTextField" customModule="Im" customModuleProvider="target">
                                                         <rect key="frame" x="15" y="20" width="345" height="40"/>
@@ -1382,7 +1383,7 @@
                                                 </constraints>
                                             </view>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CkX-eJ-ZZ3">
-                                                <rect key="frame" x="0.0" y="273" width="360" height="250"/>
+                                                <rect key="frame" x="0.0" y="337" width="360" height="250"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="250" id="wvo-Gn-6lP"/>
@@ -1401,13 +1402,12 @@
                                 </subviews>
                                 <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstItem="4P9-qF-nY1" firstAttribute="centerY" secondItem="HZR-Bu-oSc" secondAttribute="centerY" constant="32" id="C0r-4O-Hg6"/>
                                     <constraint firstAttribute="bottom" secondItem="4P9-qF-nY1" secondAttribute="bottom" id="NDW-Pb-oRm"/>
-                                    <constraint firstItem="4P9-qF-nY1" firstAttribute="height" secondItem="HZR-Bu-oSc" secondAttribute="height" constant="-64" id="Neu-j6-66p"/>
+                                    <constraint firstItem="4P9-qF-nY1" firstAttribute="height" secondItem="HZR-Bu-oSc" secondAttribute="height" id="Neu-j6-66p"/>
                                     <constraint firstAttribute="trailing" secondItem="4P9-qF-nY1" secondAttribute="trailing" id="S0v-BA-U9B"/>
                                     <constraint firstItem="4P9-qF-nY1" firstAttribute="centerX" secondItem="HZR-Bu-oSc" secondAttribute="centerX" id="Y2Z-4B-ovc"/>
                                     <constraint firstItem="4P9-qF-nY1" firstAttribute="leading" secondItem="HZR-Bu-oSc" secondAttribute="leading" id="eAn-OQ-UJP"/>
-                                    <constraint firstItem="4P9-qF-nY1" firstAttribute="top" secondItem="HZR-Bu-oSc" secondAttribute="top" constant="64" id="wXI-9t-wM8"/>
+                                    <constraint firstItem="4P9-qF-nY1" firstAttribute="top" secondItem="HZR-Bu-oSc" secondAttribute="top" id="wXI-9t-wM8"/>
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="kx5-SW-DJC" appends="YES" id="pMy-JL-zbN"/>
@@ -1418,7 +1418,7 @@
                         <constraints>
                             <constraint firstItem="HZR-Bu-oSc" firstAttribute="top" secondItem="3pA-oh-Gqr" secondAttribute="top" constant="-64" id="5Oq-Tr-EaB"/>
                             <constraint firstItem="aim-S9-bxe" firstAttribute="trailing" secondItem="HZR-Bu-oSc" secondAttribute="trailing" id="7QJ-M4-TWK"/>
-                            <constraint firstItem="HZR-Bu-oSc" firstAttribute="bottom" secondItem="aim-S9-bxe" secondAttribute="bottom" id="9pE-VS-LhX"/>
+                            <constraint firstItem="HZR-Bu-oSc" firstAttribute="bottom" secondItem="3pA-oh-Gqr" secondAttribute="bottom" id="9pE-VS-LhX"/>
                             <constraint firstItem="HZR-Bu-oSc" firstAttribute="leading" secondItem="aim-S9-bxe" secondAttribute="leading" id="k2R-Rn-8VL"/>
                             <constraint firstItem="HZR-Bu-oSc" firstAttribute="centerX" secondItem="aim-S9-bxe" secondAttribute="centerX" id="ww0-r0-SSe"/>
                         </constraints>
@@ -1440,6 +1440,7 @@
                         <outlet property="tableView" destination="CkX-eJ-ZZ3" id="CLQ-GP-8q6"/>
                         <outlet property="tableViewHeight" destination="wvo-Gn-6lP" id="QO5-AW-OIm"/>
                         <outlet property="textField" destination="1Oa-VX-ws2" id="HCe-lh-tH8"/>
+                        <outlet property="topConstraint" destination="5Oq-Tr-EaB" id="kat-WL-hm8"/>
                         <segue destination="hlu-tn-8Rh" kind="show" identifier="toOtherProfileViewController" id="kMT-tV-zvX"/>
                     </connections>
                 </viewController>
@@ -1504,6 +1505,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="7yU-eP-Aef"/>
-        <segue reference="kMT-tV-zvX"/>
+        <segue reference="zeq-Q6-ID4"/>
     </inferredMetricsTieBreakers>
 </document>
