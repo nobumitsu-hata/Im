@@ -88,11 +88,12 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
             locationManager = CLLocationManager()
             // 初期化に成功しているかどうか
             guard let locationManager = locationManager else { return }
+
             locationManager.delegate = self
             // 管理マネージャが位置情報を更新するペース
             locationManager.distanceFilter = 50// メートル単位
             // 位置情報を許可するリクエスト
-            locationManager.requestWhenInUseAuthorization()
+            locationManager.requestAlwaysAuthorization()
             
         } else  {
             // 無効の場合

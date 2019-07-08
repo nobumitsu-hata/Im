@@ -11,7 +11,6 @@ import Firebase
 import FirebaseDatabase
 import FirebaseFirestore
 import FirebaseUI
-import CoreLocation
 import FBSDKCoreKit
 import FBSDKLoginKit
 import OneSignal
@@ -30,7 +29,6 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     var picker: UIImagePickerController! = UIImagePickerController()
     
     // 位置情報
-    var locationManager: CLLocationManager!
     static var latitude: Double!
     static var longitude: Double!
     

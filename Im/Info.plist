@@ -44,7 +44,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0.6</string>
+	<string>1.0.7</string>
 	<key>FacebookAppID</key>
 	<string>2795487553825546</string>
 	<key>FacebookDisplayName</key>
@@ -60,8 +60,10 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>会場付近でコミュニティーを表示するため位置情報を取得します</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>コミュニティー作成または参加のため位置情報を取得します</string>
+	<string>会場付近でコミュニティーを表示するため位置情報を取得します</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>カメラロールから取得</string>
 	<key>OneSignal_app_groups_key</key>
