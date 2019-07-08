@@ -11,20 +11,16 @@ import Firebase
 import FirebaseDatabase
 import FirebaseFirestore
 import TwitterKit
+import SideMenu
 
 class AccountViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UINavigationControllerDelegate {
     
     var storage: Storage!
     private let db = Firestore.firestore()
     let contentViewController = UINavigationController(rootViewController: UIViewController())
-    let sidemenuViewController = SidemenuViewController()
     static var profileListener: ListenerRegistration!
     static var belongsListener: ListenerRegistration!
     static var listenerFlg = true
-    
-    private var isShownSidemenu: Bool {
-        return sidemenuViewController.parent == self
-    }
     
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
@@ -43,9 +39,6 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        sidemenuViewController.delegate = self
-        sidemenuViewController.startPanGestureRecognizing()
-
         // 編集ボタンカスタマイズ
         editBtn.setGradientBackground(
             colorOne: UIColor(displayP3Red: 147/255, green: 6/255, blue: 229/255, alpha: 1.0),
@@ -58,6 +51,16 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         storage = Storage.storage()
         tableView.delegate = self
         tableView.dataSource = self
+        
+        // サイドメニュー
+        SideMenuManager.default.menuRightNavigationController = storyboard!.instantiateViewController(withIdentifier: "RightMenuNavigationController") as? UISideMenuNavigationController
+        SideMenuManager.default.menuShadowColor = .clear
+        SideMenuManager.default.menuAddPanGestureToPresent(toView: self.navigationController!.navigationBar)
+        SideMenuManager.default.menuAddPanGestureToPresent(toView: self.view)
+        SideMenuManager.default.menuAddScreenEdgePanGesturesToPresent(toView: self.view)
+        SideMenuManager.default.menuFadeStatusBar = false
+        SideMenuManager.default.menuPresentMode = .viewSlideInOut
+        SideMenuManager.default.menuAnimationFadeStrength = 0.6
         
         introduction.textContainerInset = UIEdgeInsets.zero
         introduction.textContainer.lineFragmentPadding = 0
@@ -224,40 +227,6 @@ class AccountViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    
-    // MARK: サイドメニュー
-    
-    @IBAction func sidemenuButtonTapped(_ sender: Any) {
-        if isShownSidemenu {
-            hideSidemenu(animated: true)
-            return
-        }
-        showSidemenu(animated: true)
-    }
-    
-    private func showSidemenu(contentAvailability: Bool = true, animated: Bool) {
-        if isShownSidemenu { return }
-        
-        addChild(sidemenuViewController)
-        sidemenuViewController.view.autoresizingMask = .flexibleHeight
-        sidemenuViewController.view.frame = view.bounds
-        view.insertSubview(sidemenuViewController.view, aboveSubview: view)
-        sidemenuViewController.didMove(toParent: self)
-        if contentAvailability {
-            sidemenuViewController.showContentView(animated: animated)
-        }
-    }
-    
-    private func hideSidemenu(animated: Bool) {
-        if !isShownSidemenu { return }
-        
-        sidemenuViewController.hideContentView(animated: animated, completion: { (_) in
-            self.sidemenuViewController.willMove(toParent: nil)
-            self.sidemenuViewController.removeFromParent()
-            self.sidemenuViewController.view.removeFromSuperview()
-        })
-    }
-
 }
 
 extension UIView {
@@ -377,47 +346,4 @@ extension UIView {
         superview!.layer.mask = gradientLayer
     }
     
-}
-
-extension AccountViewController: SidemenuViewControllerDelegate {
-    func parentViewControllerForSidemenuViewController(_ sidemenuViewController: SidemenuViewController) -> UIViewController {
-        return self
-    }
-    
-    func logout() {
-        tabBarController?.selectedIndex = 0
-        RootTabBarController.AuthCheck = false
-        AccountViewController.profileListener.remove()
-        AccountViewController.belongsListener.remove()
-        AccountViewController.listenerFlg = false
-//        let sessionStore = TWTRTwitter.sharedInstance().sessionStore
-//        // アクティブなアカウントのsessionを取得
-//        if let session = sessionStore.session() {
-//            // userIDでログアウト
-//            print("twitterログアウト")
-//            sessionStore.logOutUserID(session.userID)
-//        }
-
-    }
-    
-    func shouldPresentForSidemenuViewController(_ sidemenuViewController: SidemenuViewController) -> Bool {
-        /* You can specify sidemenu availability */
-        return true
-    }
-    
-    func toDeleteViewController() {
-        self.performSegue(withIdentifier: "toDeleteViewController", sender: nil)
-    }
-    
-    func sidemenuViewControllerDidRequestShowing(_ sidemenuViewController: SidemenuViewController, contentAvailability: Bool, animated: Bool) {
-        showSidemenu(contentAvailability: contentAvailability, animated: animated)
-    }
-    
-    func sidemenuViewControllerDidRequestHiding(_ sidemenuViewController: SidemenuViewController, animated: Bool) {
-        hideSidemenu(animated: animated)
-    }
-    
-    func sidemenuViewController(_ sidemenuViewController: SidemenuViewController, didSelectItemAt indexPath: IndexPath) {
-        hideSidemenu(animated: true)
-    }
 }

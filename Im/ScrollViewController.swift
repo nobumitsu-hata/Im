@@ -163,17 +163,17 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
                 let latitude = community["latitude"] as! Double
                 let longitude = community["longitude"] as! Double
                 
-//                let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
-//                let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
-//                let distanceLocation = baseLocation.distance(from: targetLocation)
-//                print("距離は \(distanceLocation)")
-//
-//                let radius = community["radius"] as! Double
-//
-//                if radius < distanceLocation  {
-//                    print("outside")
-//                    continue
-//                }
+                let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
+                let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
+                let distanceLocation = baseLocation.distance(from: targetLocation)
+                print("距離は \(distanceLocation)")
+
+                let radius = community["radius"] as! Double
+
+                if radius < distanceLocation  {
+                    print("outside")
+                    continue
+                }
                 
                 // コミュニティー名設定
                 let titleLabel = communityView.viewWithTag(1) as! UILabel
