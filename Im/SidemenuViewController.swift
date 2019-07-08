@@ -72,6 +72,10 @@ class SidemenuViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.reloadData()
         
+        let dragGesture = UIPanGestureRecognizer(
+            target: self,
+            action: #selector(panGestureRecognizerHandled2(panGestureRecognizer:)))
+        tableView.addGestureRecognizer(dragGesture)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped(sender:)))
         tapGestureRecognizer.delegate = self
         view.addGestureRecognizer(tapGestureRecognizer)
@@ -169,6 +173,7 @@ class SidemenuViewController: UIViewController {
     }
     
     @objc private func panGestureRecognizerHandled(panGestureRecognizer: UIPanGestureRecognizer) {
+//        print("通過1")
         guard let shouldPresent = self.delegate?.shouldPresentForSidemenuViewController(self), shouldPresent else {
             return
         }
@@ -177,7 +182,7 @@ class SidemenuViewController: UIViewController {
         if translation.x > 0 && contentRatio == 1.0 {
             return
         }
-        
+//        print("通過2")
         let location = panGestureRecognizer.location(in: view)
         switch panGestureRecognizer.state {
         case .began:
@@ -199,6 +204,48 @@ class SidemenuViewController: UIViewController {
                     showContentView(animated: true)
                 } else {
                     self.delegate?.sidemenuViewControllerDidRequestHiding(self, animated: true)
+                }
+            }
+            beganLocation = .zero
+            beganState = false
+        default: break
+        }
+    }
+    
+    @objc private func panGestureRecognizerHandled2(panGestureRecognizer: UIPanGestureRecognizer) {
+        print("通過1")
+        guard let shouldPresent = self.delegate?.shouldPresentForSidemenuViewController(self), shouldPresent else {
+            return
+        }
+        
+        let translation = panGestureRecognizer.translation(in: view)
+        if translation.x > 0 && contentRatio == 0.0 {
+            return
+        }
+        print("通過2")
+        let location = panGestureRecognizer.location(in: view)
+        switch panGestureRecognizer.state {
+        case .began:
+            beganState = isShown
+            beganLocation = location
+            if translation.x <= 0 {
+                self.delegate?.sidemenuViewControllerDidRequestShowing(self, contentAvailability: false, animated: false)
+            }
+        case .changed:
+            let distance = beganState ? location.x - beganLocation.x : beganLocation.x - location.x
+            if distance >= 0 {
+                let ratio = distance / (beganState ? (view.bounds.width - beganLocation.x) : beganLocation.x)
+                let contentRatio = beganState ? 1 - ratio : ratio
+                self.contentRatio = contentRatio
+            }
+        case .ended, .cancelled, .failed:
+            if contentRatio <= 1.0, contentRatio >= 0 {
+                print(location.x)
+                print(beganLocation.x)
+                if location.x > beganLocation.x + 50 {
+                    self.delegate?.sidemenuViewControllerDidRequestHiding(self, animated: true)
+                } else {
+                    showContentView(animated: true)
                 }
             }
             beganLocation = .zero
