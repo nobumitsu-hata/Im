@@ -25,6 +25,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     static var currentUser:User!
     static var unreadCountDic:[String:Int] = [:]
     static var locationFlg = false
+    static var badgeCountListener: ListenerRegistration!
     private let db = Firestore.firestore()
     var picker: UIImagePickerController! = UIImagePickerController()
     
@@ -52,7 +53,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     
     func badgeCount() {
         
-        db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
+        RootTabBarController.badgeCountListener = db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -132,10 +133,11 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
                 }
             } else {
                 RootTabBarController.AuthCheck = false
-                if let tabItem = self.tabBar.items?[2] {
+                if let tabItem = self.tabBar.items?[1] {
                     tabItem.badgeValue = nil
                     UIApplication.shared.applicationIconBadgeNumber = 0
                 }
+                RootTabBarController.unreadCountDic = [:]
             }
         }
     }

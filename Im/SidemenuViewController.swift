@@ -92,6 +92,9 @@ class SidemenuViewController: UIViewController, UITableViewDataSource, UITableVi
                     if let session = sessionStore.session() {
                         sessionStore.logOutUserID(session.userID)
                     }
+                    
+                    // バッジリセット
+                    RootTabBarController.badgeCountListener.remove()
                 } catch let error {
                     print(error.localizedDescription)
                 }

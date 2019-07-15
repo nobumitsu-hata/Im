@@ -56,7 +56,10 @@ class DeleteViewController: UIViewController {
                             sessionStore.logOutUserID(session.userID)
                         }
                         
-                        self.showMessagePrompt(message: "アカウントを削除するには再認証が必要です")
+                        // バッジリセット
+                        RootTabBarController.badgeCountListener.remove()
+                        
+                        self.showMessagePrompt(message: "アカウントを削除するには再度ログインが必要です")
                     } catch let signOutError as NSError {
                         print ("Error signing out: %@", signOutError)
                     }
@@ -106,6 +109,9 @@ class DeleteViewController: UIViewController {
                 if let session = sessionStore.session() {
                     sessionStore.logOutUserID(session.userID)
                 }
+                
+                // バッジリセット
+                RootTabBarController.badgeCountListener.remove()
                 
                 self.tabBarController?.selectedIndex = 0
             })
