@@ -66,7 +66,7 @@
 "ehk-g8-oQg.normalTitle" = "送信";
 
 /* Class = "UITextField"; placeholder = "性別を選択"; ObjectID = "fqc-wO-NgV"; */
-"fqc-wO-NgV.placeholder" = "性別を選択";
+"fqc-wO-NgV.placeholder" = "性別  ※登録後の変更不可";
 
 /* Class = "UIButton"; normalTitle = "プロフィールを編集"; ObjectID = "g2d-EG-HCM"; */
 "g2d-EG-HCM.normalTitle" = "プロフィールを編集";
@@ -81,7 +81,7 @@
 "otF-4b-qSg.title" = "会場";
 
 /* Class = "UITextField"; placeholder = "生年月日を選択"; ObjectID = "rYO-91-pzq"; */
-"rYO-91-pzq.placeholder" = "生年月日を選択";
+"rYO-91-pzq.placeholder" = "生年月日";
 
 /* Class = "UINavigationItem"; title = "トーク"; ObjectID = "umk-HS-psB"; */
 "umk-HS-psB.title" = "トーク";

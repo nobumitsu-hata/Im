@@ -1186,7 +1186,7 @@
                                                 <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                             </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="性別を選択" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fqc-wO-NgV">
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="性別 ※登録後の変更不可" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fqc-wO-NgV">
                                                 <rect key="frame" x="0.0" y="144" width="240" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="fba-nY-Rfa"/>
@@ -1195,7 +1195,7 @@
                                                 <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="生年月日を選択" textAlignment="natural" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="rYO-91-pzq" customClass="DatePickerKeyboard" customModule="Im" customModuleProvider="target">
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="生年月日" textAlignment="natural" minimumFontSize="16" translatesAutoresizingMaskIntoConstraints="NO" id="rYO-91-pzq" customClass="DatePickerKeyboard" customModule="Im" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="188" width="240" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="Mro-RV-LXY"/>
@@ -1400,21 +1400,31 @@
                                                     <constraint firstAttribute="bottom" secondItem="1Oa-VX-ws2" secondAttribute="bottom" constant="20" id="U4i-bB-2lw"/>
                                                 </constraints>
                                             </view>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CkX-eJ-ZZ3">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Ku-Cu-UVP">
                                                 <rect key="frame" x="0.0" y="337" width="360" height="250"/>
+                                                <subviews>
+                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CkX-eJ-ZZ3">
+                                                        <rect key="frame" x="0.0" y="0.0" width="360" height="250"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </tableView>
+                                                </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="250" id="wvo-Gn-6lP"/>
+                                                    <constraint firstAttribute="bottom" secondItem="CkX-eJ-ZZ3" secondAttribute="bottom" id="B74-AC-CFN"/>
+                                                    <constraint firstAttribute="trailing" secondItem="CkX-eJ-ZZ3" secondAttribute="trailing" id="MLS-kS-djD"/>
+                                                    <constraint firstItem="CkX-eJ-ZZ3" firstAttribute="leading" secondItem="2Ku-Cu-UVP" secondAttribute="leading" id="fQT-Uk-oND"/>
+                                                    <constraint firstAttribute="height" constant="250" id="g15-cD-Vx3"/>
+                                                    <constraint firstItem="CkX-eJ-ZZ3" firstAttribute="top" secondItem="2Ku-Cu-UVP" secondAttribute="top" id="yKX-50-Bhr"/>
                                                 </constraints>
-                                            </tableView>
+                                            </view>
                                         </subviews>
                                         <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="2Ku-Cu-UVP" secondAttribute="trailing" constant="15" id="5Tb-lX-aCq"/>
                                             <constraint firstItem="3X3-Rl-d72" firstAttribute="leading" secondItem="4P9-qF-nY1" secondAttribute="leading" id="Czy-gF-fd1"/>
                                             <constraint firstAttribute="trailing" secondItem="3X3-Rl-d72" secondAttribute="trailing" id="H1r-Zo-NHt"/>
-                                            <constraint firstItem="CkX-eJ-ZZ3" firstAttribute="leading" secondItem="4P9-qF-nY1" secondAttribute="leading" id="bf8-tg-aNx"/>
+                                            <constraint firstItem="2Ku-Cu-UVP" firstAttribute="leading" secondItem="4P9-qF-nY1" secondAttribute="leading" id="YcX-yr-OUC"/>
                                             <constraint firstAttribute="bottom" secondItem="3X3-Rl-d72" secondAttribute="bottom" id="nWg-Iz-EPL"/>
-                                            <constraint firstAttribute="trailing" secondItem="CkX-eJ-ZZ3" secondAttribute="trailing" constant="15" id="ryr-qh-8Du"/>
-                                            <constraint firstItem="3X3-Rl-d72" firstAttribute="top" secondItem="CkX-eJ-ZZ3" secondAttribute="bottom" id="uIf-4Y-1fW"/>
+                                            <constraint firstItem="3X3-Rl-d72" firstAttribute="top" secondItem="2Ku-Cu-UVP" secondAttribute="bottom" id="sC2-tK-w28"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -1456,7 +1466,8 @@
                         <outlet property="inputWrap" destination="3X3-Rl-d72" id="YdJ-Jb-rG2"/>
                         <outlet property="scrollView" destination="HZR-Bu-oSc" id="AZd-j8-fxq"/>
                         <outlet property="tableView" destination="CkX-eJ-ZZ3" id="CLQ-GP-8q6"/>
-                        <outlet property="tableViewHeight" destination="wvo-Gn-6lP" id="QO5-AW-OIm"/>
+                        <outlet property="tableWrapperHeight" destination="g15-cD-Vx3" id="ORR-Ok-VYq"/>
+                        <outlet property="tableWrapperView" destination="2Ku-Cu-UVP" id="fU6-vK-udB"/>
                         <outlet property="textField" destination="1Oa-VX-ws2" id="HCe-lh-tH8"/>
                         <outlet property="topConstraint" destination="5Oq-Tr-EaB" id="kat-WL-hm8"/>
                         <segue destination="hlu-tn-8Rh" kind="show" identifier="toOtherProfileViewController" id="kMT-tV-zvX"/>
@@ -1567,6 +1578,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="7yU-eP-Aef"/>
-        <segue reference="zeq-Q6-ID4"/>
+        <segue reference="kMT-tV-zvX"/>
     </inferredMetricsTieBreakers>
 </document>
