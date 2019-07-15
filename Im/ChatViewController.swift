@@ -17,9 +17,10 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var coverView: UIView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableWrapperView: UIView!
     @IBOutlet weak var inputWrap: UIView!
     @IBOutlet weak var textField: UITextField!
-    @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var tableWrapperHeight: NSLayoutConstraint!
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
     
     var ref: DatabaseReference!
@@ -47,11 +48,29 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
         coverView.backgroundColor = UIColor.clear
+        tableWrapperView.backgroundColor = UIColor.clear
+        
+        let gradientLayer = CAGradientLayer()
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             // 使用デバイスがiPadの場合
-            tableViewHeight.constant = tableView.frame.height * 2
+            tableWrapperHeight.constant = tableWrapperView.frame.height * 2
+            
+            
+            gradientLayer.frame = CGRect(x: tableWrapperView.bounds.minX, y: tableWrapperView.bounds.minY, width: tableWrapperView.bounds.width, height: tableWrapperView.bounds.height * 2)
+
+        } else {
+            
+            gradientLayer.frame = self.tableWrapperView.bounds
+            
         }
+        
+        // グラデーション マスク設定
+        let clearColor = UIColor.clear.cgColor
+        let whiteColor = UIColor.white.cgColor
+        gradientLayer.colors = [clearColor, whiteColor, whiteColor]
+        gradientLayer.locations = [0.03, 0.18, 1.0]
+        self.tableWrapperView.layer.mask = gradientLayer
         
         if #available(iOS 11, *) {
             
@@ -106,6 +125,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         loadMessages()
         addNewMessage()
         
+        
     }
     
     func loadMessages() {
@@ -120,16 +140,9 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
                 return
             }
             
-            var subScrollFlg = false
             for document in querySnapshot!.documents {
 
                 var messageData:[String:Any] = document.data()
-                
-                if RootTabBarController.UserId == messageData["senderId"] as! String {
-                    self.autoScrollFlg = true
-                    subScrollFlg = true
-                    
-                }
                 
                 self.db.collection("users").document(messageData["senderId"] as! String).getDocument { (document, error) in
                     if let user = document.flatMap({
@@ -144,15 +157,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
                         self.messageArr = self.messageArr.sorted{ ($0["createTime"] as! TimeInterval) < ($1["createTime"] as! TimeInterval) }
                         self.tableView.reloadData()
                         
-                        // グラデーション設定
-                        let gradientLayer = CAGradientLayer()
-                        gradientLayer.frame = self.tableView.superview!.bounds
-                        let clearColor = UIColor.clear.cgColor
-                        let whiteColor = UIColor.white.cgColor
-                        gradientLayer.colors = [clearColor, whiteColor, whiteColor]
-                        gradientLayer.locations = [0.45, 0.55, 1.0]
-                        self.tableView.superview!.layer.mask = gradientLayer
-                        self.tableView.backgroundColor = UIColor.clear
+                        
                         
                         DispatchQueue.main.async {
                             self.tableView.performBatchUpdates({
@@ -166,10 +171,6 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
                                 } else {
                                     // マージン0
                                     self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-                                    print(self.autoScrollFlg)
-                                    guard self.autoScrollFlg || subScrollFlg else {
-                                        return
-                                    }
                                     self.tableView.setContentOffset(CGPoint(x: self.tableView.contentOffset.x, y: dif), animated: true)
                                 }
                             }
@@ -222,16 +223,6 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
                             self.messageArr.append(messageData)
                             self.messageArr = self.messageArr.sorted{ ($0["createTime"] as! TimeInterval) < ($1["createTime"] as! TimeInterval) }
                             self.tableView.reloadData()
-                            
-                            // グラデーション設定
-                            let gradientLayer = CAGradientLayer()
-                            gradientLayer.frame = self.tableView.superview!.bounds
-                            let clearColor = UIColor.clear.cgColor
-                            let whiteColor = UIColor.white.cgColor
-                            gradientLayer.colors = [clearColor, whiteColor, whiteColor]
-                            gradientLayer.locations = [0.45, 0.55, 1.0]
-                            self.tableView.superview!.layer.mask = gradientLayer
-                            self.tableView.backgroundColor = UIColor.clear
                             
                             DispatchQueue.main.async {
                                 self.tableView.performBatchUpdates({
