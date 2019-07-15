@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import FirebaseFirestore
+import TwitterKit
 
 class DeleteViewController: UIViewController {
     
@@ -37,6 +38,24 @@ class DeleteViewController: UIViewController {
                         AccountViewController.profileListener.remove()
                         AccountViewController.belongsListener.remove()
                         AccountViewController.listenerFlg = false
+                        if MessageViewController.listenerFlg {
+                            for listener in MessageViewController.privateChatListener {
+                                listener.remove()
+                            }
+                            for listner in MessageViewController.partnerListener {
+                                listner.remove()
+                            }
+                            if (MessageViewController.partnersListener != nil) {
+                                MessageViewController.partnersListener.remove()
+                            }
+                            MessageViewController.listenerFlg = false
+                        }
+                        
+                        let sessionStore = TWTRTwitter.sharedInstance().sessionStore
+                        if let session = sessionStore.session() {
+                            sessionStore.logOutUserID(session.userID)
+                        }
+                        
                         self.showMessagePrompt(message: "アカウントを削除するには再認証が必要です")
                     } catch let signOutError as NSError {
                         print ("Error signing out: %@", signOutError)
@@ -70,6 +89,24 @@ class DeleteViewController: UIViewController {
                 AccountViewController.profileListener.remove()
                 AccountViewController.belongsListener.remove()
                 AccountViewController.listenerFlg = false
+                if MessageViewController.listenerFlg {
+                    for listener in MessageViewController.privateChatListener {
+                        listener.remove()
+                    }
+                    for listner in MessageViewController.partnerListener {
+                        listner.remove()
+                    }
+                    if (MessageViewController.partnersListener != nil) {
+                        MessageViewController.partnersListener.remove()
+                    }
+                    MessageViewController.listenerFlg = false
+                }
+                
+                let sessionStore = TWTRTwitter.sharedInstance().sessionStore
+                if let session = sessionStore.session() {
+                    sessionStore.logOutUserID(session.userID)
+                }
+                
                 self.tabBarController?.selectedIndex = 0
             })
             

@@ -18,15 +18,29 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
     var storage: StorageReference!
     private let storageRef = Storage.storage().reference()
     private let db = Firestore.firestore()
-    var dmKeyArr:[String] = []
-    var dmValArr:[String] = []
-    var receiverArr:[[String:String]] = []
+    
+    static var partnersListener: ListenerRegistration!
+    static var partnerListener:[ListenerRegistration] = []
+    static var privateChatListener:[ListenerRegistration] = []
+    static var listenerFlg = true
+    
     @IBOutlet weak var tableView: UITableView!
     var chatListArr:[[String:Any]] = []
     
-    
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.tabBar.isHidden = false
+        
+        if MessageViewController.listenerFlg {
+            return
+        }
+        print("やり直し")
+        chatListArr = []
+        MessageViewController.partnerListener = []
+        MessageViewController.privateChatListener = []
+        self.tableView.reloadData()
+        MessageViewController.listenerFlg = true
+        setupFirebase()
+        
     }
     
     override func viewDidLoad() {
@@ -37,6 +51,9 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         // 自作セルをテーブルビューに登録する
         let chatXib = UINib(nibName: "MessageTableViewCell", bundle: nil)
         tableView.register(chatXib, forCellReuseIdentifier: "messageCell")
+        
+        storage = Storage.storage().reference()
+        ref = Database.database().reference()
         
         setupFirebase()
         
@@ -77,10 +94,9 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func setupFirebase() {
-        storage = Storage.storage().reference()
-        ref = Database.database().reference()
+        
 
-        db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
+        MessageViewController.partnersListener = db.collection("users").document(RootTabBarController.UserId).collection("privateChatPartners").addSnapshotListener{ querySnapshot, error in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
                 return
@@ -103,7 +119,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                     let privateChatRef = data["privateChatRef"] as! DocumentReference
                     let partnerRef = data["partnerRef"] as! DocumentReference
                     
-                    partnerRef.addSnapshotListener{ documentSnapshot, error in
+                    MessageViewController.partnerListener.append(partnerRef.addSnapshotListener{ documentSnapshot, error in
                         guard let document = documentSnapshot else {
                             print("Error fetching document: \(error!)")
                             return
@@ -111,7 +127,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                         
                         let partnerDoc = document.data()
                         
-                        privateChatRef.addSnapshotListener{ documentSnapshot, error in
+                        MessageViewController.privateChatListener.append(privateChatRef.addSnapshotListener{ documentSnapshot, error in
                             guard let document = documentSnapshot else {
                                 print("Error fetching document: \(error!)")
                                 return
@@ -143,8 +159,8 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
                             }
                             
                             self.tableView.reloadData()
-                        }
-                    }
+                        })
+                    })
                 case .modified:
                     if let firstIndex = self.chatListArr.index(where: {$0["partnerId"] as! String == diff.document.documentID}) {
                         let data = diff.document.data()

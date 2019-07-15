@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import TwitterKit
 
 class SidemenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -69,10 +70,28 @@ class SidemenuViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.dismiss(animated: true, completion: {
                         referenceForTabBarController.selectedIndex = 0
                     })
+                    
                     RootTabBarController.AuthCheck = false
                     AccountViewController.profileListener.remove()
                     AccountViewController.belongsListener.remove()
                     AccountViewController.listenerFlg = false
+                    if MessageViewController.listenerFlg {
+                        for listener in MessageViewController.privateChatListener {
+                            listener.remove()
+                        }
+                        for listner in MessageViewController.partnerListener {
+                            listner.remove()
+                        }
+                        if (MessageViewController.partnersListener != nil) {
+                            MessageViewController.partnersListener.remove()
+                        }
+                        MessageViewController.listenerFlg = false
+                    }
+                    
+                    let sessionStore = TWTRTwitter.sharedInstance().sessionStore
+                    if let session = sessionStore.session() {
+                        sessionStore.logOutUserID(session.userID)
+                    }
                 } catch let error {
                     print(error.localizedDescription)
                 }
