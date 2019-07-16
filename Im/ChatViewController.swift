@@ -144,6 +144,13 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
 
                 var messageData:[String:Any] = document.data()
                 
+                // 24時間以内
+                let startTime = self.timestamp - (60*60*24)
+                let createTime = messageData["createTime"] as! TimeInterval
+                if  createTime < startTime {
+                    continue
+                }
+                
                 self.db.collection("users").document(messageData["senderId"] as! String).getDocument { (document, error) in
                     if let user = document.flatMap({
                         $0.data().flatMap({ (data) in
