@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import TwitterKit
+import GoogleSignIn
 
 class DeleteViewController: UIViewController {
     
@@ -54,6 +55,10 @@ class DeleteViewController: UIViewController {
                         let sessionStore = TWTRTwitter.sharedInstance().sessionStore
                         if let session = sessionStore.session() {
                             sessionStore.logOutUserID(session.userID)
+                        }
+                        
+                        if GIDSignIn.sharedInstance().hasAuthInKeychain() {
+                            GIDSignIn.sharedInstance().signOut()
                         }
                         
                         // バッジリセット
@@ -108,6 +113,10 @@ class DeleteViewController: UIViewController {
                 let sessionStore = TWTRTwitter.sharedInstance().sessionStore
                 if let session = sessionStore.session() {
                     sessionStore.logOutUserID(session.userID)
+                }
+                
+                if GIDSignIn.sharedInstance().hasAuthInKeychain() {
+                    GIDSignIn.sharedInstance().signOut()
                 }
                 
                 // バッジリセット

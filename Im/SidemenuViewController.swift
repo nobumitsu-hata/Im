@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import TwitterKit
+import GoogleSignIn
 
 class SidemenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -91,6 +92,10 @@ class SidemenuViewController: UIViewController, UITableViewDataSource, UITableVi
                     let sessionStore = TWTRTwitter.sharedInstance().sessionStore
                     if let session = sessionStore.session() {
                         sessionStore.logOutUserID(session.userID)
+                    }
+                    
+                    if GIDSignIn.sharedInstance().hasAuthInKeychain() {
+                        GIDSignIn.sharedInstance().signOut()
                     }
                     
                     // バッジリセット

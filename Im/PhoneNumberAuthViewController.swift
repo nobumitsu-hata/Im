@@ -52,7 +52,7 @@ class PhoneNumberAuthViewController: UIViewController {
             phoneNumber = phoneNumberTextField.text
             fullNumber = "+81" + String(phoneNumber.suffix(phoneNumber.count - 1))
             
-            Auth.auth().languageCode = "jp";
+            Auth.auth().languageCode = "ja"
             PhoneAuthProvider.provider().verifyPhoneNumber(fullNumber, uiDelegate: nil) { (verificationID, error) in
 
                 if let error = error {
