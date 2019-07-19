@@ -105,7 +105,8 @@ class PhoneNumberCheckViewController: UIViewController {
                         "img": "",
                         "imgUrl": "",
                         "authType": "phoneNumber",
-                        "token": ""
+                        "token": "",
+                        "pushId": "",
                         ] as [String : Any]
                     
                     // 仮登録
