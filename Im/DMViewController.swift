@@ -443,7 +443,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 )
                 
                 // プライベートチャット 最新更新
-                transaction.setData(
+                transaction.updateData(
                     ["lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
                     forDocument: self.db.collection("privateChat").document(self.chatId)
                 )
@@ -475,7 +475,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 
                 // 個人チャットルーム作成
                 transaction.setData(
-                    ["lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
+                    ["lastMessage": text, "block": false, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
                     forDocument: self.db.collection("privateChat").document(self.chatId)
                 )
                 
@@ -483,14 +483,14 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 let partnerRef: DocumentReference = self.db.collection("users").document(self.partnerId)
                 let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
                 transaction.setData(
-                    ["partnerRef" : partnerRef, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
+                    ["partnerRef" : partnerRef, "mute": false, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
                     forDocument: self.db.document("users/\(RootTabBarController.UserId)/privateChatPartners/\(String(describing: self.partnerId))")
                 )
                 
                 // パートナーのプライベートチャットリストに追加
                 let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.UserId)
                 transaction.setData(
-                    ["partnerRef" : userRef, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
+                    ["partnerRef" : userRef, "mute": false, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
                     forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.UserId)")
                 )
                 
@@ -619,7 +619,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                             )
                             
                             // プライベートチャット 最新更新
-                            transaction.setData(
+                            transaction.updateData(
                                 ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
                                 forDocument: self.db.collection("privateChat").document(self.chatId)
                             )
@@ -651,7 +651,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                             
                             // 個人チャットルーム作成
                             transaction.setData(
-                                ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
+                                ["lastMessage": fileName, "block": false, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
                                 forDocument: self.db.collection("privateChat").document(self.chatId)
                             )
                             
@@ -659,14 +659,14 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                             let partnerRef: DocumentReference = self.db.collection("users").document(self.partnerId)
                             let privateChatRef: DocumentReference = self.db.collection("privateChat").document(self.chatId)
                             transaction.setData(
-                                ["partnerRef" : partnerRef, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
+                                ["partnerRef" : partnerRef, "mute": false, "privateChatRef": privateChatRef, "unreadCount": 0, "readTime": timestamp],
                                 forDocument: self.db.document("users/\(RootTabBarController.UserId)/privateChatPartners/\(String(describing: self.partnerId))")
                             )
                             
                             // パートナーのプライベートチャットリストに追加
                             let userRef: DocumentReference = self.db.collection("users").document(RootTabBarController.UserId)
                             transaction.setData(
-                                ["partnerRef" : userRef, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
+                                ["partnerRef" : userRef, "mute": false, "privateChatRef": privateChatRef, "unreadCount": 1, "readTime": TimeInterval(0)],
                                 forDocument: self.db.document("users/\(self.partnerId)/privateChatPartners/\(RootTabBarController.UserId)")
                             )
                             
