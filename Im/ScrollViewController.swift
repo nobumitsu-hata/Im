@@ -98,6 +98,7 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         } else  {
             // 無効の場合
             print("無効")
+            KRProgressHUD.dismiss()// ローディング終了
         }
     }
     
@@ -336,6 +337,7 @@ extension ScrollViewController: CLLocationManagerDelegate {
         }
         else if (status == .denied) {
             print("許可していない")
+            KRProgressHUD.dismiss()// ローディング終了
             RootTabBarController.locationFlg = false
             let alertLocationAuth = UIAlertController(
                 title: "Imが位置情報の利用許可を求めています",
