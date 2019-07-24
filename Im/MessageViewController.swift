@@ -213,7 +213,7 @@ class MessageViewController: UIViewController, UITableViewDataSource, UITableVie
         
         print("こんにちは")
         
-        // 選択された背景色を白に設定
+        // 選択された背景色を透明に設定
         let cellSelectedBgView = UIView()
         cellSelectedBgView.backgroundColor = UIColor.clear
         cell.selectedBackgroundView = cellSelectedBgView

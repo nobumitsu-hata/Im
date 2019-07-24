@@ -378,7 +378,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         if segue.identifier == "toOtherProfileViewController" {
             let profileViewController = segue.destination as! OtherProfileViewController
             profileViewController.userId = getId
-            profileViewController.fromWhere = "communityChat"
+            profileViewController.backChatCount = 0
         }
     }
     

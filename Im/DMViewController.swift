@@ -32,7 +32,10 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     var loadingFlg = true
     var urlArr:[String] = []
     var scrollFlg = true
-    var listener: ListenerRegistration!
+    static var chatListener: ListenerRegistration!
+    var myBlockFlg = false
+    var partnerBlockFlg = false
+    static var blockListener: ListenerRegistration!
     
     var messages: [JSQMessage]?
     var incomingBubble: JSQMessagesBubbleImage!
@@ -42,6 +45,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.tabBar.isHidden = true
+        blockCheck()
     }
 
     override func viewDidLoad() {
@@ -71,6 +75,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         // ナビバー表示
         self.navigationController!.navigationBar.isHidden = false
         self.title = partnerData["name"] as? String
+
         // ナビゲーションバーのテキストを変更する
         self.navigationController?.navigationBar.titleTextAttributes = [
             // 文字の色
@@ -139,9 +144,89 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         
     }
     
+    func blockCheck() {
+
+        db.collection("users").document(RootTabBarController.UserId).collection("blockUsers").document(partnerId).getDocument { (document
+            , error) in
+            if let document = document, document.exists {
+                let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+                self.myBlockFlg = true
+                self.inputToolbar.contentView.rightBarButtonItem.isHidden = true
+                self.inputToolbar.contentView.leftBarButtonItem.isHidden = true
+                self.inputToolbar.contentView.textView.placeHolder = "メッセージを送信できません"
+                self.inputToolbar.contentView.textView.textAlignment = .center
+                self.inputToolbar.contentView.textView.isEditable = false
+                print("Document data: \(dataDescription)")
+            } else {
+                print("Document does not exist")
+                if !self.partnerBlockFlg {
+                    self.inputToolbar.contentView.rightBarButtonItem.isHidden = false
+                    self.inputToolbar.contentView.leftBarButtonItem.isHidden = false
+                    self.inputToolbar.contentView.textView.placeHolder = "メッセージを入力"
+                    self.inputToolbar.contentView.textView.textAlignment = .left
+                    self.inputToolbar.contentView.textView.isEditable = true
+                }
+            }
+        }
+    }
     
     func setupFirebase() {
-        listener = db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
+        
+        if DMViewController.blockListener != nil {
+            DMViewController.blockListener.remove()
+        }
+        
+        if DMViewController.chatListener != nil {
+            DMViewController.chatListener.remove()
+        }
+        
+        DMViewController.blockListener = db.collection("users").document(partnerId).collection("blockUsers").addSnapshotListener{ querySnapshot, error in
+            
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+            
+            print(documents.count)
+            
+            guard let snapshot = querySnapshot else {
+                print("Error fetching documents: \(error!)")
+                return
+            }
+            
+            snapshot.documentChanges.forEach { diff in
+                switch diff.type {
+                case .added:
+                    print("ブロック追加")
+                    if diff.document.documentID == RootTabBarController.UserId {
+                        self.partnerBlockFlg = true
+                        self.inputToolbar.contentView.rightBarButtonItem.isHidden = true
+                        self.inputToolbar.contentView.leftBarButtonItem.isHidden = true
+                        self.inputToolbar.contentView.textView.placeHolder = "メッセージを送信できません"
+                        self.inputToolbar.contentView.textView.textAlignment = .center
+                        self.inputToolbar.contentView.textView.isEditable = false
+                    }
+                case .removed:
+                    print("リムーブ")
+                    if diff.document.documentID == RootTabBarController.UserId {
+                        print("相手のブロック解除")
+                        self.partnerBlockFlg = false
+                        if !self.myBlockFlg {
+                            self.inputToolbar.contentView.rightBarButtonItem.isHidden = false
+                            self.inputToolbar.contentView.leftBarButtonItem.isHidden = false
+                            self.inputToolbar.contentView.textView.placeHolder = "メッセージを入力"
+                            self.inputToolbar.contentView.textView.textAlignment = .left
+                            self.inputToolbar.contentView.textView.isEditable = true
+                        }
+                    }
+                default:
+                    print("blockUser")
+                }
+            }
+            
+        }
+        
+        DMViewController.chatListener = db.collection("privateChat").document(chatId).collection("messages").whereField("createTime", isGreaterThan: startTimestamp).addSnapshotListener{ querySnapshot, error in
 
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching documents: \(error!)")
@@ -520,7 +605,13 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
         if segue.identifier == "fromPrivateChatToOtherProfile" {
             let profileViewController = segue.destination as! OtherProfileViewController
             profileViewController.userId = partnerId
-            profileViewController.fromWhere = "privateChat"
+            profileViewController.backChatCount = 1
+        }
+        
+        if segue.identifier == "toAccountDetailViewController" {
+            let accountDetailViewController = segue.destination as! AccountDetailViewController
+            accountDetailViewController.partnerData = partnerData
+            accountDetailViewController.partnerId = partnerId
         }
     }
     
@@ -793,15 +884,16 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
     
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         // ViewControllerが表示された時に実行したい処理
-        if viewController is OtherProfileViewController {
-            //挿入したい処理
-            listener.remove()
-        }
-        
         if viewController is MessageViewController {
+            print("繊維")
             //挿入したい処理
-            listener.remove()
+            DMViewController.chatListener.remove()
+            DMViewController.blockListener.remove()
         }
+    }
+    
+    @IBAction func toAccountDetail(_ sender: Any) {
+        performSegue(withIdentifier: "toAccountDetailViewController", sender: nil)
     }
     
 }

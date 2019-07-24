@@ -15,7 +15,7 @@ class SidemenuViewController: UIViewController, UITableViewDataSource, UITableVi
     
     @IBOutlet weak var tableView: UITableView!
     
-    let tableItem = ["アカウント管理", "ログアウト"]
+    let tableItem = ["アカウント管理", "プライバシー設定", "ログアウト"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +47,7 @@ class SidemenuViewController: UIViewController, UITableViewDataSource, UITableVi
         cell.backgroundColor = .clear
         cell.textLabel?.textColor = .white
         cell.selectionStyle = .none
-        if indexPath.row == 0 {
+        if indexPath.row == 0 || indexPath.row == 1 {
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator // ここで「>」ボタンを設定
         }
         return cell
@@ -58,6 +58,9 @@ class SidemenuViewController: UIViewController, UITableViewDataSource, UITableVi
             self.performSegue(withIdentifier: "toDeleteViewController", sender: nil)
         }
         if indexPath.row == 1 {
+            self.performSegue(withIdentifier: "toPrivacySettingViewController", sender: nil)
+        }
+        if indexPath.row == 2 {
             
             let alert: UIAlertController = UIAlertController(title: "ログアウトしますか？", message: "", preferredStyle:  UIAlertController.Style.alert)
             // OKボタン
