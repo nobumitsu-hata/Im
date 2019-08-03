@@ -265,6 +265,12 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
             privateChatViewController.partnerId = userId
             privateChatViewController.partnerData = userData
         }
+        
+        if segue.identifier == "fromOtherProfileToReportUser" {
+            let nav = segue.destination as! UINavigationController
+            let reportUserViewController = nav.topViewController as! ReportUserViewController
+            reportUserViewController.targetId = userId
+        }
     }
     
     @IBAction func tapActionSheet(_ sender: Any) {
@@ -355,6 +361,11 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
             
         })
         
+        let reportAction: UIAlertAction = UIAlertAction(title: "報告する", style: UIAlertAction.Style.destructive, handler: {
+            (action:UIAlertAction!) -> Void in
+            self.performSegue(withIdentifier: "fromOtherProfileToReportUser", sender: nil)
+        })
+        
         // キャンセルボタン
         let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: UIAlertAction.Style.cancel, handler:{
             // ボタンが押された時の処理を書く（クロージャ実装）
@@ -365,6 +376,7 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
         // ③ UIAlertControllerにActionを追加
         alert.addAction(cancelAction)
         alert.addAction(defaultAction)
+        alert.addAction(reportAction)
         // iPadでは必須！
         alert.popoverPresentationController?.sourceView = self.view
         let screenSize = UIScreen.main.bounds

@@ -59,7 +59,7 @@ class AccountDetailViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -86,15 +86,24 @@ class AccountDetailViewController: UIViewController, UITableViewDataSource, UITa
             }
             
         } else {
+            
             cell = tableView.dequeueReusableCell(withIdentifier: "toAccountDetailCell2", for: indexPath)
-            if let label = cell.viewWithTag(1) as? UILabel {
-                if self.blockFlg {
-                    label.text = "ブロックを解除"
-                } else {
-                    label.text = "ブロック"
+            
+            if indexPath.row == 1{
+                if let label = cell.viewWithTag(1) as? UILabel {
+                    if self.blockFlg {
+                        label.text = "ブロックを解除"
+                    } else {
+                        label.text = "ブロック"
+                    }
+                    
                 }
-                
+            } else {
+                let label = cell.viewWithTag(1) as? UILabel
+                label?.text = "報告する"
             }
+            
+            
             cell.backgroundColor = .clear
         }
         
@@ -118,6 +127,7 @@ class AccountDetailViewController: UIViewController, UITableViewDataSource, UITa
         if indexPath.row == 0 {
             performSegue(withIdentifier: "fromAccountDetailToOtherProfile", sender: nil)
         }
+        
         if indexPath.row == 1 {
             
             // ① UIAlertControllerクラスのインスタンスを生成
@@ -188,6 +198,10 @@ class AccountDetailViewController: UIViewController, UITableViewDataSource, UITa
             // ④ Alertを表示
             present(alert, animated: true, completion: nil)
         }
+        
+        if indexPath.row == 2 {
+            performSegue(withIdentifier: "fromAccountDetailToReportUser", sender: nil)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -195,6 +209,12 @@ class AccountDetailViewController: UIViewController, UITableViewDataSource, UITa
             let profileViewController = segue.destination as! OtherProfileViewController
             profileViewController.userId = partnerId
             profileViewController.backChatCount = 2
+        }
+        
+        if segue.identifier == "fromAccountDetailToReportUser" {
+            let nav = segue.destination as! UINavigationController
+            let reportUserViewController = nav.topViewController as! ReportUserViewController
+            reportUserViewController.targetId = partnerId
         }
     }
 }

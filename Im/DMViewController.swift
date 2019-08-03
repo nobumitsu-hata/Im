@@ -560,7 +560,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                 
                 // 個人チャットルーム作成
                 transaction.setData(
-                    ["lastMessage": text, "block": false, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
+                    ["lastMessage": text, "updateTime": timestamp, "type": "text", "senderId": RootTabBarController.UserId],
                     forDocument: self.db.collection("privateChat").document(self.chatId)
                 )
                 
@@ -742,7 +742,7 @@ class DMViewController: JSQMessagesViewController, UIImagePickerControllerDelega
                             
                             // 個人チャットルーム作成
                             transaction.setData(
-                                ["lastMessage": fileName, "block": false, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
+                                ["lastMessage": fileName, "updateTime": timestamp, "type": "img", "senderId": RootTabBarController.UserId],
                                 forDocument: self.db.collection("privateChat").document(self.chatId)
                             )
                             

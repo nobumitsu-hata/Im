@@ -27,6 +27,8 @@
 		526CA7B622E3620C007FE744 /* AccountDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CA7B522E3620C007FE744 /* AccountDetailViewController.swift */; };
 		526CA7B822E55B15007FE744 /* BlockUsersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CA7B722E55B15007FE744 /* BlockUsersViewController.swift */; };
 		526CA7BA22E58558007FE744 /* PrivacySettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CA7B922E58558007FE744 /* PrivacySettingViewController.swift */; };
+		526CA7BC22E99208007FE744 /* ReportUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CA7BB22E99208007FE744 /* ReportUserViewController.swift */; };
+		526CA7BE22F3CD53007FE744 /* ReportItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CA7BD22F3CD53007FE744 /* ReportItemsViewController.swift */; };
 		52838D0122368D3700CD3C50 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52838D0022368D3700CD3C50 /* AppDelegate.swift */; };
 		52838D0622368D3700CD3C50 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52838D0422368D3700CD3C50 /* Main.storyboard */; };
 		52838D0B22368D3800CD3C50 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52838D0922368D3800CD3C50 /* LaunchScreen.storyboard */; };
@@ -121,6 +123,8 @@
 		526CA7B522E3620C007FE744 /* AccountDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailViewController.swift; sourceTree = "<group>"; };
 		526CA7B722E55B15007FE744 /* BlockUsersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockUsersViewController.swift; sourceTree = "<group>"; };
 		526CA7B922E58558007FE744 /* PrivacySettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySettingViewController.swift; sourceTree = "<group>"; };
+		526CA7BB22E99208007FE744 /* ReportUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportUserViewController.swift; sourceTree = "<group>"; };
+		526CA7BD22F3CD53007FE744 /* ReportItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportItemsViewController.swift; sourceTree = "<group>"; };
 		52838CFD22368D3700CD3C50 /* Im.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Im.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52838D0022368D3700CD3C50 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		52838D0522368D3700CD3C50 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -242,6 +246,8 @@
 				52838D322236951000CD3C50 /* GoogleService-Info.plist */,
 				52838D0022368D3700CD3C50 /* AppDelegate.swift */,
 				52838D0422368D3700CD3C50 /* Main.storyboard */,
+				526CA7BB22E99208007FE744 /* ReportUserViewController.swift */,
+				526CA7BD22F3CD53007FE744 /* ReportItemsViewController.swift */,
 				526CA7B922E58558007FE744 /* PrivacySettingViewController.swift */,
 				526CA7B722E55B15007FE744 /* BlockUsersViewController.swift */,
 				5212358522A8E47400366AA9 /* RegisterViewController.swift */,
@@ -718,6 +724,7 @@
 			files = (
 				520BD50D22C2151300460BB1 /* SpotViewController.swift in Sources */,
 				52EEBAE6229D73B800F16B29 /* LoginViewController.swift in Sources */,
+				526CA7BE22F3CD53007FE744 /* ReportItemsViewController.swift in Sources */,
 				52FD3C0122797A1200746600 /* RoomNavigationController.swift in Sources */,
 				526CA7B822E55B15007FE744 /* BlockUsersViewController.swift in Sources */,
 				520E0E1922A4B512008934C2 /* SidemenuViewController.swift in Sources */,
@@ -751,6 +758,7 @@
 				52838D382237905D00CD3C50 /* CommunityTableViewCell.swift in Sources */,
 				526C6CE4228AF21800BE61E4 /* PlaceHolderTextView.swift in Sources */,
 				526CA7BA22E58558007FE744 /* PrivacySettingViewController.swift in Sources */,
+				526CA7BC22E99208007FE744 /* ReportUserViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
