@@ -18,6 +18,7 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
     
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var nameLbl: UILabel!
+    @IBOutlet weak var genderLbl: UILabel!
     @IBOutlet weak var talkBtn: UIButton!
     @IBOutlet weak var wrapperView: UIView!
     @IBOutlet weak var mainView: UIView!
@@ -168,6 +169,12 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
             
             self.nameLbl.text = (self.userData!["name"] as! String)
             
+            if "男性" == self.userData!["sex"] as? String {
+                self.genderLbl.text = "男性"
+            } else if "女性" == self.userData!["sex"] as? String {
+                self.genderLbl.text = "女性"
+            }
+            
             if (self.userData?["introduction"] as? String != "") {
                 self.introduction.isHidden = false
                 self.introduction.text = self.userData?["introduction"] as? String
@@ -193,8 +200,13 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
                         let communityData = communityDoc?.data()
                         
                         self.belongsVal[0] = communityData?["name"] as! String
-                        if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
-                        else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
+                        if data["friend"] as? String == "" {
+                            self.belongsVal[1] = "未設定"
+                        
+                        } else {
+                            if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
+                            else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
+                        }
                         // ファンレベル
                         guard data["level"] as? String != "" else {
                             return

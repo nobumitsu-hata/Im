@@ -52,13 +52,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qKQ-0v-1gA">
-                                <rect key="frame" x="37.5" y="165" width="300" height="337.5"/>
+                                <rect key="frame" x="37.5" y="156.5" width="300" height="354.5"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pty-xA-Ply">
-                                        <rect key="frame" x="0.0" y="0.0" width="300" height="170.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="300" height="187.5"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="bvh-GN-GHu">
-                                                <rect key="frame" x="20" y="20" width="260" height="130.5"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="bvh-GN-GHu">
+                                                <rect key="frame" x="20" y="20" width="260" height="147.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dba-uH-CDD">
                                                         <rect key="frame" x="0.0" y="0.0" width="260" height="80"/>
@@ -99,16 +99,22 @@
                                                             <constraint firstItem="GHG-IB-bTL" firstAttribute="leading" secondItem="He8-9H-tPJ" secondAttribute="trailing" constant="10" id="PQc-0i-Bc0"/>
                                                             <constraint firstItem="wBo-db-x3c" firstAttribute="top" secondItem="dba-uH-CDD" secondAttribute="top" constant="10" id="UiV-rH-iEw"/>
                                                             <constraint firstAttribute="height" constant="80" id="bT9-p7-gVs"/>
-                                                            <constraint firstAttribute="trailing" secondItem="wBo-db-x3c" secondAttribute="trailing" id="cO9-aJ-fDf"/>
                                                             <constraint firstItem="wBo-db-x3c" firstAttribute="leading" secondItem="He8-9H-tPJ" secondAttribute="trailing" constant="10" id="jq8-Fm-MiM"/>
                                                             <constraint firstAttribute="trailing" secondItem="GHG-IB-bTL" secondAttribute="trailing" id="kMK-hG-vso"/>
                                                             <constraint firstItem="He8-9H-tPJ" firstAttribute="top" secondItem="dba-uH-CDD" secondAttribute="top" id="mci-YG-Ftj"/>
+                                                            <constraint firstAttribute="trailing" secondItem="wBo-db-x3c" secondAttribute="trailing" id="uBj-B6-fbU"/>
                                                             <constraint firstItem="He8-9H-tPJ" firstAttribute="leading" secondItem="dba-uH-CDD" secondAttribute="leading" id="wt5-u2-cHG"/>
                                                             <constraint firstItem="GHG-IB-bTL" firstAttribute="top" secondItem="wBo-db-x3c" secondAttribute="bottom" constant="10" id="xa6-hA-fdx"/>
                                                         </constraints>
                                                     </view>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="女性" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bg3-2n-xg8">
+                                                        <rect key="frame" x="0.0" y="90" width="260" height="12"/>
+                                                        <fontDescription key="fontDescription" name="HiraginoSans-W6" family="Hiragino Sans" pointSize="12"/>
+                                                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rTS-6p-7vs">
-                                                        <rect key="frame" x="0.0" y="95" width="260" height="35.5"/>
+                                                        <rect key="frame" x="0.0" y="112" width="260" height="35.5"/>
                                                         <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="HiraginoSans-W3" family="Hiragino Sans" pointSize="13"/>
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -125,7 +131,7 @@
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="jCA-U1-jfr">
-                                        <rect key="frame" x="20" y="185.5" width="260" height="132"/>
+                                        <rect key="frame" x="20" y="202.5" width="260" height="132"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="132" id="o6q-8U-VwJ"/>
@@ -205,6 +211,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="genderLbl" destination="bg3-2n-xg8" id="ipr-yV-zga"/>
                         <outlet property="imgView" destination="He8-9H-tPJ" id="YWv-10-rQG"/>
                         <outlet property="introduction" destination="rTS-6p-7vs" id="oD4-u3-UJ1"/>
                         <outlet property="mainView" destination="pty-xA-Ply" id="OvD-r4-UMl"/>
