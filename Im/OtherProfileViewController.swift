@@ -204,8 +204,12 @@ class OtherProfileViewController: UIViewController, UITableViewDelegate, UITable
                             self.belongsVal[1] = "未設定"
                         
                         } else {
-                            if (data["friend"] as? Bool)! { self.belongsVal[1] = "いる" }
-                            else if data["friend"] as? Bool == false { self.belongsVal[1] = "いない" }
+                            if (data["friend"] as? Bool)!{
+                                self.belongsVal[1] = "いる"
+                            }
+                            else {
+                                self.belongsVal[1] = "いない"
+                            }
                         }
                         // ファンレベル
                         guard data["level"] as? String != "" else {
