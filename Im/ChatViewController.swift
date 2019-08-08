@@ -42,13 +42,15 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         tableView.dataSource = self
         self.textField.delegate = self
         
+        self.scrollView.keyboardDismissMode = .interactive
+        
         // 背景色設定
         self.view.backgroundColor = UIColor.clear
         tableView.backgroundColor = UIColor.clear
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
         coverView.backgroundColor = UIColor.clear
-        tableWrapperView.backgroundColor = UIColor.clear
+        tableWrapperView.backgroundColor = UIColor.green
         
         let gradientLayer = CAGradientLayer()
         
@@ -338,7 +340,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
 
     @IBAction func tapScreen(_ sender: Any) {
         // キーボードを閉じる
-        self.view.endEditing(true)
+//        self.view.endEditing(true)
     }
 
     // キーボード分スライド
@@ -419,16 +421,20 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
 
     // スワイプで画面を閉じる
     @objc func closeModalView() {
-        if keyboardOn { return }
-        //呼び出し元のView Controllerを取得しパラメータを渡す
-        let InfoVc = self.presentingViewController as! RootTabBarController
-        InfoVc.tabBar.isHidden = false
-        self.dismiss(animated: true, completion: nil)
+        if keyboardOn {
+            print("閉じる")
+            self.view.endEditing(true)
+        } else {
+            //呼び出し元のView Controllerを取得しパラメータを渡す
+            let InfoVc = self.presentingViewController as! RootTabBarController
+            InfoVc.tabBar.isHidden = false
+            self.dismiss(animated: true, completion: nil)
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // キーボードを閉じる
-        textField.resignFirstResponder()
+//        textField.resignFirstResponder()
     }
     
 }
