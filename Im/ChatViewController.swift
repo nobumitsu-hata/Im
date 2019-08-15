@@ -50,21 +50,17 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         inputWrap.backgroundColor = UIColor.clear
         textField.backgroundColor = UIColor.clear
         coverView.backgroundColor = UIColor.clear
-        tableWrapperView.backgroundColor = UIColor.green
+        tableWrapperView.backgroundColor = UIColor.clear
         
         let gradientLayer = CAGradientLayer()
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             // 使用デバイスがiPadの場合
             tableWrapperHeight.constant = tableWrapperView.frame.height * 2
-            
-            
-            gradientLayer.frame = CGRect(x: tableWrapperView.bounds.minX, y: tableWrapperView.bounds.minY, width: tableWrapperView.bounds.width, height: tableWrapperView.bounds.height * 2)
+            gradientLayer.frame = CGRect(x: tableWrapperView.bounds.minX, y: tableWrapperView.bounds.minY, width: UIScreen.main.bounds.width - 15, height: tableWrapperView.bounds.height * 2)
 
         } else {
-            
             gradientLayer.frame = self.tableWrapperView.bounds
-            
         }
         
         // グラデーション マスク設定
@@ -340,7 +336,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
 
     @IBAction func tapScreen(_ sender: Any) {
         // キーボードを閉じる
-//        self.view.endEditing(true)
+        self.view.endEditing(true)
     }
 
     // キーボード分スライド
@@ -434,7 +430,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // キーボードを閉じる
-//        textField.resignFirstResponder()
+        textField.resignFirstResponder()
     }
     
 }
