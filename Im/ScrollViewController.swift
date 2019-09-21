@@ -16,6 +16,7 @@ import KRProgressHUD
 
 class MyTapGestureRecognizer: UITapGestureRecognizer {
     var targetString: String?
+    var targetData: [String:Any]?
 }
 
 class ScrollViewController: UIViewController, UIScrollViewDelegate {
@@ -29,7 +30,6 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
     var appGuideView:UIView!
 
     var locationManager: CLLocationManager!// 位置情報
-    fileprivate let refreshCtl = UIRefreshControl()
     
     var communityKey:[String] = []
     var communityVal:[[String:Any]] = []
@@ -42,11 +42,6 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidLoad()
         
         scrollView.delegate = self
-        
-        refreshCtl.tintColor  = .white
-        refreshCtl.addTarget(self, action: #selector(ScrollViewController.refresh(sender:)), for: .valueChanged)
-        scrollView.refreshControl = refreshCtl
-        
         storage = Storage.storage()
         
         // ローディング開始
@@ -75,31 +70,8 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         scrollScreenWidth = screenSize.width
         scrollScreenHeight = screenSize.height
         self.view.setGradientLayer()
-        setupLocationManager()
+        setupFirebase()
         setAppGuide()
-    }
-    
-    func setupLocationManager() {
-        
-        // 位置情報サービスが有効な場合
-        if (CLLocationManager.locationServicesEnabled()) {
-            print("有効")
-            // 初期化
-            locationManager = CLLocationManager()
-            // 初期化に成功しているかどうか
-            guard let locationManager = locationManager else { return }
-
-            locationManager.delegate = self
-            // 管理マネージャが位置情報を更新するペース
-            locationManager.distanceFilter = 50// メートル単位
-            // 位置情報を許可するリクエスト
-            locationManager.requestAlwaysAuthorization()
-            
-        } else  {
-            // 無効の場合
-            print("無効")
-            KRProgressHUD.dismiss()// ローディング終了
-        }
     }
     
     func setAppGuide() {
@@ -139,11 +111,6 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         
         var counter = 1
         
-        guard RootTabBarController.locationFlg else {
-            KRProgressHUD.dismiss()// ローディング終了
-            return
-        }
-        
         db.collection("communities").getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
@@ -162,20 +129,6 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
                 
                 let community = document.data()
                 let documentId = document.documentID
-                let latitude = community["latitude"] as! Double
-                let longitude = community["longitude"] as! Double
-                
-                let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
-                let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
-                let distanceLocation = baseLocation.distance(from: targetLocation)
-                print("距離は \(distanceLocation)")
-
-                let radius = community["radius"] as! Double
-
-                if radius < distanceLocation  {
-                    print("outside")
-                    continue
-                }
                 
                 // コミュニティー名設定
                 let titleLabel = communityView.viewWithTag(1) as! UILabel
@@ -200,6 +153,7 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
                 
                 let gesture = MyTapGestureRecognizer(target: self, action: #selector(ScrollViewController.btnClick(_:)))
                 gesture.targetString = documentId
+                gesture.targetData = community
                 communityView.addGestureRecognizer(gesture)
                 communityView.tag = 1
                 self.scrollView.addSubview(communityView)
@@ -241,7 +195,9 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         if segue.identifier == "toChatViewController" {
             let nav = segue.destination as! UINavigationController
             let chatViewController = nav.topViewController as! ChatViewController
-            chatViewController.communityId = (sender as! String)
+            let tapGesture = sender as! MyTapGestureRecognizer
+            chatViewController.communityId = tapGesture.targetString
+            chatViewController.communityData = tapGesture.targetData
         }
     }
     
@@ -258,7 +214,7 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
                 
             } else {
                 tabBarController?.tabBar.isHidden = true
-                performSegue(withIdentifier: "toChatViewController", sender: sender.targetString)
+                performSegue(withIdentifier: "toChatViewController", sender: sender)
             }
         } else {
             
@@ -269,104 +225,10 @@ class ScrollViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    @objc func refresh(sender: UIRefreshControl) {
-        let subviews =  self.scrollView.subviews
-        for view in subviews {
-            if view.tag == 1 {
-                view.removeFromSuperview()
-            }
-        }
-        
-        var appGuideViewFrame:CGRect = self.appGuideView.frame
-        appGuideViewFrame.origin = CGPoint(x: 0, y: 0)
-        self.appGuideView.frame = appGuideViewFrame
-        self.scrollView.contentSize = CGSize(width: self.scrollScreenWidth, height: self.scrollScreenHeight)
-        // ここが引っ張られるたびに呼び出される
-        DispatchQueue.global().async {
-            self.setupFirebase()
-            Thread.sleep(forTimeInterval: 1.0)
-            
-            DispatchQueue.main.async {
-                // 通信終了後、endRefreshingを実行することでロードインジケーター（くるくる）が終了
-                if sender.isRefreshing {
-                    sender.endRefreshing()
-                }
-            }
-        }
-        
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-        guard #available(iOS 11, *) else {
-            return
-        }
-        
-        // 新機種 レスポンシブ
-        guard UIScreen.main.nativeBounds.height == 2436 || UIScreen.main.nativeBounds.height == 2688 || UIScreen.main.nativeBounds.height == 1792 else {
-            return
-        }
-        
-        if scrollView.contentOffset.y < 0 {
-            topConstraint.constant = -scrollView.contentOffset.y/2
-        } else {
-            topConstraint.constant = 0
-        }
-    }
 }
 
 extension ScrollViewController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return LoginPresentationController(presentedViewController: presented, presenting: presenting)
     }
-}
-
-extension ScrollViewController: CLLocationManagerDelegate {
-    
-    // 位置情報を取得・更新するたびに呼ばれる
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = locations.first
-        RootTabBarController.latitude = location!.coordinate.latitude
-        RootTabBarController.longitude = location!.coordinate.longitude
-        print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if (status == .restricted) {
-            print("機能制限している");
-        }
-        else if (status == .denied) {
-            print("許可していない")
-            KRProgressHUD.dismiss()// ローディング終了
-            RootTabBarController.locationFlg = false
-            let alertLocationAuth = UIAlertController(
-                title: "Imが位置情報の利用許可を求めています",
-                message: "このアプリは位置情報を必要とします",
-                preferredStyle: .alert)
-            let openAction = UIAlertAction(title: "設定する", style: .default, handler: { (_) -> Void in
-                guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
-                    return
-                }
-                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
-            })
-            let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: nil)
-            alertLocationAuth.addAction(openAction)
-            alertLocationAuth.addAction(cancelAction)
-            present(alertLocationAuth, animated: true, completion: nil)
-        }
-        else if (status == .authorizedWhenInUse) {
-            print("このアプリ使用中のみ許可している")
-            RootTabBarController.locationFlg = true
-            print(RootTabBarController.locationFlg)
-            locationManager.startUpdatingLocation()
-            setupFirebase()
-        }
-        else if (status == .authorizedAlways) {
-            print("常に許可している")
-            RootTabBarController.locationFlg = true
-            locationManager.startUpdatingLocation()
-            setupFirebase()
-        }
-    }
-    
 }

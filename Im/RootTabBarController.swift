@@ -16,6 +16,7 @@ import FBSDKLoginKit
 import OneSignal
 import KRProgressHUD
 import TwitterKit
+import CoreLocation
 
 class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -28,6 +29,7 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
     static var badgeCountListener: ListenerRegistration!
     private let db = Firestore.firestore()
     var picker: UIImagePickerController! = UIImagePickerController()
+    var locationManager: CLLocationManager!// 位置情報
     
     // 位置情報
     static var latitude: Double!
@@ -49,6 +51,31 @@ class RootTabBarController: UITabBarController, UITabBarControllerDelegate, UIIm
         
         UITabBar.appearance().unselectedItemTintColor = UIColor.white
         
+        setupLocationManager()
+        
+    }
+    
+    func setupLocationManager() {
+        
+        // 位置情報サービスが有効な場合
+        if (CLLocationManager.locationServicesEnabled()) {
+            print("有効")
+            // 初期化
+            locationManager = CLLocationManager()
+            // 初期化に成功しているかどうか
+            guard let locationManager = locationManager else { return }
+            
+            locationManager.delegate = self
+            // 管理マネージャが位置情報を更新するペース
+            locationManager.distanceFilter = 50// メートル単位
+            // 位置情報を許可するリクエスト
+            locationManager.requestAlwaysAuthorization()
+            
+        } else  {
+            // 無効の場合
+            print("無効")
+            RootTabBarController.locationFlg = false
+        }
     }
     
     func badgeCount() {
@@ -201,4 +228,51 @@ extension RootTabBarController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return LoginPresentationController(presentedViewController: presented, presenting: presenting)
     }
+}
+
+extension RootTabBarController: CLLocationManagerDelegate {
+    
+    // 位置情報を取得・更新するたびに呼ばれる
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.first
+        RootTabBarController.latitude = location!.coordinate.latitude
+        RootTabBarController.longitude = location!.coordinate.longitude
+        print("latitude: \(RootTabBarController.latitude!)\nlongitude: \(RootTabBarController.longitude!)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if (status == .restricted) {
+            print("機能制限している");
+            RootTabBarController.locationFlg = false
+        }
+        else if (status == .denied) {
+            print("許可していない")
+            RootTabBarController.locationFlg = false
+            let alertLocationAuth = UIAlertController(
+                title: "Imが位置情報の利用許可を求めています",
+                message: "このアプリは位置情報を必要とします",
+                preferredStyle: .alert)
+            let openAction = UIAlertAction(title: "設定する", style: .default, handler: { (_) -> Void in
+                guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                    return
+                }
+                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+            })
+            let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: nil)
+            alertLocationAuth.addAction(openAction)
+            alertLocationAuth.addAction(cancelAction)
+            present(alertLocationAuth, animated: true, completion: nil)
+        }
+        else if (status == .authorizedWhenInUse) {
+            print("このアプリ使用中のみ許可している")
+            RootTabBarController.locationFlg = true
+            locationManager.startUpdatingLocation()
+        }
+        else if (status == .authorizedAlways) {
+            print("常に許可している")
+            RootTabBarController.locationFlg = true
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
 }

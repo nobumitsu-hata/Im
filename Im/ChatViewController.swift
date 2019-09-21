@@ -11,6 +11,7 @@ import Firebase
 import FirebaseDatabase
 import FirebaseUI
 import FirebaseFirestore
+import CoreLocation
 
 class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource {
     
@@ -28,6 +29,7 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
     private let db = Firestore.firestore()
     var timestamp: TimeInterval!
     var communityId: String!
+    var communityData: [String:Any]!
     var messageArr:[[String:Any]] = []
     var padding: CGPoint = CGPoint(x: 6.0, y: 0.0)
     var testCounter = 0
@@ -368,6 +370,40 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         if getId == RootTabBarController.UserId {
             return
         }
+        
+        // 位置情報が許可の場合
+        guard RootTabBarController.locationFlg else {
+            let alertLocationAuth = UIAlertController(
+                title: "続けるには位置情報の許可が必要です",
+                message: "会場に来ているかの確認で使用します",
+                preferredStyle: .alert)
+            let openAction = UIAlertAction(title: "設定する", style: .default, handler: { (_) -> Void in
+                guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                    return
+                }
+                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+            })
+            let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: nil)
+            alertLocationAuth.addAction(openAction)
+            alertLocationAuth.addAction(cancelAction)
+            present(alertLocationAuth, animated: true, completion: nil)
+            return
+        }
+        
+        let latitude = communityData["latitude"] as! Double
+        let longitude = communityData["longitude"] as! Double
+        let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
+        let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
+        let distanceLocation = baseLocation.distance(from: targetLocation)
+        print("距離は \(distanceLocation)")
+        let radius = communityData["radius"] as! Double
+        // エリア外の場合
+        if radius < distanceLocation  {
+            print("outside")
+            showMessagePrompt(message: "会場にいるユーザーのみ閲覧できます")
+            return
+        }
+        
         self.performSegue(withIdentifier: "toOtherProfileViewController", sender: sender.userDoc)// ページ遷移
 
     }
@@ -385,6 +421,39 @@ class ChatViewController: UIViewController, UIScrollViewDelegate, UITextFieldDel
         
         let message = textField.text// 入力文字を取得
         if message == "" {
+            return false
+        }
+        
+        // 位置情報が許可の場合
+        guard RootTabBarController.locationFlg else {
+            let alertLocationAuth = UIAlertController(
+                title: "続けるには位置情報の許可が必要です",
+                message: "会場に来ているかの確認で使用します",
+                preferredStyle: .alert)
+            let openAction = UIAlertAction(title: "設定する", style: .default, handler: { (_) -> Void in
+                guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                    return
+                }
+                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+            })
+            let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: nil)
+            alertLocationAuth.addAction(openAction)
+            alertLocationAuth.addAction(cancelAction)
+            present(alertLocationAuth, animated: true, completion: nil)
+            return false
+        }
+        
+        let latitude = communityData["latitude"] as! Double
+        let longitude = communityData["longitude"] as! Double
+        let baseLocation: CLLocation = CLLocation(latitude: RootTabBarController.latitude, longitude: RootTabBarController.longitude)
+        let targetLocation: CLLocation = CLLocation(latitude: latitude, longitude: longitude)
+        let distanceLocation = baseLocation.distance(from: targetLocation)
+        print("距離は \(distanceLocation)")
+        let radius = communityData["radius"] as! Double
+        // エリア外の場合
+        if radius < distanceLocation  {
+            print("outside")
+            showMessagePrompt(message: "会場にいるユーザーのみ送信できます")
             return false
         }
         
